@@ -1,10 +1,18 @@
 # Calvary Ellicott website — working notes
 
-Static single-page church website for Calvary Ellicott (Ellicott/Calhan, Colorado), hosted on GitHub Pages under the church's own GitHub organization. No build step, no server, no dependencies.
+Static multi-page church website for Calvary Ellicott (Ellicott/Calhan, Colorado), hosted on GitHub Pages under the church's own GitHub organization. No build step, no server, no dependencies.
+
+## Structure
+- Pages: `index.html` (home), `about.html`, `staff.html`, `beliefs.html`, `events.html`, `connect.html`, `404.html`. Each page is focused on one thing; the owner chose pages over one long scrolling page.
+- Header, nav, and footer markup is duplicated verbatim in every page (no templating). Change it everywhere at once. `scripts/app.js` sets `aria-current="page"` on the matching nav link.
+- Inner pages open with a `.page-hero` block (eyebrow, h1, lead). The home page keeps the full-bleed `.hero`.
+- An unconfigured ChurchTrac link on any page redirects to `connect.html` and shows the "coming soon" note there via `sessionStorage`.
 
 ## Project decisions
 - Hosting: GitHub Pages, deploy from `main` branch, root folder. Domain DNS will live at GoDaddy (records are in README.md). Domain not yet chosen.
-- Backend: ChurchTrac supplies forms and the events calendar via public URLs only. Those URLs live in `data/churchtrac.json`; `scripts/app.js` reads that file on load and wires buttons marked `data-churchtrac-link`. Blank values show a friendly "coming soon" message.
+- Backend: ChurchTrac supplies forms and the events calendar via public URLs only. Those URLs live in `data/churchtrac.json`; `scripts/app.js` reads that file on load. Any key works: `data-churchtrac-link="key"` on an `<a>` opens it in a new tab, `data-churchtrac-embed="key"` on a `<div>` swaps in an iframe. Blank or non-https values show a friendly "coming soon" message.
+- All page copy lives in `data/content.json`. `scripts/app.js` fills `[data-content="path"]` elements (string or array of lines; `*text*` becomes `<em>`; `{site.key}` interpolates) and `[data-content-list="path"][data-list-type]` blocks (types: details, cards, paragraphs, beliefs, forms). The HTML keeps the same copy as a fallback; keep both in sync when adding sections. Content is applied before ChurchTrac wiring because the Connect form list is rendered from JSON.
+- Staff cards render from `data/staff.json` (name, role, photo, bio, email). Photos go in `images/staff/`. The placeholder cards in `index.html` only show if the JSON is missing or empty.
 - Keep it static. Do not reintroduce a server, admin panel, framework, or bundler. The site owner dislikes the GoDaddy and ChurchTrac site builders and wants hand-written HTML/CSS/JS.
 - Security policy is a `<meta http-equiv="Content-Security-Policy">` tag in `index.html`. If you add a new external host (images, embeds, fonts), add it there too or it will be silently blocked.
 - Never commit ChurchTrac credentials, API keys, or member data. Only public URLs belong in the repo.
@@ -17,8 +25,8 @@ Static single-page church website for Calvary Ellicott (Ellicott/Calhan, Colorad
 
 ## Remaining work
 Content (needs church leadership):
-- Real staff names, titles, bios, photos (both staff cards are placeholders)
-- Final statement of faith and transition wording for the "Our next chapter" section
+- Real staff names, titles, bios, photos for `data/staff.json` (photos being taken the week of 2026-09-07)
+- Final statement of faith (`beliefs.items` in content.json) and transition wording (`about.story` and `home.story`)
 - The seven public ChurchTrac URLs for `data/churchtrac.json`
 - Livestream and online-giving links
 - Confirm the address: 2150 N. Ellicott Hwy, Calhan, CO 80808
