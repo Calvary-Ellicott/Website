@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#182820" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' https://images.unsplash.com data:; frame-src https:; script-src 'self'; connect-src 'self'" />
+    <meta name="description" content="Learn the story of Calvary Ellicott, a locally led church family serving Ellicott, Colorado and the surrounding plains." />
+    <title>About | Calvary Ellicott</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header" data-scrolled="false">
+      <a class="brand" href="index.html" aria-label="Calvary Ellicott home">
+        <span class="brand-mark" aria-hidden="true">CE</span>
+        <span><strong>Calvary</strong><small>Ellicott</small></span>
+      </a>
+      <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false"><span></span><span></span><span></span></button>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="about.html">About</a><a href="staff.html">Staff</a><a href="beliefs.html">Beliefs</a><a href="events.html">Events</a><a class="nav-cta" href="connect.html">Connect</a>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="page-hero">
+        <p class="eyebrow" data-content="about.hero.eyebrow">About us</p>
+        <h1 data-content="about.hero.headline">Our next chapter.</h1>
+        <p data-content="about.hero.lead">A church family rooted in Ellicott, grateful for our history, and hopeful about what God is building here.</p>
+      </section>
+
+      <section class="section story">
+        <div class="story-image" role="img" aria-label="Open Colorado prairie beneath a wide sky"></div>
+        <div class="story-copy">
+          <p class="eyebrow" data-content="about.story.eyebrow">Who we are</p>
+          <h2 data-content="about.story.headline">Calvary Ellicott</h2>
+          <div data-content-list="about.story.paragraphs" data-list-type="paragraphs">
+            <p>Our congregation is prayerfully preparing for a new season as a locally led church serving Ellicott and the surrounding plains. While our name and organizational relationship may be changing, our foundation is not: Jesus Christ, the authority of Scripture, and the call to make disciples.</p>
+            <p>We’re grateful for our history with Rocky Mountain Calvary and hopeful about what God is building here. We’ll share formal updates with clarity as decisions are finalized.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section welcome-grid">
+        <div>
+          <p class="eyebrow" data-content="about.sunday.eyebrow">What a Sunday looks like</p>
+          <h2 data-content="about.sunday.headline">Simple, warm,<br />and centered on Jesus.</h2>
+          <p class="lead" data-content="about.sunday.lead">We gather to worship, open the Bible together, and pray for one another. Children are cared for with age-appropriate teaching, and there’s always time to talk afterward.</p>
+          <a class="text-link" href="beliefs.html"><span data-content="about.sunday.link">What we believe</span> <span>→</span></a>
+        </div>
+        <div class="details-card" data-content-list="about.sunday.details" data-list-type="details">
+            <div><span class="detail-number">01</span><p><strong>Worship</strong>Songs that lift up Christ and prepare our hearts for the Word.</p></div>
+            <div><span class="detail-number">02</span><p><strong>Teaching</strong>Practical, verse-by-verse teaching through the Bible.</p></div>
+            <div><span class="detail-number">03</span><p><strong>Community</strong>Genuine people who want to know you and walk with you.</p></div>
+          </div>
+      </section>
+
+      <section class="section next-steps-section">
+        <div class="section-heading narrow"><div><p class="eyebrow" data-content="about.nextSteps.eyebrow">Keep exploring</p><h2 data-content="about.nextSteps.headline">Get to know us.</h2></div></div>
+        <div class="next-steps" data-content-list="about.nextSteps.cards" data-list-type="cards">
+          <a class="next-step" href="staff.html"><span class="detail-number">01</span><h3>Our staff</h3><p>Meet the people who teach, care, and serve here.</p></a>
+          <a class="next-step" href="beliefs.html"><span class="detail-number">02</span><h3>Our beliefs</h3><p>The historic Christian faith we hold and teach.</p></a>
+          <a class="next-step" href="connect.html"><span class="detail-number">03</span><h3>Connect</h3><p>Plan a visit or ask us anything.</p></a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a class="brand footer-brand" href="index.html"><span class="brand-mark">CE</span><span><strong>Calvary</strong><small>Ellicott</small></span></a>
+      <div><strong><span data-content="site.serviceDay">Sunday</span> at <span data-content="site.serviceTime">9:30 AM</span></strong><p><span data-content="site.addressLine1">2150 N. Ellicott Hwy</span>, <span data-content="site.addressLine2">Calhan, CO 80808</span></p></div>
+      <nav aria-label="Footer navigation"><a href="about.html">About</a><a href="staff.html">Staff</a><a href="beliefs.html">Beliefs</a><a href="events.html">Events</a><a href="connect.html">Connect</a></nav>
+      <p class="copyright">© <span data-year></span> <span data-content="site.name">Calvary Ellicott</span></p>
+    </footer>
+    <script type="module" src="scripts/app.js"></script>
+  </body>
+</html>

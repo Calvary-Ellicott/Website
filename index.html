@@ -15,13 +15,13 @@
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
     <header class="site-header" data-scrolled="false">
-      <a class="brand" href="#home" aria-label="Calvary Ellicott home">
+      <a class="brand" href="index.html" aria-label="Calvary Ellicott home">
         <span class="brand-mark" aria-hidden="true">CE</span>
         <span><strong>Calvary</strong><small>Ellicott</small></span>
       </a>
       <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false"><span></span><span></span><span></span></button>
       <nav class="nav-links" aria-label="Primary navigation">
-        <a href="#visit">Visit</a><a href="#events">Events</a><a href="#about">About</a><a href="#staff">Staff</a><a href="#beliefs">Beliefs</a><a class="nav-cta" href="#connect">Connect</a>
+        <a href="about.html">About</a><a href="staff.html">Staff</a><a href="beliefs.html">Beliefs</a><a href="events.html">Events</a><a class="nav-cta" href="connect.html">Connect</a>
       </nav>
     </header>
 
@@ -29,82 +29,53 @@
       <section id="home" class="hero" aria-labelledby="hero-title">
         <div class="hero-media" aria-hidden="true"></div>
         <div class="hero-content">
-          <p class="eyebrow">A church family in Ellicott, Colorado</p>
-          <h1 id="hero-title">Rooted in truth.<br /><em>Growing in grace.</em></h1>
-          <p>Come as you are and join us as we study God’s Word, follow Jesus, and love our neighbors—together.</p>
-          <div class="hero-actions"><a class="button primary" href="#visit">Plan your visit</a><a class="button light" href="#about">Get to know us</a></div>
+          <p class="eyebrow" data-content="home.hero.eyebrow">A church family in Ellicott, Colorado</p>
+          <h1 id="hero-title" data-content="home.hero.headline">Rooted in truth.<br /><em>Growing in grace.</em></h1>
+          <p data-content="home.hero.intro">Come as you are and join us as we study God’s Word, follow Jesus, and love our neighbors—together.</p>
+          <div class="hero-actions"><a class="button primary" href="#visit" data-content="home.hero.primaryButton">Plan your visit</a><a class="button light" href="about.html" data-content="home.hero.secondaryButton">Get to know us</a></div>
         </div>
-        <div class="service-ribbon"><span>Sunday worship</span><strong>9:30 AM</strong><span>2150 N. Ellicott Hwy</span></div>
+        <div class="service-ribbon"><span><span data-content="site.serviceDay">Sunday</span> worship</span><strong data-content="site.serviceTime">9:30 AM</strong><span data-content="site.addressLine1">2150 N. Ellicott Hwy</span></div>
       </section>
 
       <section id="visit" class="section welcome-grid">
         <div>
-          <p class="eyebrow">You’re welcome here</p>
-          <h2>A simple Sunday.<br />A meaningful community.</h2>
-          <p class="lead">Whether church is familiar or completely new, we want your first visit to feel easy. Expect genuine people, worship, age-appropriate care for children, and practical teaching through the Bible.</p>
-          <a class="text-link" data-churchtrac-link="visit" href="#connect">Tell us you’re coming <span>→</span></a>
+          <p class="eyebrow" data-content="home.visit.eyebrow">You’re welcome here</p>
+          <h2 data-content="home.visit.headline">A simple Sunday.<br />A meaningful community.</h2>
+          <p class="lead" data-content="home.visit.lead">Whether church is familiar or completely new, we want your first visit to feel easy. Expect genuine people, worship, age-appropriate care for children, and practical teaching through the Bible.</p>
+          <a class="text-link" data-churchtrac-link="visit" href="connect.html"><span data-content="home.visit.link">Tell us you’re coming</span> <span>→</span></a>
         </div>
-        <div class="details-card">
-          <div><span class="detail-number">01</span><p><strong>When</strong>Sunday at 9:30 AM</p></div>
-          <div><span class="detail-number">02</span><p><strong>Where</strong>2150 N. Ellicott Hwy<br />Calhan, CO 80808</p></div>
-          <div><span class="detail-number">03</span><p><strong>What to expect</strong>Biblical teaching, worship, and a relaxed atmosphere.</p></div>
-        </div>
+        <div class="details-card" data-content-list="home.visit.details" data-list-type="details">
+            <div><span class="detail-number">01</span><p><strong>When</strong>Sunday at 9:30 AM</p></div>
+            <div><span class="detail-number">02</span><p><strong>Where</strong>2150 N. Ellicott Hwy<br />Calhan, CO 80808</p></div>
+            <div><span class="detail-number">03</span><p><strong>What to expect</strong>Biblical teaching, worship, and a relaxed atmosphere.</p></div>
+          </div>
       </section>
 
-      <section id="about" class="section story">
+      <section class="section story">
         <div class="story-image" role="img" aria-label="Open Colorado prairie beneath a wide sky"></div>
         <div class="story-copy">
-          <p class="eyebrow">Our next chapter</p>
-          <h2>Calvary Ellicott</h2>
-          <p>Our congregation is prayerfully preparing for a new season as a locally led church serving Ellicott and the surrounding plains. While our name and organizational relationship may be changing, our foundation is not: Jesus Christ, the authority of Scripture, and the call to make disciples.</p>
-          <p>We’re grateful for our history with Rocky Mountain Calvary and hopeful about what God is building here. We’ll share formal updates with clarity as decisions are finalized.</p>
+          <p class="eyebrow" data-content="home.story.eyebrow">Our next chapter</p>
+          <h2 data-content="home.story.headline">Calvary Ellicott</h2>
+          <p data-content="home.story.text">Our congregation is prayerfully preparing for a new season as a locally led church serving Ellicott and the surrounding plains. Our foundation is not changing: Jesus Christ, the authority of Scripture, and the call to make disciples.</p>
+          <a class="text-link story-link" href="about.html"><span data-content="home.story.link">Read our story</span> <span>→</span></a>
         </div>
       </section>
 
-      <section id="events" class="section events-section">
-        <div class="section-heading"><div><p class="eyebrow">Life together</p><h2>Upcoming events</h2></div><a class="button outline" data-churchtrac-link="calendar" href="#events">Full calendar</a></div>
-        <div class="calendar-shell" data-churchtrac-calendar>
-          <div class="calendar-placeholder"><span class="calendar-icon" aria-hidden="true">CE</span><h3>Our calendar is moving to ChurchTrac</h3><p>Upcoming gatherings and registrations will appear here as soon as the public ChurchTrac calendar link is connected.</p></div>
+      <section class="section next-steps-section">
+        <div class="section-heading narrow"><div><p class="eyebrow" data-content="home.nextSteps.eyebrow">Take a look around</p><h2 data-content="home.nextSteps.headline">Find your next step.</h2></div></div>
+        <div class="next-steps" data-content-list="home.nextSteps.cards" data-list-type="cards">
+          <a class="next-step" href="events.html"><span class="detail-number">01</span><h3>Events</h3><p>See what’s coming up and register for gatherings.</p></a>
+          <a class="next-step" href="staff.html"><span class="detail-number">02</span><h3>Our staff</h3><p>Meet the people who teach, care, and serve here.</p></a>
+          <a class="next-step" href="connect.html"><span class="detail-number">03</span><h3>Connect</h3><p>Plan a visit, ask for prayer, or start serving.</p></a>
         </div>
-      </section>
-
-      <section id="staff" class="section staff-section">
-        <div class="section-heading narrow"><div><p class="eyebrow">People who serve</p><h2>Meet our staff</h2><p>Our leaders are here to teach faithfully, care personally, and equip every person for ministry.</p></div></div>
-        <div class="staff-grid">
-          <article class="staff-card"><div class="portrait portrait-one" role="img" aria-label="Staff photo placeholder"></div><p class="role">Lead Pastor</p><h3>Leadership update coming soon</h3><p>We’ll introduce Calvary Ellicott’s pastoral leadership here as our transition is finalized.</p></article>
-          <article class="staff-card"><div class="portrait portrait-two" role="img" aria-label="Staff photo placeholder"></div><p class="role">Ministry Team</p><h3>Serving every generation</h3><p>Meet the people who support worship, children, families, care, and church operations.</p></article>
-          <article class="staff-card staff-invite"><p class="eyebrow">Need to talk?</p><h3>We’d love to hear from you.</h3><p>Questions, prayer needs, and conversations are always welcome.</p><a class="text-link" data-churchtrac-link="contact" href="#connect">Contact our team <span>→</span></a></article>
-        </div>
-      </section>
-
-      <section id="beliefs" class="section beliefs-section">
-        <div class="beliefs-intro"><p class="eyebrow">What we believe</p><h2>Historic faith.<br />Everyday hope.</h2><p>We hold to the historic Christian faith and seek to live it with conviction, humility, and love.</p></div>
-        <div class="belief-list">
-          <details open><summary><span>01</span>The Bible</summary><p>We believe the Scriptures are inspired by God, trustworthy, and our final authority for faith and life.</p></details>
-          <details><summary><span>02</span>God</summary><p>We believe in one God—Father, Son, and Holy Spirit—eternal, holy, loving, and sovereign over all.</p></details>
-          <details><summary><span>03</span>Jesus Christ</summary><p>We believe Jesus is fully God and fully man, lived without sin, died for our sins, rose bodily, and will return.</p></details>
-          <details><summary><span>04</span>Salvation</summary><p>We believe salvation is God’s gift of grace, received through repentance and faith in Jesus Christ—not earned by our works.</p></details>
-          <details><summary><span>05</span>The Church</summary><p>We believe the Church is the family of all who follow Jesus, called to worship, grow, serve, and make disciples together.</p></details>
-        </div>
-      </section>
-
-      <section id="connect" class="section connect-section">
-        <div><p class="eyebrow">Your next step</p><h2>There’s a place for you here.</h2><p>Plan a visit, ask for prayer, find a group, or learn where you can serve. Each option opens a secure ChurchTrac form.</p></div>
-        <div class="form-links">
-          <a data-churchtrac-link="visit" href="#connect"><span>Plan a visit</span><b>→</b></a>
-          <a data-churchtrac-link="prayer" href="#connect"><span>Request prayer</span><b>→</b></a>
-          <a data-churchtrac-link="connect" href="#connect"><span>Connect with us</span><b>→</b></a>
-          <a data-churchtrac-link="serve" href="#connect"><span>Start serving</span><b>→</b></a>
-        </div>
-        <p class="integration-note" data-integration-status role="status">ChurchTrac forms are being connected. Check back soon or visit us Sunday.</p>
       </section>
     </main>
 
     <footer class="site-footer">
-      <a class="brand footer-brand" href="#home"><span class="brand-mark">CE</span><span><strong>Calvary</strong><small>Ellicott</small></span></a>
-      <div><strong>Sunday at 9:30 AM</strong><p>2150 N. Ellicott Hwy, Calhan, CO 80808</p></div>
-      <nav aria-label="Footer navigation"><a href="#events">Events</a><a href="#staff">Staff</a><a href="#beliefs">Beliefs</a><a href="#connect">Connect</a></nav>
-      <p class="copyright">© <span data-year></span> Calvary Ellicott</p>
+      <a class="brand footer-brand" href="index.html"><span class="brand-mark">CE</span><span><strong>Calvary</strong><small>Ellicott</small></span></a>
+      <div><strong><span data-content="site.serviceDay">Sunday</span> at <span data-content="site.serviceTime">9:30 AM</span></strong><p><span data-content="site.addressLine1">2150 N. Ellicott Hwy</span>, <span data-content="site.addressLine2">Calhan, CO 80808</span></p></div>
+      <nav aria-label="Footer navigation"><a href="about.html">About</a><a href="staff.html">Staff</a><a href="beliefs.html">Beliefs</a><a href="events.html">Events</a><a href="connect.html">Connect</a></nav>
+      <p class="copyright">© <span data-year></span> <span data-content="site.name">Calvary Ellicott</span></p>
     </footer>
     <script type="module" src="scripts/app.js"></script>
   </body>

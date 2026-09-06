@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#182820" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' https://images.unsplash.com data:; frame-src https:; script-src 'self'; connect-src 'self'" />
+    <meta name="description" content="Upcoming gatherings, studies, and events at Calvary Ellicott, with registration through ChurchTrac." />
+    <title>Events | Calvary Ellicott</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header" data-scrolled="false">
+      <a class="brand" href="index.html" aria-label="Calvary Ellicott home">
+        <span class="brand-mark" aria-hidden="true">CE</span>
+        <span><strong>Calvary</strong><small>Ellicott</small></span>
+      </a>
+      <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false"><span></span><span></span><span></span></button>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="about.html">About</a><a href="staff.html">Staff</a><a href="beliefs.html">Beliefs</a><a href="events.html">Events</a><a class="nav-cta" href="connect.html">Connect</a>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="page-hero">
+        <p class="eyebrow" data-content="events.hero.eyebrow">Life together</p>
+        <h1 data-content="events.hero.headline">Upcoming events.</h1>
+        <p data-content="events.hero.lead">Sunday worship, studies, and gatherings for every generation. Registration happens right on the calendar.</p>
+      </section>
+
+      <section id="events" class="section events-section">
+        <div class="section-heading"><div><p class="eyebrow" data-content="events.calendar.eyebrow">Calendar</p><h2 data-content="events.calendar.headline">What’s coming up</h2></div><a class="button outline" data-churchtrac-link="calendar" href="connect.html" data-content="events.calendar.button">Open full calendar</a></div>
+        <div class="calendar-shell" data-churchtrac-embed="calendarEmbed" data-embed-title="Calvary Ellicott event calendar">
+          <div class="calendar-placeholder"><span class="calendar-icon" aria-hidden="true">CE</span><h3 data-content="events.calendar.placeholderTitle">Our calendar is moving to ChurchTrac</h3><p data-content="events.calendar.placeholderText">Upcoming gatherings and registrations will appear here as soon as the public ChurchTrac calendar link is connected.</p></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a class="brand footer-brand" href="index.html"><span class="brand-mark">CE</span><span><strong>Calvary</strong><small>Ellicott</small></span></a>
+      <div><strong><span data-content="site.serviceDay">Sunday</span> at <span data-content="site.serviceTime">9:30 AM</span></strong><p><span data-content="site.addressLine1">2150 N. Ellicott Hwy</span>, <span data-content="site.addressLine2">Calhan, CO 80808</span></p></div>
+      <nav aria-label="Footer navigation"><a href="about.html">About</a><a href="staff.html">Staff</a><a href="beliefs.html">Beliefs</a><a href="events.html">Events</a><a href="connect.html">Connect</a></nav>
+      <p class="copyright">© <span data-year></span> <span data-content="site.name">Calvary Ellicott</span></p>
+    </footer>
+    <script type="module" src="scripts/app.js"></script>
+  </body>
+</html>
