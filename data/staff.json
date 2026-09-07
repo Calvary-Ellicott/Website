@@ -2,14 +2,12 @@
   {
     "name": "Pastor name",
     "role": "Lead Pastor",
-    "photo": "",
     "bio": "A short paragraph about the pastor, their family, and their heart for the Ellicott community.",
     "email": ""
   },
   {
     "name": "Staff member name",
     "role": "Worship & Ministry",
-    "photo": "",
     "bio": "A short paragraph about this staff member and the ministry area they serve.",
     "email": ""
   }

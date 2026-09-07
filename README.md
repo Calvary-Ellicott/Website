@@ -13,6 +13,8 @@ The site is fully static: plain HTML, CSS, and JavaScript with no build step and
 | `staff.html`    | Staff cards, generated from `data/staff.json`                 |
 | `beliefs.html`  | Statement of faith                                            |
 | `events.html`   | Embedded ChurchTrac calendar                                  |
+| `bulletin.html` | This week's bulletin PDF from the `bulletins/` folder         |
+| `watch.html`    | BoxCast livestream embed and sermon notes from `sermons/`     |
 | `connect.html`  | Links to every ChurchTrac form, plus address and service time |
 | `404.html`      | Shown by GitHub Pages for missing URLs                        |
 
@@ -49,6 +51,61 @@ Only public URLs belong in this file. Never store ChurchTrac usernames, password
 2. Paste the public URL from ChurchTrac between the quotes.
 3. Commit the change. GitHub Pages republishes within a minute or two.
 
+## Livestream and sermon notes
+
+**Livestream.** Paste the BoxCast embed URL into [`data/watch.json`](data/watch.json):
+
+```json
+{ "boxcastEmbed": "https://boxcast.tv/view-embed/..." }
+```
+
+In BoxCast, open the channel or broadcast, choose Embed, and copy the address from the `src="..."` part of the code it gives you. Only that address is needed. Leave the value blank to show a "being connected" placeholder.
+
+**Sermon notes.** Two PDFs per week in the [`sermons/`](sermons/) folder, named by the Sunday date:
+
+```
+sermons/2026-09-13.pdf         the handout, posted before the service
+sermons/2026-09-13-notes.pdf   the pastor's full notes, posted afterwards
+```
+
+Either can exist on its own. The Watch page shows this week's files as download buttons, notes that the full notes are coming if only the handout is up, and lists previous weeks underneath. It looks back 12 Sundays (`watch.weeksBack` and `watch.weekday` in `data/content.json`).
+
+## Weekly bulletin
+
+Save each week's bulletin as a PDF in the [`bulletins/`](bulletins/) folder, named by its Sunday date:
+
+```
+bulletins/2026-09-13.pdf
+```
+
+That is the whole process. The Bulletin page finds the newest file, shows it in a viewer with an Open PDF button, and lists the older ones underneath. It looks at today and the last 12 Sundays; change `bulletin.weeksBack` or `bulletin.weekday` (0 = Sunday) in `data/content.json` if the schedule differs. When no file is found the page shows a "posted soon" message.
+
+## Alert banner
+
+For weather closures, schedule changes, or any short notice, edit [`data/alert.json`](data/alert.json):
+
+```json
+{
+  "enabled": true,
+  "style": "warning",
+  "message": "Sunday services are canceled this week due to snow. Stay safe and warm!",
+  "linkText": "Contact us",
+  "link": "connect.html",
+  "expires": "2026-01-20"
+}
+```
+
+| Field      | Notes                                                                                   |
+| ---------- | --------------------------------------------------------------------------------------- |
+| `enabled`  | `true` shows the banner on every page, `false` hides it                                 |
+| `style`    | `warning` (red) or `info` (gold)                                                        |
+| `message`  | The text. `*asterisks*` for emphasis work here too                                      |
+| `link`     | Optional. A page such as `connect.html` or a full `https://` address                    |
+| `linkText` | Optional label for the link, defaults to "Learn more"                                   |
+| `expires`  | Optional date, `YYYY-MM-DD`. The banner hides itself after that day, so you can forget it |
+
+Visitors can dismiss the banner with the × for the rest of their visit. A new message shows again.
+
 ## Editing the words on the site
 
 All headings, paragraphs, labels, and the church's basic details live in [`data/content.json`](data/content.json). Edit that file to change what the site says; you do not need to touch the HTML.
@@ -64,17 +121,26 @@ Keep the file valid JSON: every string in double quotes, commas between items, n
 
 ## Staff
 
-Staff cards are generated from [`data/staff.json`](data/staff.json). Each entry has:
+Staff cards are generated from [`data/staff.json`](data/staff.json). The page loops over the list and builds one card per entry, in the order listed, so adding a person is adding an entry:
 
-| Field   | Notes                                                                 |
-| ------- | --------------------------------------------------------------------- |
-| `name`  | Displayed as the card heading                                         |
-| `role`  | Short title, for example "Lead Pastor"                                |
-| `photo` | Path such as `images/staff/jane-smith.jpg`; blank shows initials      |
-| `bio`   | One or two sentences                                                  |
-| `email` | Optional; adds a "Send an email" link                                 |
+```json
+{
+  "name": "Pastor John Smith",
+  "role": "Lead Pastor",
+  "bio": "One or two sentences.",
+  "email": "john@example.org"
+}
+```
 
-Cards appear in the order listed. Photo guidance is in [`images/staff/README.md`](images/staff/README.md).
+| Field   | Notes                                                                          |
+| ------- | ------------------------------------------------------------------------------ |
+| `name`  | Displayed as the card heading; also decides the photo file name (see below)    |
+| `role`  | Short title, for example "Lead Pastor"                                         |
+| `bio`   | One or two sentences                                                           |
+| `email` | Optional; adds a "Send an email" link                                          |
+| `photo` | Optional override, for example `images/staff/other-name.jpg`                   |
+
+**Photos link by name.** Save the photo in `images/staff/` as the person's name in lowercase with hyphens: `Pastor John Smith` becomes `pastor-john-smith.jpg`. No `photo` field needed. If no file matches, the card shows initials. Details are in [`images/staff/README.md`](images/staff/README.md).
 
 ## Hosting on GitHub Pages
 
