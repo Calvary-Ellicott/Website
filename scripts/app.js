@@ -180,17 +180,39 @@ function applyChurchTrac(raw) {
    Staff: cards are rendered from data/staff.json. If the file is missing or empty,
    the placeholder cards already in the HTML stay in place.
    ------------------------------------------------------------------ */
+/* Photo convention: images/staff/<name-as-slug>.jpg (or .png / .webp), for example
+   "Pastor John Smith" -> images/staff/pastor-john-smith.jpg. A "photo" field in the JSON
+   overrides this. If no file is found the card shows the person's initials instead. */
+const PHOTO_TYPES = ["jpg", "jpeg", "png", "webp"];
+
+function slug(text) {
+  return String(text || "").normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
+
+function showInitials(portrait, name) {
+  portrait.classList.add("portrait-placeholder");
+  portrait.textContent = String(name || "").split(/\s+/).map((part) => part[0] || "").join("").slice(0, 2).toUpperCase();
+  portrait.setAttribute("aria-hidden", "true");
+}
+
 function staffCard(person) {
   const card = el("article", "staff-card");
   const portrait = el("div", "portrait");
-  if (person.photo) {
+  const base = slug(person.name);
+  const candidates = person.photo ? [String(person.photo)] : base ? PHOTO_TYPES.map((type) => `images/staff/${base}.${type}`) : [];
+  if (candidates.length) {
     const img = document.createElement("img");
-    img.src = person.photo; img.alt = person.name || ""; img.loading = "lazy";
+    img.alt = person.name || ""; img.loading = "lazy";
+    let attempt = 0;
+    img.addEventListener("error", () => {
+      attempt += 1;
+      if (attempt < candidates.length) img.src = candidates[attempt];
+      else { img.remove(); showInitials(portrait, person.name); }
+    });
+    img.src = candidates[0];
     portrait.append(img);
   } else {
-    portrait.classList.add("portrait-placeholder");
-    portrait.textContent = (person.name || "").split(/\s+/).map((part) => part[0] || "").join("").slice(0, 2).toUpperCase();
-    portrait.setAttribute("aria-hidden", "true");
+    showInitials(portrait, person.name);
   }
   card.append(portrait, el("p", "role", person.role || ""), el("h3", "", person.name || ""), el("p", "", person.bio || ""));
   if (person.email && /^[^\s@]+@[^\s@]+$/.test(person.email)) {
@@ -210,6 +232,179 @@ function applyStaff(people) {
   if (invite) grid.append(invite);
 }
 
+/* ------------------------------------------------------------------
+   Alert banner: data/alert.json. Shown on every page while "enabled" is true
+   and the optional "expires" date (YYYY-MM-DD) has not passed. Visitors can
+   dismiss it for their browsing session; a changed message reappears.
+   ------------------------------------------------------------------ */
+function applyAlert(alert) {
+  if (!alert || alert.enabled !== true) return;
+  const message = String(alert.message || "").trim();
+  if (!message) return;
+  if (alert.expires) {
+    const expires = new Date(`${alert.expires}T23:59:59`);
+    if (!Number.isNaN(expires.getTime()) && expires < new Date()) return;
+  }
+  const key = `alert-dismissed:${message}`;
+  try { if (sessionStorage.getItem(key)) return; } catch {}
+
+  const banner = el("div", `site-alert site-alert-${alert.style === "info" ? "info" : "warning"}`);
+  banner.setAttribute("role", "status");
+  const text = el("p");
+  appendText(text, message);
+  const url = String(alert.link || "").trim();
+  if (url && /^(https:\/\/|[\w-]+\.html(#[\w-]*)?$)/.test(url)) {
+    text.append(" ");
+    const link = el("a", "", alert.linkText || "Learn more");
+    link.href = url;
+    if (url.startsWith("https://")) { link.target = "_blank"; link.rel = "noopener noreferrer"; }
+    text.append(link);
+  }
+  const close = el("button", "site-alert-close");
+  close.type = "button";
+  close.setAttribute("aria-label", "Dismiss message");
+  close.textContent = "×";
+  close.addEventListener("click", () => {
+    banner.remove();
+    document.documentElement.style.setProperty("--alert-height", "0px");
+    try { sessionStorage.setItem(key, "1"); } catch {}
+  });
+  banner.append(text, close);
+  document.body.prepend(banner);
+
+  const sizeBanner = () => document.documentElement.style.setProperty("--alert-height", `${banner.offsetHeight}px`);
+  sizeBanner();
+  window.addEventListener("resize", sizeBanner, { passive:true });
+}
+
+/* ------------------------------------------------------------------
+   Dated files: bulletins and sermon notes are PDFs named by Sunday date.
+   findDatedFiles("bulletins", [""]) checks today and the last N Sundays for
+   bulletins/YYYY-MM-DD.pdf; findDatedFiles("sermons", ["", "-notes"]) checks
+   sermons/YYYY-MM-DD.pdf and sermons/YYYY-MM-DD-notes.pdf. Returns newest first.
+   ------------------------------------------------------------------ */
+function isoDate(date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+function longDate(iso) {
+  const [year, month, day] = iso.split("-").map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString("en-US", { weekday:"long", month:"long", day:"numeric", year:"numeric" });
+}
+
+async function exists(path) {
+  try { return (await fetch(path, { method:"HEAD", cache:"no-cache" })).ok; }
+  catch { return false; }
+}
+
+async function findDatedFiles(folder, variants, settings) {
+  const weekday = Number.isInteger(settings.weekday) ? settings.weekday : 0;
+  const weeksBack = Number.isInteger(settings.weeksBack) ? settings.weeksBack : 12;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const dates = new Set([isoDate(today)]);
+  const sunday = new Date(today);
+  sunday.setDate(today.getDate() - ((today.getDay() - weekday + 7) % 7));
+  for (let week = 0; week < weeksBack; week += 1) {
+    dates.add(isoDate(sunday));
+    sunday.setDate(sunday.getDate() - 7);
+  }
+  const results = await Promise.all([...dates].map(async (date) => {
+    const files = {};
+    await Promise.all(variants.map(async (variant) => {
+      const path = `${folder}/${date}${variant}.pdf`;
+      if (await exists(path)) files[variant] = path;
+    }));
+    return Object.keys(files).length ? { date, files } : null;
+  }));
+  return results.filter(Boolean).sort((a, b) => (a.date < b.date ? 1 : -1));
+}
+
+function pdfLink(path, label, className = "") {
+  const link = el("a", className, label);
+  link.href = path; link.target = "_blank"; link.rel = "noopener";
+  return link;
+}
+
+/* Bulletin page: newest bulletins/YYYY-MM-DD.pdf in a viewer, the rest listed. */
+async function applyBulletin() {
+  const section = document.querySelector("[data-bulletin]");
+  if (!section) return;
+  const settings = get("bulletin") || {};
+  const found = await findDatedFiles("bulletins", [""], settings);
+  if (found.length === 0) return;
+
+  const [latest, ...older] = found;
+  const heading = el("div", "bulletin-heading");
+  heading.append(el("p", "eyebrow", longDate(latest.date)), pdfLink(latest.files[""], settings.openButton || "Open PDF", "button primary"));
+  const frame = document.createElement("iframe");
+  frame.src = `${latest.files[""]}#view=FitH`;
+  frame.title = `Bulletin for ${longDate(latest.date)}`;
+  frame.loading = "lazy";
+  section.querySelector("[data-bulletin-current]").replaceChildren(heading, frame);
+
+  if (older.length) {
+    section.querySelector("[data-bulletin-list]").replaceChildren(...older.map((entry) => {
+      const item = el("li");
+      item.append(pdfLink(entry.files[""], longDate(entry.date)));
+      return item;
+    }));
+    section.querySelector("[data-bulletin-archive]").hidden = false;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Watch page: BoxCast embed from data/watch.json, plus sermon notes from
+   sermons/YYYY-MM-DD.pdf (handout, posted before the service) and
+   sermons/YYYY-MM-DD-notes.pdf (pastor's notes, posted afterwards).
+   ------------------------------------------------------------------ */
+function applyWatchEmbed(watch) {
+  const shell = document.querySelector("[data-watch-embed]");
+  if (!shell) return;
+  const url = String(watch && watch.boxcastEmbed || "").trim();
+  if (!/^https:\/\//i.test(url)) return;
+  const frame = document.createElement("iframe");
+  frame.src = url;
+  frame.title = shell.dataset.embedTitle || "Livestream";
+  frame.setAttribute("allow", "autoplay; fullscreen; picture-in-picture");
+  frame.setAttribute("allowfullscreen", "");
+  frame.referrerPolicy = "strict-origin-when-cross-origin";
+  shell.replaceChildren(frame);
+}
+
+async function applySermons() {
+  const section = document.querySelector("[data-sermons]");
+  if (!section) return;
+  const settings = get("watch") || {};
+  const labels = { "": settings.handoutLabel || "Sermon handout", "-notes": settings.notesLabel || "Pastor’s notes" };
+  const found = await findDatedFiles("sermons", ["", "-notes"], settings);
+  if (found.length === 0) return;
+
+  const [latest, ...older] = found;
+  const current = section.querySelector("[data-sermons-current]");
+  current.replaceChildren(el("p", "eyebrow", longDate(latest.date)));
+  const buttons = el("div", "sermon-buttons");
+  for (const [variant, label] of Object.entries(labels)) {
+    if (latest.files[variant]) buttons.append(pdfLink(latest.files[variant], label, variant ? "button outline" : "button primary"));
+  }
+  if (!latest.files["-notes"] && settings.notesPending) buttons.append(el("p", "sermon-pending", settings.notesPending));
+  current.append(buttons);
+
+  if (older.length) {
+    section.querySelector("[data-sermons-list]").replaceChildren(...older.map((entry) => {
+      const item = el("li");
+      item.append(el("span", "sermon-date", longDate(entry.date)));
+      const links = el("span", "sermon-links");
+      for (const [variant, label] of Object.entries(labels)) {
+        if (entry.files[variant]) links.append(pdfLink(entry.files[variant], label));
+      }
+      item.append(links);
+      return item;
+    }));
+    section.querySelector("[data-sermons-archive]").hidden = false;
+  }
+}
+
 /* Highlight the current page in the navigation. */
 const current = location.pathname.replace(/index\.html$/, "").replace(/\/$/, "");
 document.querySelectorAll(".nav-links a, .site-footer nav a").forEach((link) => {
@@ -224,6 +419,9 @@ setHeaderState();
 /* Content first so ChurchTrac can wire up any links it creates; then the carried-over note. */
 loadJson("data/content.json", {}).then(applyContent).then(async () => {
   applyChurchTrac(await loadJson("data/churchtrac.json", {}));
+  applyBulletin();
+  applySermons();
+  applyWatchEmbed(await loadJson("data/watch.json", {}));
   if (status) {
     try {
       const note = sessionStorage.getItem("churchtrac-note");
@@ -232,3 +430,4 @@ loadJson("data/content.json", {}).then(applyContent).then(async () => {
   }
 });
 loadJson("data/staff.json", []).then(applyStaff);
+loadJson("data/alert.json", null).then(applyAlert);

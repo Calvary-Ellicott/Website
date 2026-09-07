@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#182820" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' https://images.unsplash.com data:; frame-src 'self' https:; object-src 'self'; script-src 'self'; connect-src 'self'" />
-    <meta name="description" content="Upcoming gatherings, studies, and events at Calvary Ellicott, with registration through ChurchTrac." />
-    <title>Events | Calvary Ellicott</title>
+    <meta name="description" content="Watch the Calvary Ellicott livestream and download this week's sermon notes." />
+    <title>Watch | Calvary Ellicott</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet" />
@@ -27,16 +27,32 @@
 
     <main id="main">
       <section class="page-hero">
-        <p class="eyebrow" data-content="events.hero.eyebrow">Life together</p>
-        <h1 data-content="events.hero.headline">Upcoming events.</h1>
-        <p data-content="events.hero.lead">Sunday worship, studies, and gatherings for every generation. Registration happens right on the calendar.</p>
+        <p class="eyebrow" data-content="watch.hero.eyebrow">Watch online</p>
+        <h1 data-content="watch.hero.headline">Join us live.</h1>
+        <p data-content="watch.hero.lead">Can’t make it in person? Worship with us from home. We go live every Sunday at 9:30 AM.</p>
       </section>
 
-      <section id="events" class="section events-section">
-        <div class="section-heading"><div><p class="eyebrow" data-content="events.calendar.eyebrow">Calendar</p><h2 data-content="events.calendar.headline">What’s coming up</h2></div><a class="button outline" data-churchtrac-link="calendar" href="connect.html" data-content="events.calendar.button">Open full calendar</a></div>
-        <div class="calendar-shell" data-churchtrac-embed="calendarEmbed" data-embed-title="Calvary Ellicott event calendar">
-          <div class="calendar-placeholder"><span class="calendar-icon" aria-hidden="true">CE</span><h3 data-content="events.calendar.placeholderTitle">Our calendar is moving to ChurchTrac</h3><p data-content="events.calendar.placeholderText">Upcoming gatherings and registrations will appear here as soon as the public ChurchTrac calendar link is connected.</p></div>
+      <section id="watch" class="section watch-section">
+        <div class="section-heading narrow"><div><p class="eyebrow" data-content="watch.live.eyebrow">Livestream</p><h2 data-content="watch.live.headline">Sundays at 9:30 AM</h2><p data-content="watch.live.text">The stream starts a few minutes before the service. Past services are available in the player.</p></div></div>
+        <div class="watch-shell" data-watch-embed data-embed-title="Calvary Ellicott livestream">
+          <div class="calendar-placeholder"><span class="calendar-icon" aria-hidden="true">CE</span><h3 data-content="watch.live.placeholderTitle">The livestream is being connected</h3><p data-content="watch.live.placeholderText">Our online service will appear here once the BoxCast link is added.</p></div>
         </div>
+      </section>
+
+      <section id="notes" class="section sermons-section" data-sermons>
+        <div>
+          <p class="eyebrow" data-content="watch.notes.eyebrow">Follow along</p>
+          <h2 data-content="watch.notes.headline">Sermon notes</h2>
+          <p class="lead" data-content="watch.notes.text">Download this week’s handout to follow along, and check back after the service for the pastor’s full notes.</p>
+          <div class="sermons-current" data-sermons-current>
+            <p class="eyebrow" data-content="watch.notes.emptyTitle">This week’s notes will be posted soon</p>
+            <p data-content="watch.notes.emptyText">The sermon handout is usually posted by Saturday evening.</p>
+          </div>
+        </div>
+        <aside class="sermons-archive" data-sermons-archive hidden>
+          <h2 data-content="watch.notes.archiveHeading">Previous weeks</h2>
+          <ul data-sermons-list></ul>
+        </aside>
       </section>
     </main>
 

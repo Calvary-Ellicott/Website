@@ -6,24 +6,41 @@
     "addressLine1": "2150 N. Ellicott Hwy",
     "addressLine2": "Calhan, CO 80808"
   },
-
   "home": {
     "hero": {
       "eyebrow": "A church family in Ellicott, Colorado",
-      "headline": ["Rooted in truth.", "*Growing in grace.*"],
+      "headline": [
+        "Rooted in truth.",
+        "*Growing in grace.*"
+      ],
       "intro": "Come as you are and join us as we study God’s Word, follow Jesus, and love our neighbors—together.",
       "primaryButton": "Plan your visit",
       "secondaryButton": "Get to know us"
     },
     "visit": {
       "eyebrow": "You’re welcome here",
-      "headline": ["A simple Sunday.", "A meaningful community."],
+      "headline": [
+        "A simple Sunday.",
+        "A meaningful community."
+      ],
       "lead": "Whether church is familiar or completely new, we want your first visit to feel easy. Expect genuine people, worship, age-appropriate care for children, and practical teaching through the Bible.",
       "link": "Tell us you’re coming",
       "details": [
-        { "label": "When", "text": "{site.serviceDay} at {site.serviceTime}" },
-        { "label": "Where", "text": ["{site.addressLine1}", "{site.addressLine2}"] },
-        { "label": "What to expect", "text": "Biblical teaching, worship, and a relaxed atmosphere." }
+        {
+          "label": "When",
+          "text": "{site.serviceDay} at {site.serviceTime}"
+        },
+        {
+          "label": "Where",
+          "text": [
+            "{site.addressLine1}",
+            "{site.addressLine2}"
+          ]
+        },
+        {
+          "label": "What to expect",
+          "text": "Biblical teaching, worship, and a relaxed atmosphere."
+        }
       ]
     },
     "story": {
@@ -36,13 +53,24 @@
       "eyebrow": "Take a look around",
       "headline": "Find your next step.",
       "cards": [
-        { "href": "events.html", "title": "Events", "text": "See what’s coming up and register for gatherings." },
-        { "href": "staff.html", "title": "Our staff", "text": "Meet the people who teach, care, and serve here." },
-        { "href": "connect.html", "title": "Connect", "text": "Plan a visit, ask for prayer, or start serving." }
+        {
+          "href": "events.html",
+          "title": "Events",
+          "text": "See what’s coming up and register for gatherings."
+        },
+        {
+          "href": "staff.html",
+          "title": "Our staff",
+          "text": "Meet the people who teach, care, and serve here."
+        },
+        {
+          "href": "connect.html",
+          "title": "Connect",
+          "text": "Plan a visit, ask for prayer, or start serving."
+        }
       ]
     }
   },
-
   "about": {
     "hero": {
       "eyebrow": "About us",
@@ -59,26 +87,49 @@
     },
     "sunday": {
       "eyebrow": "What a Sunday looks like",
-      "headline": ["Simple, warm,", "and centered on Jesus."],
+      "headline": [
+        "Simple, warm,",
+        "and centered on Jesus."
+      ],
       "lead": "We gather to worship, open the Bible together, and pray for one another. Children are cared for with age-appropriate teaching, and there’s always time to talk afterward.",
       "link": "What we believe",
       "details": [
-        { "label": "Worship", "text": "Songs that lift up Christ and prepare our hearts for the Word." },
-        { "label": "Teaching", "text": "Practical, verse-by-verse teaching through the Bible." },
-        { "label": "Community", "text": "Genuine people who want to know you and walk with you." }
+        {
+          "label": "Worship",
+          "text": "Songs that lift up Christ and prepare our hearts for the Word."
+        },
+        {
+          "label": "Teaching",
+          "text": "Practical, verse-by-verse teaching through the Bible."
+        },
+        {
+          "label": "Community",
+          "text": "Genuine people who want to know you and walk with you."
+        }
       ]
     },
     "nextSteps": {
       "eyebrow": "Keep exploring",
       "headline": "Get to know us.",
       "cards": [
-        { "href": "staff.html", "title": "Our staff", "text": "Meet the people who teach, care, and serve here." },
-        { "href": "beliefs.html", "title": "Our beliefs", "text": "The historic Christian faith we hold and teach." },
-        { "href": "connect.html", "title": "Connect", "text": "Plan a visit or ask us anything." }
+        {
+          "href": "staff.html",
+          "title": "Our staff",
+          "text": "Meet the people who teach, care, and serve here."
+        },
+        {
+          "href": "beliefs.html",
+          "title": "Our beliefs",
+          "text": "The historic Christian faith we hold and teach."
+        },
+        {
+          "href": "connect.html",
+          "title": "Connect",
+          "text": "Plan a visit or ask us anything."
+        }
       ]
     }
   },
-
   "staff": {
     "hero": {
       "eyebrow": "People who serve",
@@ -92,27 +143,46 @@
       "link": "Contact our team"
     }
   },
-
   "beliefs": {
     "hero": {
       "eyebrow": "What we believe",
-      "headline": ["Historic faith.", "Everyday hope."],
+      "headline": [
+        "Historic faith.",
+        "Everyday hope."
+      ],
       "lead": "We hold to the historic Christian faith and seek to live it with conviction, humility, and love."
     },
     "intro": {
       "eyebrow": "Our statement of faith",
-      "headline": ["What we", "hold to."],
+      "headline": [
+        "What we",
+        "hold to."
+      ],
       "text": "These convictions shape how we worship, teach, and care for one another."
     },
     "items": [
-      { "title": "The Bible", "text": "We believe the Scriptures are inspired by God, trustworthy, and our final authority for faith and life." },
-      { "title": "God", "text": "We believe in one God—Father, Son, and Holy Spirit—eternal, holy, loving, and sovereign over all." },
-      { "title": "Jesus Christ", "text": "We believe Jesus is fully God and fully man, lived without sin, died for our sins, rose bodily, and will return." },
-      { "title": "Salvation", "text": "We believe salvation is God’s gift of grace, received through repentance and faith in Jesus Christ—not earned by our works." },
-      { "title": "The Church", "text": "We believe the Church is the family of all who follow Jesus, called to worship, grow, serve, and make disciples together." }
+      {
+        "title": "The Bible",
+        "text": "We believe the Scriptures are inspired by God, trustworthy, and our final authority for faith and life."
+      },
+      {
+        "title": "God",
+        "text": "We believe in one God—Father, Son, and Holy Spirit—eternal, holy, loving, and sovereign over all."
+      },
+      {
+        "title": "Jesus Christ",
+        "text": "We believe Jesus is fully God and fully man, lived without sin, died for our sins, rose bodily, and will return."
+      },
+      {
+        "title": "Salvation",
+        "text": "We believe salvation is God’s gift of grace, received through repentance and faith in Jesus Christ—not earned by our works."
+      },
+      {
+        "title": "The Church",
+        "text": "We believe the Church is the family of all who follow Jesus, called to worship, grow, serve, and make disciples together."
+      }
     ]
   },
-
   "events": {
     "hero": {
       "eyebrow": "Life together",
@@ -127,28 +197,97 @@
       "placeholderText": "Upcoming gatherings and registrations will appear here as soon as the public ChurchTrac calendar link is connected."
     }
   },
-
+  "bulletin": {
+    "hero": {
+      "eyebrow": "This week",
+      "headline": "Sunday bulletin.",
+      "lead": "Announcements, the order of service, and ways to get involved this week."
+    },
+    "weekday": 0,
+    "weeksBack": 12,
+    "openButton": "Open PDF",
+    "archiveHeading": "Previous bulletins",
+    "emptyTitle": "This week’s bulletin will be posted soon",
+    "emptyText": "Check back before Sunday, or pick one up when you arrive."
+  },
+  "watch": {
+    "hero": {
+      "eyebrow": "Watch online",
+      "headline": "Join us live.",
+      "lead": "Can’t make it in person? Worship with us from home. We go live every {site.serviceDay} at {site.serviceTime}."
+    },
+    "live": {
+      "eyebrow": "Livestream",
+      "headline": "{site.serviceDay}s at {site.serviceTime}",
+      "text": "The stream starts a few minutes before the service. Past services are available in the player.",
+      "placeholderTitle": "The livestream is being connected",
+      "placeholderText": "Our online service will appear here once the BoxCast link is added."
+    },
+    "notes": {
+      "eyebrow": "Follow along",
+      "headline": "Sermon notes",
+      "text": "Download this week’s handout to follow along, and check back after the service for the pastor’s full notes.",
+      "emptyTitle": "This week’s notes will be posted soon",
+      "emptyText": "The sermon handout is usually posted by Saturday evening.",
+      "archiveHeading": "Previous weeks"
+    },
+    "handoutLabel": "Sermon handout",
+    "notesLabel": "Pastor’s notes",
+    "notesPending": "Pastor’s notes will be posted after the service.",
+    "weekday": 0,
+    "weeksBack": 12
+  },
   "connect": {
     "hero": {
       "eyebrow": "Your next step",
-      "headline": ["There’s a place", "for you here."],
+      "headline": [
+        "There’s a place",
+        "for you here."
+      ],
       "lead": "Plan a visit, ask for prayer, find a group, or learn where you can serve."
     },
     "intro": {
       "eyebrow": "Get in touch",
-      "headline": ["We’d love to", "meet you."],
+      "headline": [
+        "We’d love to",
+        "meet you."
+      ],
       "text": "Each option opens a secure ChurchTrac form. If you’d rather talk in person, find us Sunday morning.",
       "details": [
-        { "label": "When", "text": "{site.serviceDay} at {site.serviceTime}" },
-        { "label": "Where", "text": ["{site.addressLine1}", "{site.addressLine2}"] }
+        {
+          "label": "When",
+          "text": "{site.serviceDay} at {site.serviceTime}"
+        },
+        {
+          "label": "Where",
+          "text": [
+            "{site.addressLine1}",
+            "{site.addressLine2}"
+          ]
+        }
       ]
     },
     "forms": [
-      { "key": "visit", "label": "Plan a visit" },
-      { "key": "prayer", "label": "Request prayer" },
-      { "key": "connect", "label": "Connect with us" },
-      { "key": "serve", "label": "Start serving" },
-      { "key": "contact", "label": "Contact our team" }
+      {
+        "key": "visit",
+        "label": "Plan a visit"
+      },
+      {
+        "key": "prayer",
+        "label": "Request prayer"
+      },
+      {
+        "key": "connect",
+        "label": "Connect with us"
+      },
+      {
+        "key": "serve",
+        "label": "Start serving"
+      },
+      {
+        "key": "contact",
+        "label": "Contact our team"
+      }
     ],
     "note": "ChurchTrac forms are being connected. Check back soon or visit us Sunday."
   }
