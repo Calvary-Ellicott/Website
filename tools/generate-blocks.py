@@ -56,8 +56,8 @@ def group(inner, bg=None, text="#f4f0e6"):
     return f'<!-- wp:group {{"layout":{{"type":"constrained"}}}} -->\n<div class="wp-block-group">\n{inner}\n</div>\n<!-- /wp:group -->'
 
 def cover(url, inner):
-    return (f'<!-- wp:cover {{"url":"{url}","dimRatio":60,"overlayColor":"black","minHeight":70,"minHeightUnit":"vh","isDark":true,"align":"full","layout":{{"type":"constrained"}}}} -->\n'
-            f'<div class="wp-block-cover alignfull" style="min-height:70vh"><span aria-hidden="true" class="wp-block-cover__background has-black-background-color has-background-dim-60 has-background-dim"></span>'
+    return (f'<!-- wp:cover {{"url":"{url}","dimRatio":60,"overlayColor":"black","minHeight":70,"minHeightUnit":"vh","isDark":true,"align":"full","style":{{"spacing":{{"padding":{{"top":"150px","bottom":"72px","left":"32px","right":"32px"}}}}}},"layout":{{"type":"constrained"}}}} -->\n'
+            f'<div class="wp-block-cover alignfull" style="padding-top:150px;padding-bottom:72px;padding-left:32px;padding-right:32px;min-height:70vh"><span aria-hidden="true" class="wp-block-cover__background has-black-background-color has-background-dim-60 has-background-dim"></span>'
             f'<img class="wp-block-cover__image-background" alt="" src="{url}" data-object-fit="cover"/><div class="wp-block-cover__inner-container">\n{inner}\n</div></div>\n<!-- /wp:cover -->')
 
 def details(items):
@@ -104,6 +104,7 @@ write("home.html", home, hm["hero"])
 # ---------------- About ----------------
 ab = content["about"]
 about = [
+    spacer(110),
     eyebrow(ab["hero"]["eyebrow"]), h(1, ab["hero"]["headline"]), p(ab["hero"]["lead"]),
     separator(),
     eyebrow(ab["story"]["eyebrow"]), h(2, ab["story"]["headline"]),
@@ -127,6 +128,7 @@ for person in staff:
     ]))
 cards.append("\n".join([eyebrow(st["invite"]["eyebrow"]), h(3, st["invite"]["headline"]), p(st["invite"]["text"]), buttons([(st["invite"]["link"], CT)])]))
 staff_page = [
+    spacer(110),
     eyebrow(st["hero"]["eyebrow"]), h(1, st["hero"]["headline"]), p(st["hero"]["lead"]),
     separator(),
     note("To add a person: copy one column below (from the Image block to the paragraph), paste it after the last one, and change the words. Click the empty image to upload their photo."),
@@ -137,6 +139,7 @@ write("staff.html", staff_page, st["hero"])
 # ---------------- Beliefs ----------------
 be = content["beliefs"]
 beliefs = [
+    spacer(110),
     eyebrow(be["hero"]["eyebrow"]), h(1, be["hero"]["headline"]), p(be["hero"]["lead"]),
     separator(),
     eyebrow(be["intro"]["eyebrow"]), h(2, be["intro"]["headline"]), p(be["intro"]["text"]),
@@ -147,6 +150,7 @@ write("beliefs.html", beliefs, be["hero"])
 # ---------------- Events ----------------
 ev = content["events"]
 events = [
+    spacer(110),
     eyebrow(ev["hero"]["eyebrow"]), h(1, ev["hero"]["headline"]), p(ev["hero"]["lead"]),
     separator(),
     eyebrow(ev["calendar"]["eyebrow"]), h(2, ev["calendar"]["headline"]),
@@ -159,6 +163,7 @@ write("events.html", events, ev["hero"])
 # ---------------- Bulletin ----------------
 bu = content["bulletin"]
 bulletin = [
+    spacer(110),
     eyebrow(bu["hero"]["eyebrow"]), h(1, bu["hero"]["headline"]), p(bu["hero"]["lead"]),
     separator(),
     note("Each week: add a File block at the top of the list below (type /file, upload the PDF), and put the Sunday date as the block's text. Older weeks stay underneath as the archive."),
@@ -172,6 +177,7 @@ write("bulletin.html", bulletin, bu["hero"])
 # ---------------- Watch ----------------
 wa = content["watch"]
 watch = [
+    spacer(110),
     eyebrow(wa["hero"]["eyebrow"]), h(1, wa["hero"]["headline"]), p(wa["hero"]["lead"]),
     separator(),
     eyebrow(wa["live"]["eyebrow"]), h(2, wa["live"]["headline"]), p(wa["live"]["text"]),
@@ -191,6 +197,7 @@ write("watch.html", watch, wa["hero"])
 # ---------------- Connect ----------------
 co = content["connect"]
 connect = [
+    spacer(110),
     eyebrow(co["hero"]["eyebrow"]), h(1, co["hero"]["headline"]), p(co["hero"]["lead"]),
     separator(),
     columns([
