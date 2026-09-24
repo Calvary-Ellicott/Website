@@ -1,0 +1,7 @@
+# Code owners are automatically asked to review every pull request.
+# Both people listed here must approve before a change can go live on main
+# (enforced by .github/workflows/required-approvals.yml and the ruleset on main).
+#
+# Replace PASTOR-DAN-GITHUB-USERNAME with Pastor Dan's real GitHub username.
+
+*   @primo4e @PASTOR-DAN-GITHUB-USERNAME

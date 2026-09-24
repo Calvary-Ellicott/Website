@@ -1,5 +1,7 @@
 # Calvary Ellicott website
 
+> **Direction change (September 2026):** the church is moving to WordPress. The static site in this folder stays as the design reference and archive, and the same design now lives as a WordPress theme in [`wp-theme/`](wp-theme/README.md), installed on WordPress.com (Premium plan) by uploading a zip that GitHub builds from `main`. Weekly updates (bulletins, sermon notes, alerts, staff) happen in the WordPress dashboard instead of in these folders.
+
 A responsive church website for **Calvary Ellicott**, prepared for the congregation's transition from Rocky Mountain Calvary Ellicott.
 
 The site is fully static: plain HTML, CSS, and JavaScript with no build step and no server. It is hosted on **GitHub Pages** and uses **ChurchTrac** for forms and the events calendar.
@@ -16,6 +18,7 @@ The site is fully static: plain HTML, CSS, and JavaScript with no build step and
 | `bulletin.html` | This week's bulletin PDF from the `bulletins/` folder         |
 | `watch.html`    | BoxCast livestream embed and sermon notes from `sermons/`     |
 | `connect.html`  | Links to every ChurchTrac form, plus address and service time |
+| `update-guide.html` | Helper guide, unlinked and no-index (copy of `docs/helper-guide.md`) |
 | `404.html`      | Shown by GitHub Pages for missing URLs                        |
 
 Every page shares the same header, navigation, and footer markup. When you change the navigation, update it in every page (a find-and-replace across `*.html` is the quickest way). Shared styles live in `styles.css`; shared behaviour lives in `scripts/app.js`.
@@ -50,6 +53,10 @@ Only public URLs belong in this file. Never store ChurchTrac usernames, password
 1. Open `data/churchtrac.json` on GitHub and click the pencil icon.
 2. Paste the public URL from ChurchTrac between the quotes.
 3. Commit the change. GitHub Pages republishes within a minute or two.
+
+## Guide for helpers
+
+[`docs/helper-guide.md`](docs/helper-guide.md) is a plain-language walkthrough for volunteers using the WordPress dashboard: signing in, the four-move routine (sign in, pick a screen, fill the form, Submit for Review), and the common tasks. Give helpers **Contributor** accounts so "Submit for Review" is their only option. To put the guide inside WordPress, paste it into a page set to **Private** so only signed-in users see it. The copy at `update-guide.html` on the static site is generated from the same markdown.
 
 ## Livestream and sermon notes
 
@@ -158,13 +165,17 @@ Staff cards are generated from [`data/staff.json`](data/staff.json). The page lo
 
 ## Previewing locally
 
-No install is required. From the project folder, run any static file server, for example:
+Double-click `preview.bat` (Windows) or `preview.command` (Mac) in the project folder. A local server starts at `http://localhost:8080` and the browser opens. Nothing needs to be installed on Windows; the server is `tools/preview-server.ps1`, a small PowerShell script. On a Mac it uses the built-in `python3`.
 
-```bash
-python -m http.server 8080
-```
+Any other static file server works too, for example `python -m http.server 8080` from the project folder.
 
-Then open `http://localhost:8080`.
+## Reviews before anything goes live
+
+The `main` branch is protected by a ruleset: changes arrive only through pull requests, and a pull request needs two approvals. `.github/CODEOWNERS` lists the two reviewers so GitHub asks them automatically, and `.github/workflows/required-approvals.yml` is a required check that only passes once **both** named people have approved (or one of them wrote the change). Scott approves the technical side, Pastor Dan approves the content.
+
+- Both files carry the placeholder `PASTOR-DAN-GITHUB-USERNAME`. Replace it with his real GitHub username once he has an account and is in the organization.
+- Repository admins can bypass the ruleset for emergencies. That is a setting on the ruleset under Settings → Rules → Rulesets.
+- New pushes to a pull request dismiss earlier approvals, so both people re-approve after fixes.
 
 ## Content still needed before launch
 

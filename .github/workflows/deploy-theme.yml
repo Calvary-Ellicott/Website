@@ -1,0 +1,69 @@
+# Checks the WordPress theme and packages it for upload to WordPress.com.
+#
+# - Every pull request or push that touches wp-theme/ runs a PHP syntax check.
+# - Every push to main also builds calvary-ellicott.zip and attaches it to a
+#   GitHub Release named after the version in style.css. Download that zip and
+#   upload it in WordPress under Appearance → Themes → Add New → Upload Theme.
+#   (Automatic deploys need the WordPress.com Business plan; the site is on Premium.)
+
+name: Theme
+
+on:
+  push:
+    branches: [main]
+    paths: ["wp-theme/**", ".github/workflows/deploy-theme.yml"]
+  pull_request:
+    paths: ["wp-theme/**", ".github/workflows/deploy-theme.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  lint:
+    name: PHP syntax check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+      - name: Lint every PHP file in the theme
+        run: |
+          set -e
+          find wp-theme/calvary-ellicott -name "*.php" -print0 | xargs -0 -n1 php -l
+
+  package:
+    name: Build theme zip
+    needs: lint
+    if: ${{ github.event_name != 'pull_request' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read theme version from style.css
+        id: version
+        run: |
+          v=$(grep -m1 -E '^Version:' wp-theme/calvary-ellicott/style.css | sed -E 's/Version:[[:space:]]*//' | tr -d '\r')
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+          echo "Theme version: $v"
+      - name: Zip the theme folder
+        run: |
+          cd wp-theme
+          rm -f calvary-ellicott.zip
+          zip -r calvary-ellicott.zip calvary-ellicott -x "*.DS_Store" -x "*/.git/*"
+          unzip -l calvary-ellicott.zip | tail -1
+      - name: Keep the zip on this run
+        uses: actions/upload-artifact@v4
+        with:
+          name: calvary-ellicott-theme-${{ steps.version.outputs.version }}
+          path: wp-theme/calvary-ellicott.zip
+      - name: Attach the zip to a release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: theme-v${{ steps.version.outputs.version }}
+          name: Theme ${{ steps.version.outputs.version }}
+          body: |
+            WordPress theme build from `main` (${{ github.sha }}).
+
+            Upload `calvary-ellicott.zip` in WordPress under **Appearance → Themes → Add New → Upload Theme**. If the theme is already installed, WordPress offers **Replace current with uploaded**.
+          files: wp-theme/calvary-ellicott.zip

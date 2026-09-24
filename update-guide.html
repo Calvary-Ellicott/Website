@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#182820" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' https://images.unsplash.com data:; frame-src 'self' https:; object-src 'self'; script-src 'self'; connect-src 'self'" />
+    <meta name="description" content="How to update the Calvary Ellicott website from the WordPress dashboard." />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Website update guide | Calvary Ellicott</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header" data-scrolled="false">
+      <a class="brand" href="index.html" aria-label="Calvary Ellicott home">
+        <span class="brand-mark" aria-hidden="true">CE</span>
+        <span><strong>Calvary</strong><small>Ellicott</small></span>
+      </a>
+      <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false"><span></span><span></span><span></span></button>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="about.html">About</a><a href="staff.html">Staff</a><a href="beliefs.html">Beliefs</a><a href="events.html">Events</a><a href="bulletin.html">Bulletin</a><a href="watch.html">Watch</a><a class="nav-cta" href="connect.html">Connect</a>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="page-hero">
+        <p class="eyebrow">For helpers</p>
+        <h1>Updating the Calvary Ellicott website</h1>
+        <p>Everything you need to add bulletins, sermon notes, announcements, and staff to the website from the WordPress dashboard.</p>
+      </section>
+      <section class="section guide-section">
+        <article class="guide">
+<p>This guide is for anyone helping keep the website up to date. You do not need to know anything about websites. Everything happens in your web browser, on screens with forms and buttons.</p>
+<p>Nothing goes live until it has been checked: the website admin (Scott) makes sure the files and dates are right, and Pastor Dan checks the content. So you cannot accidentally publish something. Just fill in the form, click <strong>Submit for Review</strong>, and they take it from there.</p>
+<p>If anything goes wrong at any point, nothing is lost. Stop and ask Scott. It is always fixable.</p>
+<hr />
+<h2>Part 1: One-time setup</h2>
+<ol start="1">
+<li>Scott will create a login for you and email you a link to set your password. Open it, choose a password, and write it down somewhere safe.</li>
+<li>To sign in later, go to the website address followed by <strong>/wp-admin</strong>, for example <code>calvaryellicott.org/wp-admin</code>. Bookmark that page.</li>
+<li>After signing in you see the <strong>Dashboard</strong>. The menu down the left side is where everything lives. The items you will use are <strong>Bulletins</strong>, <strong>Sermons</strong>, <strong>Alerts</strong>, <strong>Staff</strong>, and <strong>Pages</strong>.</li>
+</ol>
+<p>That is the whole setup. There is nothing to install.</p>
+<hr />
+<h2>Part 2: How every update works</h2>
+<p>Every kind of update follows the same four moves.</p>
+<ol start="1">
+<li><strong>Sign in</strong> at <code>/wp-admin</code>.</li>
+<li><strong>Pick the screen</strong> from the left menu and click <strong>Add new</strong>, or click an existing item to change it.</li>
+<li><strong>Fill in the form</strong> and, if you want, click <strong>Preview</strong> at the top right to see how it will look.</li>
+<li>Click <strong>Submit for Review</strong> (the big button at the top right). Scott and Pastor Dan get a notice. Once they approve, it goes live within a minute.</li>
+</ol>
+<p>If they ask for a change, they may fix it themselves or ask you to. To fix it yourself, open the item again from the left menu, make the change, and click <strong>Submit for Review</strong> again.</p>
+<p><strong>A note on dates.</strong> Bulletins and sermons are filed by their Sunday. On the right side of the screen there is a <strong>Publish</strong> or <strong>Date</strong> line. Click it and set it to the Sunday the item belongs to, even if you are adding it on a Thursday.</p>
+<hr />
+<h2>Part 3: Common tasks</h2>
+<h3>Post this week's bulletin</h3>
+<ol start="1">
+<li>Left menu: <strong>Bulletins → Add new</strong>.</li>
+<li>Title: anything you like, for example <code>September 20 bulletin</code>.</li>
+<li>Under <strong>Bulletin PDF</strong>, click <strong>Choose PDF</strong>. Click <strong>Upload files</strong>, pick the PDF from your computer, then click <strong>Use this file</strong>.</li>
+<li>On the right, set the date to the Sunday.</li>
+<li>Click <strong>Submit for Review</strong>.</li>
+</ol>
+<p>The Bulletin page always shows the newest one and lists the older ones underneath.</p>
+<h3>Post sermon notes</h3>
+<ol start="1">
+<li>Left menu: <strong>Sermons → Add new</strong>.</li>
+<li>Title: the sermon title or passage, for example <code>John 15:1–11</code>.</li>
+<li>Under <strong>Sermon files</strong>, use <strong>Choose PDF</strong> next to <strong>Sermon handout</strong> to add the handout. Leave <strong>Pastor's notes</strong> blank for now.</li>
+<li>Set the date to the Sunday and click <strong>Submit for Review</strong>.</li>
+<li>After the service, open the same sermon from <strong>Sermons</strong>, add the notes with the second <strong>Choose PDF</strong> button, and click <strong>Submit for Review</strong> again.</li>
+</ol>
+<p>The Watch page shows this week's files as buttons and says "notes will be posted after the service" until they are added.</p>
+<h3>Put up an announcement banner (snow closure, schedule change)</h3>
+<ol start="1">
+<li>Left menu: <strong>Alerts → Add new</strong>.</li>
+<li>Title: a short name for your own reference, for example <code>Snow closure</code>.</li>
+<li>In the big text box, type the message people will see, for example <code>Sunday services are canceled this week due to snow. Stay safe and warm!</code></li>
+<li>Under <strong>Alert settings</strong>, choose <strong>Warning</strong> (red) for closures or <strong>Information</strong> (gold) for ordinary notices. If you want the banner to disappear on its own, put a date in <strong>Hide automatically after</strong>.</li>
+<li>Click <strong>Submit for Review</strong>.</li>
+</ol>
+<p>The banner appears at the top of every page once approved. <strong>To take it down</strong>, open the alert from <strong>Alerts</strong> and either change its date to yesterday or ask Scott to switch it to a draft.</p>
+<h3>Add or change a staff member</h3>
+<ol start="1">
+<li>Left menu: <strong>Staff → Add new</strong> (or click a name to change it).</li>
+<li>Title: the person's name.</li>
+<li>Big text box: one or two sentences about them.</li>
+<li>Under <strong>Staff details</strong>, fill in the role (for example <code>Lead Pastor</code>) and, if wanted, an email address.</li>
+<li>On the right, click <strong>Set featured image</strong> and upload their photo. A landscape photo works best.</li>
+<li>Click <strong>Submit for Review</strong>.</li>
+</ol>
+<h3>Change the words on a page</h3>
+<ol start="1">
+<li>Left menu: <strong>Pages</strong>. Click the page, for example <strong>About</strong>.</li>
+<li>Click into the text and edit it like a document.</li>
+<li>The sentence under the big title at the top of the page is in the <strong>Excerpt</strong> box on the right. The small line above the title is in the <strong>Page banner</strong> box.</li>
+<li>Click <strong>Submit for Review</strong>.</li>
+</ol>
+<p>The homepage wording, the service time, the address, and the ChurchTrac links are in a different place: <strong>Appearance → Customize → Calvary Ellicott</strong>. That screen is normally handled by Scott, so ask before changing it.</p>
+<hr />
+<h2>If something goes wrong</h2>
+<ul>
+<li><strong>You see a message you do not understand.</strong> Take a screenshot or photo of it and send it to Scott. Do not click anything else.</li>
+<li><strong>You changed something you did not mean to.</strong> Nothing is live until it is approved. Tell Scott and he will discard it, or open the item and change it back.</li>
+<li><strong>The website did not update.</strong> Your change is probably waiting for approval. Check with Scott or Pastor Dan. Once approved, wait a minute and refresh the page.</li>
+<li><strong>You cannot sign in.</strong> On the sign-in page click <strong>Lost your password?</strong> and follow the email. If that does not work, ask Scott.</li>
+<li><strong>The Choose PDF button does nothing.</strong> Refresh the page and try again. If it still does not work, email the PDF to Scott and he will attach it.</li>
+</ul>
+<p>Nothing you do can permanently break the website. Every change is saved and can be undone.</p>
+        </article>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a class="brand footer-brand" href="index.html"><span class="brand-mark">CE</span><span><strong>Calvary</strong><small>Ellicott</small></span></a>
+      <div><strong><span data-content="site.serviceDay">Sunday</span> at <span data-content="site.serviceTime">9:30 AM</span></strong><p><span data-content="site.addressLine1">2150 N. Ellicott Hwy</span>, <span data-content="site.addressLine2">Calhan, CO 80808</span></p></div>
+      <nav aria-label="Footer navigation"><a href="about.html">About</a><a href="staff.html">Staff</a><a href="beliefs.html">Beliefs</a><a href="events.html">Events</a><a href="bulletin.html">Bulletin</a><a href="watch.html">Watch</a><a href="connect.html">Connect</a></nav>
+      <p class="copyright">© <span data-year></span> <span data-content="site.name">Calvary Ellicott</span></p>
+    </footer>
+    <script type="module" src="scripts/app.js"></script>
+  </body>
+</html>

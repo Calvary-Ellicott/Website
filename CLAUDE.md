@@ -3,7 +3,7 @@
 Static multi-page church website for Calvary Ellicott (Ellicott/Calhan, Colorado), hosted on GitHub Pages under the church's own GitHub organization. No build step, no server, no dependencies.
 
 ## Structure
-- Pages: `index.html` (home), `about.html`, `staff.html`, `beliefs.html`, `events.html`, `bulletin.html`, `watch.html`, `connect.html`, `404.html`. Each page is focused on one thing; the owner chose pages over one long scrolling page.
+- Pages: `index.html` (home), `about.html`, `staff.html`, `beliefs.html`, `events.html`, `bulletin.html`, `watch.html`, `connect.html`, `404.html`, plus `update-guide.html` (helper guide, no nav link, `noindex`; its source is `docs/helper-guide.md` and the HTML must be regenerated or hand-updated when the markdown changes). Each page is focused on one thing; the owner chose pages over one long scrolling page.
 - Header, nav, and footer markup is duplicated verbatim in every page (no templating). Change it everywhere at once. `scripts/app.js` sets `aria-current="page"` on the matching nav link.
 - Inner pages open with a `.page-hero` block (eyebrow, h1, lead). The home page keeps the full-bleed `.hero`.
 - An unconfigured ChurchTrac link on any page redirects to `connect.html` and shows the "coming soon" note there via `sessionStorage`.
@@ -19,11 +19,24 @@ Static multi-page church website for Calvary Ellicott (Ellicott/Calhan, Colorado
 - Keep it static. Do not reintroduce a server, admin panel, framework, or bundler. The site owner dislikes the GoDaddy and ChurchTrac site builders and wants hand-written HTML/CSS/JS.
 - Security policy is a `<meta http-equiv="Content-Security-Policy">` tag in `index.html`. If you add a new external host (images, embeds, fonts), add it there too or it will be silently blocked.
 - Never commit ChurchTrac credentials, API keys, or member data. Only public URLs belong in the repo.
-- Preview locally with `python -m http.server 8080` from this folder.
+- Preview locally by double-clicking `preview.bat` (runs `tools/preview-server.ps1`, a PowerShell TcpListener static server on port 8080 with HEAD support) or `preview.command` on Mac. `python -m http.server 8080` also works.
+- Review policy: ruleset on `main` requires a PR with 2 approvals, code-owner review, dismisses stale approvals, and the `Required approvals` status check from `.github/workflows/required-approvals.yml`, which passes only when both `primo4e` and Pastor Dan (placeholder `PASTOR-DAN-GITHUB-USERNAME` in CODEOWNERS and the workflow) have approved or authored. Repo admins may bypass.
+
+## WordPress theme (current direction)
+- On 2026-09-22 the pastor chose WordPress. On 2026-09-23 it turned out the site is on **WordPress.com, Premium plan** (calvaryellicott.org, still "Coming soon"). Premium allows custom theme upload and plugins but not GitHub Deployments or SSH (Business plan only), so the theme is installed by zip upload. The design is being kept, so `wp-theme/calvary-ellicott/` is a custom theme reproducing the static site. Work on the theme going forward; the static pages remain as a reference and are no longer the deliverable.
+- Theme layout: `functions.php` bootstraps `inc/` (template-tags, post-types, meta-boxes, customizer, setup). Page templates in `page-templates/` (about, staff, beliefs, events, bulletin, watch, connect) are selected per page via the Template dropdown; `ce_page_by_template()` finds pages by template so links never depend on slugs. `front-page.php` is the homepage; copy comes from the Customizer (`ce_opt()` with defaults in `inc/customizer.php`).
+- Custom post types (all non-public, shown by templates): `ce_staff` (title=name, content=bio, featured image=photo, meta `_ce_role`, `_ce_email`, ordered by menu_order), `ce_belief` (menu_order), `ce_bulletin` (post date = Sunday, meta `_ce_pdf`), `ce_sermon` (post date = Sunday, meta `_ce_handout`, `_ce_notes`), `ce_alert` (published = shown, meta `_ce_style`, `_ce_expires`, `_ce_link`, `_ce_link_page`, `_ce_link_text`). Pages have `_ce_eyebrow`; the excerpt is the banner lead.
+- `Appearance → Site setup` (inc/setup.php) creates the standard pages, sample beliefs/staff, the menu, and sets the front page; idempotent.
+- `style.css` is the static `styles.css` plus a theme header and a few WordPress-specific rules (menu `ul/li` reset, `.prose` for block content). Keep the two stylesheets in sync if the static site is still touched.
+- Unconfigured ChurchTrac links go to the Connect page with `?soon=Label`; `site.js` also handles it without reload on that page.
+- Deploy: `.github/workflows/deploy-theme.yml` ("Theme") lints PHP on PRs and pushes; on push to main it zips the theme and attaches `calvary-ellicott.zip` to a GitHub Release tagged `theme-v<Version from style.css>`. Locally, `tools/package-theme.bat` writes `wp-theme/dist/calvary-ellicott.zip` (gitignored). Install/update = Appearance → Themes → Upload Theme → Replace current with uploaded. No GoDaddy/SSH workflow remains. Local testing: `wp-theme/docker-compose.yml` (WordPress on :8088, theme bind-mounted). No PHP is installed on this machine; lint with Docker `php:8.2-cli`.
+- `docs/helper-guide.md` is written for the WordPress dashboard (Contributor role, Submit for Review). `update-guide.html` is regenerated from it by the scratch generator.
+- Content review on WordPress uses roles (Contributor/Editor) and optionally PublishPress; the GitHub two-approval rule now only covers theme code.
 
 ## History
 - Started as an RMCE Ellicott mockup with a Planning Center backend, then rebranded to Calvary Ellicott with ChurchTrac and a small Node admin panel.
 - On 2026-09-06 the Node server was removed, the site was made fully static, and it was moved into this fresh repo so the church org owns it outright.
+- The static GitHub Pages site (index.html etc.) was completed 2026-09-13 with pages, JSON content, alert banner, bulletin and watch pages, then superseded by the WordPress decision on 2026-09-22.
 - The retired mockup lives at `Documents/Storm Veil Technologies/RMCE Website` and should not be edited.
 
 ## Remaining work

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 2,
+  "settings": {
+    "color": {
+      "defaultPalette": false,
+      "palette": [
+        { "slug": "forest", "color": "#182820", "name": "Forest" },
+        { "slug": "cream", "color": "#f4f0e6", "name": "Cream" },
+        { "slug": "paper", "color": "#fbfaf5", "name": "Paper" },
+        { "slug": "rust", "color": "#b75c3d", "name": "Rust" },
+        { "slug": "gold", "color": "#d2a24a", "name": "Gold" },
+        { "slug": "ink", "color": "#1b2822", "name": "Ink" },
+        { "slug": "muted", "color": "#647169", "name": "Muted" }
+      ]
+    },
+    "typography": {
+      "fontFamilies": [
+        { "slug": "sans", "fontFamily": "\"DM Sans\", sans-serif", "name": "DM Sans" },
+        { "slug": "serif", "fontFamily": "Newsreader, Georgia, serif", "name": "Newsreader" }
+      ]
+    },
+    "layout": { "contentSize": "760px", "wideSize": "1100px" }
+  },
+  "styles": {
+    "typography": { "fontFamily": "var(--wp--preset--font-family--sans)" },
+    "elements": {
+      "heading": { "typography": { "fontFamily": "var(--wp--preset--font-family--serif)", "fontWeight": "500" } },
+      "link": { "color": { "text": "#b75c3d" } }
+    }
+  }
+}

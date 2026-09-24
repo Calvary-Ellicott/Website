@@ -1,0 +1,52 @@
+# Blocks merging into main until BOTH named people have approved the pull request:
+#   - the technical reviewer (Scott) checks files and names are right
+#   - the content reviewer (Pastor Dan) checks the words and materials
+# If one of them wrote the pull request, their own approval is not needed.
+# Replace PASTOR-DAN-GITHUB-USERNAME below with Pastor Dan's real GitHub username.
+
+name: Required approvals
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  pull_request_review:
+    types: [submitted, dismissed]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  approvals:
+    name: Required approvals
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        env:
+          REQUIRED_APPROVERS: primo4e, PASTOR-DAN-GITHUB-USERNAME
+        with:
+          script: |
+            const required = process.env.REQUIRED_APPROVERS.split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
+            const pr = context.payload.pull_request;
+            const author = pr.user.login.toLowerCase();
+
+            const reviews = await github.paginate(github.rest.pulls.listReviews, {
+              owner: context.repo.owner, repo: context.repo.repo, pull_number: pr.number, per_page: 100,
+            });
+
+            // Latest non-comment review per person decides their current position.
+            const latest = {};
+            for (const review of reviews) {
+              if (review.state === "COMMENTED") continue;
+              latest[review.user.login.toLowerCase()] = review.state;
+            }
+
+            const waiting = required.filter((login) => login !== author && latest[login] !== "APPROVED");
+            const done = required.filter((login) => !waiting.includes(login));
+
+            core.info(`Approved or author: ${done.map((l) => "@" + l).join(", ") || "none"}`);
+            if (waiting.length) {
+              core.setFailed(`Waiting for approval from: ${waiting.map((l) => "@" + l).join(", ")}`);
+            } else {
+              core.info("All required approvals are in place.");
+            }

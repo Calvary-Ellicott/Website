@@ -1,0 +1,29 @@
+# Local WordPress for testing the theme. See wp-theme/README.md.
+services:
+  db:
+    image: mariadb:11
+    environment:
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: wordpress
+      MARIADB_PASSWORD: wordpress
+      MARIADB_ROOT_PASSWORD: root
+    volumes:
+      - db:/var/lib/mysql
+
+  wordpress:
+    image: wordpress:6-php8.2-apache
+    depends_on: [db]
+    ports:
+      - "8088:80"
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+    volumes:
+      - wp:/var/www/html
+      - ./calvary-ellicott:/var/www/html/wp-content/themes/calvary-ellicott
+
+volumes:
+  db:
+  wp:
