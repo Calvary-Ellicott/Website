@@ -193,16 +193,37 @@ write("home.html", home, hm["hero"])
 # ---------------- About ----------------
 ab = content["about"]
 about = [
-    eyebrow(ab["hero"]["eyebrow"]), lead(ab["hero"]["lead"]),
-    separator(),
-    eyebrow(ab["story"]["eyebrow"]), h(2, ab["story"]["headline"]),
-    "\n".join(p(t) for t in ab["story"]["paragraphs"]),
-    separator(),
-    eyebrow(ab["sunday"]["eyebrow"]), h(2, ab["sunday"]["headline"]),
-    columns([p(ab["sunday"]["lead"]) + "\n" + buttons([(ab["sunday"]["link"], "/beliefs/")]), detail_rows(ab["sunday"]["details"])]),
-    separator(),
-    eyebrow(ab["nextSteps"]["eyebrow"]), h(2, ab["nextSteps"]["headline"]),
-    columns(["\n".join([h(3, c["title"]), p(c["text"]), buttons([("Go", "/" + c["href"].replace(".html", "") + "/")])]) for c in ab["nextSteps"]["cards"]]),
+    first_row("\n".join([
+        big_heading(ab["hero"]["headline"]),
+        lead(ab["hero"]["lead"]),
+    ])),
+    spacer(24),
+
+    # Band 1: who we are, navy
+    band("\n".join([
+        eyebrow(ab["story"]["eyebrow"], GOLD),
+        ch(2, ab["story"]["headline"], WHITE),
+        "\n".join(cp(t, "#dbe6f1", "1.1rem") for t in ab["story"]["paragraphs"]),
+    ]), NAVY, WHITE),
+
+    # Band 2: what a Sunday looks like, warm sand with three white cards
+    band("\n".join([
+        eyebrow(ab["sunday"]["eyebrow"]),
+        ch(2, ab["sunday"]["headline"], INK),
+        cp(ab["sunday"]["lead"], INK, "1.15rem"),
+        columns([card("\n".join([ch(3, row["label"], INK), cp(row["text"], "#3d5670")])) for row in ab["sunday"]["details"]]),
+        cbuttons([(ab["sunday"]["link"], "/beliefs/")], NAVY, WHITE),
+    ]), SAND, INK),
+
+    # Band 3: keep exploring, pale blue with white cards
+    band("\n".join([
+        eyebrow(ab["nextSteps"]["eyebrow"]),
+        ch(2, ab["nextSteps"]["headline"], INK),
+        columns([card("\n".join([
+            ch(3, c["title"], INK), cp(c["text"], "#3d5670"),
+            cbuttons([("Go", "/" + c["href"].replace(".html", "") + "/")], NAVY, WHITE),
+        ])) for c in ab["nextSteps"]["cards"]]),
+    ]), SKY, INK),
 ]
 write("about.html", about, ab["hero"])
 
