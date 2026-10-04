@@ -1,13 +1,25 @@
 [
   {
-    "name": "Pastor name",
-    "role": "Lead Pastor",
-    "bio": "A short paragraph about the pastor, their family, and their heart for the Ellicott community.",
+    "name": "Dr. Dan Hooker",
+    "role": "Pastor",
+    "bio": "A short paragraph about Pastor Dan, his family, and his heart for the Ellicott community.",
+    "email": ""
+  },
+  {
+    "name": "Don Drury",
+    "role": "Assistant Pastor",
+    "bio": "A short paragraph about Pastor Don and the areas of ministry he serves.",
     "email": ""
   },
   {
     "name": "Staff member name",
-    "role": "Worship & Ministry",
+    "role": "Role or ministry",
+    "bio": "A short paragraph about this staff member and the ministry area they serve.",
+    "email": ""
+  },
+  {
+    "name": "Staff member name",
+    "role": "Role or ministry",
     "bio": "A short paragraph about this staff member and the ministry area they serve.",
     "email": ""
   }

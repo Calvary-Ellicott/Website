@@ -227,20 +227,41 @@ about = [
 ]
 write("about.html", about, ab["hero"])
 
+def grid(inner, min_width="17rem"):
+    """A group whose children flow into as many columns as fit. Duplicate a child and it finds its own place."""
+    return (f'<!-- wp:group {{"className":"ce-grid","layout":{{"type":"grid","minimumColumnWidth":"{min_width}"}}}} -->\n'
+            f'<div class="wp-block-group ce-grid">\n{inner}\n</div>\n<!-- /wp:group -->')
+
+EMPTY_IMAGE = '<!-- wp:image -->\n<figure class="wp-block-image"><img alt=""/></figure>\n<!-- /wp:image -->'
+
 # ---------------- Staff ----------------
+# Each person is one self-contained white card (a Group). To add someone in WordPress:
+# select a card, choose Duplicate from its menu, and change the words. The grid makes room.
 st = content["staff"]
-cards = []
-for person in staff:
-    cards.append("\n".join([
-        '<!-- wp:image {"sizeSlug":"large"} -->\n<figure class="wp-block-image size-large"><img alt="' + html.escape(person["name"], quote=True) + '"/></figure>\n<!-- /wp:image -->',
-        eyebrow(person["role"]), h(3, person["name"]), p(person["bio"]),
-    ]))
-cards.append("\n".join([eyebrow(st["invite"]["eyebrow"]), h(3, st["invite"]["headline"]), p(st["invite"]["text"]), buttons([(st["invite"]["link"], CT)])]))
+staff_cards = "\n".join(
+    card("\n".join([
+        EMPTY_IMAGE,
+        eyebrow(person["role"]),
+        ch(3, person["name"], INK),
+        cp(person["bio"], "#3d5670"),
+    ])) for person in staff)
 staff_page = [
-    eyebrow(st["hero"]["eyebrow"]), lead(st["hero"]["lead"]),
-    separator(),
-    note("To add a person: copy one column below (from the Image block to the paragraph), paste it after the last one, and change the words. Click the empty image to upload their photo."),
-    columns(cards),
+    first_row("\n".join([
+        big_heading(st["hero"]["headline"]),
+        lead(st["hero"]["lead"]),
+    ])),
+    spacer(24),
+
+    # Band 1: the people, pale blue with white cards
+    band(grid(staff_cards), SKY, INK),
+
+    # Band 2: invite, navy
+    band("\n".join([
+        eyebrow(st["invite"]["eyebrow"], GOLD),
+        ch(2, st["invite"]["headline"], WHITE),
+        cp(st["invite"]["text"], "#dbe6f1", "1.1rem"),
+        cbuttons([(st["invite"]["link"], CT)], GOLD, INK),
+    ]), NAVY, WHITE),
 ]
 write("staff.html", staff_page, st["hero"])
 
@@ -346,7 +367,7 @@ These are built to work with the theme's normal page layout rather than against 
 
 - Every link that says `https://REPLACE-WITH-CHURCHTRAC-LINK` needs the real public ChurchTrac form or calendar URL. In the visual editor, click the button → the link icon → paste the address.
 - The Watch page has `https://REPLACE-WITH-BOXCAST-EMBED-URL` inside a Custom HTML block. Replace it with the `src` address from BoxCast's embed code.
-- Staff photos: click each empty image block and upload the photo.
+- Staff: each person is one white card. Click the empty image at the top of a card to upload their photo. To add a person, click a card, open the three-dot menu in its toolbar, choose **Duplicate**, and change the words; the grid makes room on its own. If a click lands on the text instead of the card, open List View (top left of the editor) and pick the Group that holds that person. To remove someone, select their card and press Delete.
 - Bulletin and Watch pages use **File** blocks for PDFs. Click the placeholder file block, choose Replace or upload, and change the link text to the date.
 
 ## Two things to test once
