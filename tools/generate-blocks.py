@@ -298,14 +298,60 @@ beliefs = [
 write("beliefs.html", beliefs, be["hero"])
 
 # ---------------- Events ----------------
+# Three ChurchTrac hooks, each with its own clearly named placeholder:
+#   CT_EVENT      a public event's own link (one per featured card) -> registration
+#   CT_CAL_EMBED  the src inside ChurchTrac's iframe code            -> calendar shown on the page
+#   CT_CAL_PAGE   the plain public calendar link                      -> "Open full calendar" button
+#   CT_VOLUNTEER  the volunteer / serving form link
+CT_EVENT = "https://REPLACE-WITH-CHURCHTRAC-EVENT-LINK"
+CT_CAL_EMBED = "https://REPLACE-WITH-CHURCHTRAC-CALENDAR-EMBED-LINK"
+CT_CAL_PAGE = "https://REPLACE-WITH-CHURCHTRAC-CALENDAR-PAGE-LINK"
+CT_VOLUNTEER = "https://REPLACE-WITH-CHURCHTRAC-VOLUNTEER-FORM-LINK"
+
 ev = content["events"]
+featured = [
+    ("Every Sunday · 9:30 AM", "Sunday Worship", "Worship, teaching through the Bible, and care for children. Everyone is welcome."),
+    ("Date and time", "Event name", "One or two sentences about this event: who it is for and what to expect."),
+    ("Date and time", "Event name", "One or two sentences about this event: who it is for and what to expect."),
+]
+event_cards = "\n".join(
+    card("\n".join([
+        eyebrow(when),
+        ch(3, name, INK),
+        cp(text, "#3d5670"),
+        cbuttons([("Details & sign up", CT_EVENT)], NAVY, WHITE),
+    ])) for when, name, text in featured)
+
 events = [
-    eyebrow(ev["hero"]["eyebrow"]), lead(ev["hero"]["lead"]),
-    separator(),
-    eyebrow(ev["calendar"]["eyebrow"]), h(2, ev["calendar"]["headline"]),
-    buttons([(ev["calendar"]["button"], CT)]),
-    note("The box below is the embedded ChurchTrac calendar. Replace the address in it with the calendar embed link from ChurchTrac. If the calendar does not appear after saving, the site is stripping iframes and the button above will have to do."),
-    html_block(f'<iframe src="{CT}" title="Event calendar" style="width:100%;height:650px;border:0" loading="lazy"></iframe>'),
+    first_row("\n".join([
+        big_heading(ev["hero"]["headline"]),
+        lead(ev["hero"]["lead"]),
+    ])),
+    spacer(24),
+
+    # Band 1: featured events, navy with white cards. Each card is duplicable.
+    band("\n".join([
+        eyebrow("Coming up", GOLD),
+        ch(2, "Featured events", WHITE),
+        grid(event_cards),
+    ]), NAVY, WHITE),
+
+    # Band 2: the ChurchTrac calendar, pale blue
+    band("\n".join([
+        eyebrow(ev["calendar"]["eyebrow"]),
+        ch(2, ev["calendar"]["headline"], INK),
+        cp("Tap any event on the calendar for details and registration.", "#3d5670"),
+        html_block(f'<iframe src="{CT_CAL_EMBED}" title="Calvary Ellicott event calendar" style="width:100%;height:760px;border:0;border-radius:10px;background:#ffffff" loading="lazy"></iframe>'),
+        cbuttons([(ev["calendar"]["button"], CT_CAL_PAGE)], NAVY, WHITE),
+    ]), SKY, INK),
+
+    # Band 3: volunteer sign-up, warm sand
+    band("\n".join([
+        eyebrow("Serve with us"),
+        ch(2, "Want to help make it happen?", INK),
+        cp("Events run on volunteers. Tell us where you would like to serve and we will be in touch.", INK, "1.15rem"),
+        cbuttons([("Sign up to serve", CT_VOLUNTEER)], NAVY, WHITE),
+    ]), SAND, INK),
 ]
 write("events.html", events, ev["hero"])
 
@@ -392,6 +438,21 @@ These are built to work with the theme's normal page layout rather than against 
 - Staff: each person is one white card. Click the empty image at the top of a card to upload their photo. To add a person, click a card, open the three-dot menu in its toolbar, choose **Duplicate**, and change the words; the grid makes room on its own. If a click lands on the text instead of the card, open List View (top left of the editor) and pick the Group that holds that person. To remove someone, select their card and press Delete.
 - Beliefs: each item is a Details block. Click one to change its title or text. To add an item, select one, choose **Duplicate** from its three-dot menu, and edit it. Drag to reorder.
 - Bulletin and Watch pages use **File** blocks for PDFs. Click the placeholder file block, choose Replace or upload, and change the link text to the date.
+
+## ChurchTrac links: where each one comes from
+
+The Events page has four placeholders. Each starts with `https://REPLACE-WITH-CHURCHTRAC-` so they are easy to find.
+
+| Placeholder ends with   | Where to get it in ChurchTrac                                                                 | Where it goes on the page |
+| ----------------------- | --------------------------------------------------------------------------------------------- | ------------------------- |
+| `CALENDAR-EMBED-LINK`   | Events → **Options** tab → **Embed Calendar**. In the iframe code it shows, copy the address inside `src="..."`. | The Custom HTML block in the calendar band. Replace only the address, or paste ChurchTrac's whole iframe code over ours. |
+| `CALENDAR-PAGE-LINK`    | Same screen, the plain link at the top.                                                         | The **Open full calendar** button. |
+| `EVENT-LINK`            | Open the event in ChurchTrac. Public events show a shareable link and a QR code.                | The button on that event's card. One link per card. |
+| `VOLUNTEER-FORM-LINK`   | The public link for the volunteer or serving form.                                              | The **Sign up to serve** button. |
+
+Before any of it shows up, each event has to be published: open the event in ChurchTrac and turn on **Publish this Event to Public Calendars**. Unpublished events never appear on the public calendar.
+
+To change a button's link in WordPress, click the button, click the link icon in its toolbar, and paste the address. The featured event cards work like staff cards: select one, choose Duplicate, edit the words and the link.
 
 ## Two things to test once
 

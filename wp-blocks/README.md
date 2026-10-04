@@ -38,6 +38,21 @@ These are built to work with the theme's normal page layout rather than against 
 - Beliefs: each item is a Details block. Click one to change its title or text. To add an item, select one, choose **Duplicate** from its three-dot menu, and edit it. Drag to reorder.
 - Bulletin and Watch pages use **File** blocks for PDFs. Click the placeholder file block, choose Replace or upload, and change the link text to the date.
 
+## ChurchTrac links: where each one comes from
+
+The Events page has four placeholders. Each starts with `https://REPLACE-WITH-CHURCHTRAC-` so they are easy to find.
+
+| Placeholder ends with   | Where to get it in ChurchTrac                                                                 | Where it goes on the page |
+| ----------------------- | --------------------------------------------------------------------------------------------- | ------------------------- |
+| `CALENDAR-EMBED-LINK`   | Events → **Options** tab → **Embed Calendar**. In the iframe code it shows, copy the address inside `src="..."`. | The Custom HTML block in the calendar band. Replace only the address, or paste ChurchTrac's whole iframe code over ours. |
+| `CALENDAR-PAGE-LINK`    | Same screen, the plain link at the top.                                                         | The **Open full calendar** button. |
+| `EVENT-LINK`            | Open the event in ChurchTrac. Public events show a shareable link and a QR code.                | The button on that event's card. One link per card. |
+| `VOLUNTEER-FORM-LINK`   | The public link for the volunteer or serving form.                                              | The **Sign up to serve** button. |
+
+Before any of it shows up, each event has to be published: open the event in ChurchTrac and turn on **Publish this Event to Public Calendars**. Unpublished events never appear on the public calendar.
+
+To change a button's link in WordPress, click the button, click the link icon in its toolbar, and paste the address. The featured event cards work like staff cards: select one, choose Duplicate, edit the words and the link.
+
 ## Two things to test once
 
 - Save the Events or Watch page and preview it. If the iframe box is empty, the site strips iframes for your account. Delete the Custom HTML block and rely on the button links instead.
