@@ -123,6 +123,21 @@ home = [
 ]
 write("home.html", home, hm["hero"])
 
+# ---------------- Home (compact) ----------------
+# For themes with a full-height side column: everything fits in one row beside the image.
+home_compact = [
+    eyebrow(hm["hero"]["eyebrow"]),
+    big_heading(hm["hero"]["headline"]),
+    lead(hm["hero"]["intro"]),
+    buttons([(hm["hero"]["primaryButton"], "/connect/"), (hm["hero"]["secondaryButton"], "/about/")]),
+    separator(),
+    detail_rows(hm["visit"]["details"]),
+    separator(),
+    eyebrow(hm["nextSteps"]["eyebrow"]),
+    buttons([(c["title"], "/" + c["href"].replace(".html", "") + "/") for c in hm["nextSteps"]["cards"]]),
+]
+write("home-compact.html", home_compact, hm["hero"])
+
 # ---------------- About ----------------
 ab = content["about"]
 about = [
@@ -236,6 +251,7 @@ One file per page, generated from `data/content.json` and `data/staff.json`. Eac
 | Page title | File           | Page link (slug) |
 | ---------- | -------------- | ---------------- |
 | Home       | `home.html`    | set as homepage under Settings → Reading |
+| Home, short version | `home-compact.html` | use instead of `home.html` when the theme keeps a side image column for the whole page |
 | About      | `about.html`   | `about`          |
 | Staff      | `staff.html`   | `staff`          |
 | Beliefs    | `beliefs.html` | `beliefs`        |

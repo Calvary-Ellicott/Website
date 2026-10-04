@@ -12,6 +12,7 @@ One file per page, generated from `data/content.json` and `data/staff.json`. Eac
 | Page title | File           | Page link (slug) |
 | ---------- | -------------- | ---------------- |
 | Home       | `home.html`    | set as homepage under Settings → Reading |
+| Home, short version | `home-compact.html` | use instead of `home.html` when the theme keeps a side image column for the whole page |
 | About      | `about.html`   | `about`          |
 | Staff      | `staff.html`   | `staff`          |
 | Beliefs    | `beliefs.html` | `beliefs`        |
