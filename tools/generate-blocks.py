@@ -13,6 +13,15 @@ site = content["site"]
 CT = "https://REPLACE-WITH-CHURCHTRAC-LINK"   # placeholder until the public ChurchTrac URLs exist
 BOXCAST = "https://REPLACE-WITH-BOXCAST-EMBED-URL"
 
+# One placeholder per ChurchTrac form so it is obvious which link goes where.
+CT_VISIT = "https://REPLACE-WITH-CHURCHTRAC-VISIT-FORM-LINK"
+CT_PRAYER = "https://REPLACE-WITH-CHURCHTRAC-PRAYER-FORM-LINK"
+CT_CONNECT = "https://REPLACE-WITH-CHURCHTRAC-CONNECT-CARD-LINK"
+CT_CONTACT = "https://REPLACE-WITH-CHURCHTRAC-CONTACT-FORM-LINK"
+CT_VOLUNTEER_FORM = "https://REPLACE-WITH-CHURCHTRAC-VOLUNTEER-FORM-LINK"
+CT_VOLUNTEER_EMBED = "https://REPLACE-WITH-CHURCHTRAC-VOLUNTEER-FORM-EMBED-LINK"
+MAPS = "https://www.google.com/maps/search/?api=1&query=" + (site["addressLine1"] + " " + site["addressLine2"]).replace(",", "").replace(" ", "+")
+
 def fill(text):
     text = re.sub(r"\{([\w.]+)\}", lambda m: str(content.get(m.group(1).split(".")[0], {}).get(m.group(1).split(".")[1], m.group(0))) if m.group(1).startswith("site.") else m.group(0), str(text))
     return text
@@ -167,7 +176,7 @@ home = [
         eyebrow(hm["visit"]["eyebrow"]),
         f'<!-- wp:heading {{"level":2,"anchor":"visit","style":{{"color":{{"text":"{INK}"}}}}}} -->\n<h2 class="wp-block-heading has-text-color" id="visit" style="color:{INK}">{lines(hm["visit"]["headline"])}</h2>\n<!-- /wp:heading -->',
         cp(hm["visit"]["lead"], INK, "1.15rem"),
-        cbuttons([(hm["visit"]["link"], CT)], NAVY, WHITE),
+        cbuttons([(hm["visit"]["link"], CT_VISIT)], NAVY, WHITE),
     ]), SAND, INK),
 
     # Band 3: our next chapter, navy with gold
@@ -260,7 +269,7 @@ staff_page = [
         eyebrow(st["invite"]["eyebrow"], GOLD),
         ch(2, st["invite"]["headline"], WHITE),
         cp(st["invite"]["text"], "#dbe6f1", "1.1rem"),
-        cbuttons([(st["invite"]["link"], CT)], GOLD, INK),
+        cbuttons([(st["invite"]["link"], "/connect/")], GOLD, INK),
     ]), NAVY, WHITE),
 ]
 write("staff.html", staff_page, st["hero"])
@@ -350,7 +359,7 @@ events = [
         eyebrow("Serve with us"),
         ch(2, "Want to help make it happen?", INK),
         cp("Events run on volunteers. Tell us where you would like to serve and we will be in touch.", INK, "1.15rem"),
-        cbuttons([("Sign up to serve", CT_VOLUNTEER)], NAVY, WHITE),
+        cbuttons([("Sign up to serve", "/volunteer/")], NAVY, WHITE),
     ]), SAND, INK),
 ]
 write("events.html", events, ev["hero"])
@@ -389,15 +398,88 @@ write("watch.html", watch, wa["hero"])
 
 # ---------------- Connect ----------------
 co = content["connect"]
+steps = [
+    ("Plan a visit", "Let us know you are coming and we will have someone ready to welcome you.", "Plan a visit", CT_VISIT),
+    ("Request prayer", "Share a need or a praise. Our team prays over every request.", "Request prayer", CT_PRAYER),
+    ("Connect with us", "New here, or ready to get more involved? Fill out a connect card.", "Connect card", CT_CONNECT),
+    ("Start serving", "See where you can help and sign up to volunteer.", "Volunteer", "/volunteer/"),
+    ("Ask a question", "Anything else on your mind? Send our team a note.", "Contact us", CT_CONTACT),
+]
+step_cards = "\n".join(
+    card("\n".join([ch(3, title, INK), cp(text, "#3d5670"), cbuttons([(label, href)], NAVY, WHITE)]))
+    for title, text, label, href in steps)
+
 connect = [
-    eyebrow(co["hero"]["eyebrow"]), lead(co["hero"]["lead"]),
-    separator(),
-    columns([
-        "\n".join([eyebrow(co["intro"]["eyebrow"]), h(2, co["intro"]["headline"]), p(co["intro"]["text"]), detail_rows(co["intro"]["details"])]),
-        "\n".join([buttons([(f["label"], CT)]) for f in co["forms"]]) + "\n" + note(co["note"]),
-    ]),
+    first_row("\n".join([
+        big_heading(co["hero"]["headline"]),
+        lead(co["hero"]["lead"]),
+    ])),
+    spacer(24),
+
+    # Band 1: one card per next step, pale blue. Each button is a ChurchTrac form card link.
+    band("\n".join([
+        eyebrow("Take a next step"),
+        ch(2, "How can we help?", INK),
+        grid(step_cards),
+    ]), SKY, INK),
+
+    # Band 2: find us, navy
+    band("\n".join([
+        eyebrow("Find us", GOLD),
+        ch(2, co["intro"]["headline"], WHITE),
+        columns(["\n".join([eyebrow(row["label"], GOLD), cp(row["text"], WHITE, "1.15rem")]) for row in co["intro"]["details"]]),
+        cbuttons([("Get directions", MAPS)], GOLD, INK),
+    ]), NAVY, WHITE),
 ]
 write("connect.html", connect, co["hero"])
+
+# ---------------- Volunteer ----------------
+areas = [
+    ("Worship and tech", "Music, sound, slides, and the livestream."),
+    ("Children’s ministry", "Teaching and caring for kids during the service."),
+    ("Hospitality", "Greeting, coffee, and helping visitors feel at home."),
+    ("Facilities and grounds", "Setup, cleaning, repairs, and keeping the property ready."),
+    ("Events and outreach", "Planning and running gatherings for the church and community."),
+    ("Prayer and care", "Praying for requests and checking in on people who need it."),
+]
+area_cards = "\n".join(card("\n".join([ch(3, title, INK), cp(text, "#3d5670")])) for title, text in areas)
+how = [
+    ("1", "Tell us about you", "Fill out the short form below with your interests and availability."),
+    ("2", "We will reach out", "A ministry leader contacts you to talk through where you fit best."),
+    ("3", "Start serving", "We get you trained, scheduled, and serving alongside a team."),
+]
+
+volunteer = [
+    first_row("\n".join([
+        big_heading(["Serve with us."]),
+        lead("There is a place for your gifts here. Whether you have an hour a month or a heart for a whole ministry, we would love your help."),
+    ])),
+    spacer(24),
+
+    # Band 1: where you can serve, pale blue with white cards (duplicable)
+    band("\n".join([
+        eyebrow("Where you can serve"),
+        ch(2, "Find your fit.", INK),
+        grid(area_cards),
+    ]), SKY, INK),
+
+    # Band 2: how it works, navy
+    band("\n".join([
+        eyebrow("How it works", GOLD),
+        ch(2, "Three simple steps.", WHITE),
+        columns(["\n".join([ch(3, n + ". " + title, GOLD), cp(text, "#dbe6f1")]) for n, title, text in how]),
+    ]), NAVY, WHITE),
+
+    # Band 3: the ChurchTrac volunteer form, warm sand
+    band("\n".join([
+        eyebrow("Sign up"),
+        f'<!-- wp:heading {{"level":2,"anchor":"sign-up","style":{{"color":{{"text":"{INK}"}}}}}} -->\n<h2 class="wp-block-heading has-text-color" id="sign-up" style="color:{INK}">Volunteer sign-up</h2>\n<!-- /wp:heading -->',
+        cp("Fill out the form and we will be in touch within the week.", INK, "1.15rem"),
+        html_block(f'<iframe src="{CT_VOLUNTEER_EMBED}" title="Volunteer sign-up form" style="width:100%;height:900px;border:0;border-radius:10px;background:#ffffff" loading="lazy"></iframe>'),
+        cbuttons([("Open the form in a new tab", CT_VOLUNTEER_FORM)], NAVY, WHITE),
+    ]), SAND, INK),
+]
+write("volunteer.html", volunteer, co["hero"])
 
 readme = """# Block markup for the WordPress pages
 
@@ -420,6 +502,7 @@ One file per page, generated from `data/content.json` and `data/staff.json`. Eac
 | Bulletin   | `bulletin.html`| `bulletin`       |
 | Watch      | `watch.html`   | `watch`          |
 | Connect    | `connect.html` | `connect`        |
+| Volunteer  | `volunteer.html`| `volunteer`     |
 
 Buttons between pages use those slugs (`/about/`, `/events/`, and so on), so keep them.
 
@@ -441,18 +524,34 @@ These are built to work with the theme's normal page layout rather than against 
 
 ## ChurchTrac links: where each one comes from
 
-The Events page has four placeholders. Each starts with `https://REPLACE-WITH-CHURCHTRAC-` so they are easy to find.
+Every placeholder starts with `https://REPLACE-WITH-CHURCHTRAC-` and ends with which link it wants, so they are easy to find in the editor.
 
-| Placeholder ends with   | Where to get it in ChurchTrac                                                                 | Where it goes on the page |
-| ----------------------- | --------------------------------------------------------------------------------------------- | ------------------------- |
-| `CALENDAR-EMBED-LINK`   | Events → **Options** tab → **Embed Calendar**. In the iframe code it shows, copy the address inside `src="..."`. | The Custom HTML block in the calendar band. Replace only the address, or paste ChurchTrac's whole iframe code over ours. |
-| `CALENDAR-PAGE-LINK`    | Same screen, the plain link at the top.                                                         | The **Open full calendar** button. |
-| `EVENT-LINK`            | Open the event in ChurchTrac. Public events show a shareable link and a QR code.                | The button on that event's card. One link per card. |
-| `VOLUNTEER-FORM-LINK`   | The public link for the volunteer or serving form.                                              | The **Sign up to serve** button. |
+**Events**
 
-Before any of it shows up, each event has to be published: open the event in ChurchTrac and turn on **Publish this Event to Public Calendars**. Unpublished events never appear on the public calendar.
+| Placeholder ends with   | Where to get it in ChurchTrac                                                                 | Where it goes |
+| ----------------------- | --------------------------------------------------------------------------------------------- | ------------- |
+| `CALENDAR-EMBED-LINK`   | Events → **Options** tab → **Embed Calendar**. In the iframe code it shows, copy the address inside `src="..."`. | Events page, the Custom HTML block in the calendar band. |
+| `CALENDAR-PAGE-LINK`    | Same screen, the plain link at the top.                                                         | Events page, **Open full calendar** button. |
+| `EVENT-LINK`            | Open the event in ChurchTrac. Public events show a shareable link and a QR code.                | Events page, the button on that event's card. One link per card. |
 
-To change a button's link in WordPress, click the button, click the link icon in its toolbar, and paste the address. The featured event cards work like staff cards: select one, choose Duplicate, edit the words and the link.
+Each event has to be published before it appears: open it in ChurchTrac and turn on **Publish this Event to Public Calendars**.
+
+**Forms** (ChurchTrac calls these Form Cards, under Church Connect)
+
+| Placeholder ends with        | Which form                         | Where it goes |
+| ---------------------------- | ---------------------------------- | ------------- |
+| `VISIT-FORM-LINK`            | Plan a visit                       | Home page **Tell us you're coming** button; Connect page **Plan a visit** |
+| `PRAYER-FORM-LINK`           | Prayer request                     | Connect page **Request prayer** |
+| `CONNECT-CARD-LINK`          | Connect card                       | Connect page **Connect card** |
+| `CONTACT-FORM-LINK`          | General contact                    | Connect page **Contact us** |
+| `VOLUNTEER-FORM-LINK`        | Volunteer sign-up                  | Volunteer page **Open the form in a new tab** |
+| `VOLUNTEER-FORM-EMBED-LINK`  | Volunteer sign-up, embedded        | Volunteer page, the Custom HTML block |
+
+- **To get a form's link:** in Church Connect, open the Form Card and copy the address from the browser's address bar.
+- **To get a form's embed code:** open the Form Card, choose **Show Additional Options**, scroll to **Form/Giving Embed Domain**, enter the website's domain (for example `calvaryellicott.org`), and save. ChurchTrac then shows an iframe code. Copy the address inside `src="..."`, or paste the whole code over ours in the Custom HTML block. The embed only works on the domain you entered there.
+- Each Form Card has a ChurchTrac user who receives the notification emails; set that on the card.
+
+To change a button's link in WordPress, click the button, click the link icon in its toolbar, and paste the address. Cards on Events, Connect, and Volunteer work like staff cards: select one, choose Duplicate, edit the words and the link.
 
 ## Two things to test once
 

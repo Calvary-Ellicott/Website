@@ -19,6 +19,7 @@ One file per page, generated from `data/content.json` and `data/staff.json`. Eac
 | Bulletin   | `bulletin.html`| `bulletin`       |
 | Watch      | `watch.html`   | `watch`          |
 | Connect    | `connect.html` | `connect`        |
+| Volunteer  | `volunteer.html`| `volunteer`     |
 
 Buttons between pages use those slugs (`/about/`, `/events/`, and so on), so keep them.
 
@@ -40,18 +41,34 @@ These are built to work with the theme's normal page layout rather than against 
 
 ## ChurchTrac links: where each one comes from
 
-The Events page has four placeholders. Each starts with `https://REPLACE-WITH-CHURCHTRAC-` so they are easy to find.
+Every placeholder starts with `https://REPLACE-WITH-CHURCHTRAC-` and ends with which link it wants, so they are easy to find in the editor.
 
-| Placeholder ends with   | Where to get it in ChurchTrac                                                                 | Where it goes on the page |
-| ----------------------- | --------------------------------------------------------------------------------------------- | ------------------------- |
-| `CALENDAR-EMBED-LINK`   | Events → **Options** tab → **Embed Calendar**. In the iframe code it shows, copy the address inside `src="..."`. | The Custom HTML block in the calendar band. Replace only the address, or paste ChurchTrac's whole iframe code over ours. |
-| `CALENDAR-PAGE-LINK`    | Same screen, the plain link at the top.                                                         | The **Open full calendar** button. |
-| `EVENT-LINK`            | Open the event in ChurchTrac. Public events show a shareable link and a QR code.                | The button on that event's card. One link per card. |
-| `VOLUNTEER-FORM-LINK`   | The public link for the volunteer or serving form.                                              | The **Sign up to serve** button. |
+**Events**
 
-Before any of it shows up, each event has to be published: open the event in ChurchTrac and turn on **Publish this Event to Public Calendars**. Unpublished events never appear on the public calendar.
+| Placeholder ends with   | Where to get it in ChurchTrac                                                                 | Where it goes |
+| ----------------------- | --------------------------------------------------------------------------------------------- | ------------- |
+| `CALENDAR-EMBED-LINK`   | Events → **Options** tab → **Embed Calendar**. In the iframe code it shows, copy the address inside `src="..."`. | Events page, the Custom HTML block in the calendar band. |
+| `CALENDAR-PAGE-LINK`    | Same screen, the plain link at the top.                                                         | Events page, **Open full calendar** button. |
+| `EVENT-LINK`            | Open the event in ChurchTrac. Public events show a shareable link and a QR code.                | Events page, the button on that event's card. One link per card. |
 
-To change a button's link in WordPress, click the button, click the link icon in its toolbar, and paste the address. The featured event cards work like staff cards: select one, choose Duplicate, edit the words and the link.
+Each event has to be published before it appears: open it in ChurchTrac and turn on **Publish this Event to Public Calendars**.
+
+**Forms** (ChurchTrac calls these Form Cards, under Church Connect)
+
+| Placeholder ends with        | Which form                         | Where it goes |
+| ---------------------------- | ---------------------------------- | ------------- |
+| `VISIT-FORM-LINK`            | Plan a visit                       | Home page **Tell us you're coming** button; Connect page **Plan a visit** |
+| `PRAYER-FORM-LINK`           | Prayer request                     | Connect page **Request prayer** |
+| `CONNECT-CARD-LINK`          | Connect card                       | Connect page **Connect card** |
+| `CONTACT-FORM-LINK`          | General contact                    | Connect page **Contact us** |
+| `VOLUNTEER-FORM-LINK`        | Volunteer sign-up                  | Volunteer page **Open the form in a new tab** |
+| `VOLUNTEER-FORM-EMBED-LINK`  | Volunteer sign-up, embedded        | Volunteer page, the Custom HTML block |
+
+- **To get a form's link:** in Church Connect, open the Form Card and copy the address from the browser's address bar.
+- **To get a form's embed code:** open the Form Card, choose **Show Additional Options**, scroll to **Form/Giving Embed Domain**, enter the website's domain (for example `calvaryellicott.org`), and save. ChurchTrac then shows an iframe code. Copy the address inside `src="..."`, or paste the whole code over ours in the Custom HTML block. The embed only works on the domain you entered there.
+- Each Form Card has a ChurchTrac user who receives the notification emails; set that on the card.
+
+To change a button's link in WordPress, click the button, click the link icon in its toolbar, and paste the address. Cards on Events, Connect, and Volunteer work like staff cards: select one, choose Duplicate, edit the words and the link.
 
 ## Two things to test once
 
