@@ -227,9 +227,9 @@ about = [
 ]
 write("about.html", about, ab["hero"])
 
-def grid(inner, min_width="17rem"):
+def grid(inner, min_width="14rem", columns_max=3):
     """A group whose children flow into as many columns as fit. Duplicate a child and it finds its own place."""
-    return (f'<!-- wp:group {{"className":"ce-grid","layout":{{"type":"grid","minimumColumnWidth":"{min_width}"}}}} -->\n'
+    return (f'<!-- wp:group {{"className":"ce-grid","layout":{{"type":"grid","columnCount":{columns_max},"minimumColumnWidth":"{min_width}"}}}} -->\n'
             f'<div class="wp-block-group ce-grid">\n{inner}\n</div>\n<!-- /wp:group -->')
 
 EMPTY_IMAGE = '<!-- wp:image -->\n<figure class="wp-block-image"><img alt=""/></figure>\n<!-- /wp:image -->'
@@ -265,13 +265,35 @@ staff_page = [
 ]
 write("staff.html", staff_page, st["hero"])
 
+def cdetails(items, color, body_color):
+    """Accordion (core Details blocks) with explicit colours so it reads on any band."""
+    out = []
+    for i, it in enumerate(items):
+        opened = ',"showContent":true' if i == 0 else ""
+        out.append(
+            f'<!-- wp:details {{"summary":"{html.escape(fill(it["title"]), quote=True)}"{opened},"style":{{"color":{{"text":"{color}"}},"typography":{{"fontSize":"1.5rem"}}}}}} -->\n'
+            f'<details class="wp-block-details has-text-color" style="color:{color};font-size:1.5rem"{" open" if i == 0 else ""}><summary>{inline(it["title"])}</summary>'
+            f'{cp(it["text"], body_color, "1.1rem")}</details>\n<!-- /wp:details -->')
+    return "\n".join(out)
+
 # ---------------- Beliefs ----------------
 be = content["beliefs"]
 beliefs = [
-    eyebrow(be["hero"]["eyebrow"]), lead(be["hero"]["lead"]),
-    separator(),
-    eyebrow(be["intro"]["eyebrow"]), h(2, be["intro"]["headline"]), p(be["intro"]["text"]),
-    details(be["items"]),
+    first_row("\n".join([
+        big_heading(be["hero"]["headline"]),
+        lead(be["hero"]["lead"]),
+    ])),
+    spacer(24),
+
+    # Band 1: intro, navy
+    band("\n".join([
+        eyebrow(be["intro"]["eyebrow"], GOLD),
+        ch(2, be["intro"]["headline"], WHITE),
+        cp(be["intro"]["text"], "#dbe6f1", "1.1rem"),
+    ]), NAVY, WHITE),
+
+    # Band 2: the statement of faith as an accordion, warm sand
+    band(cdetails(be["items"], INK, "#3d5670"), SAND, INK),
 ]
 write("beliefs.html", beliefs, be["hero"])
 
@@ -368,6 +390,7 @@ These are built to work with the theme's normal page layout rather than against 
 - Every link that says `https://REPLACE-WITH-CHURCHTRAC-LINK` needs the real public ChurchTrac form or calendar URL. In the visual editor, click the button → the link icon → paste the address.
 - The Watch page has `https://REPLACE-WITH-BOXCAST-EMBED-URL` inside a Custom HTML block. Replace it with the `src` address from BoxCast's embed code.
 - Staff: each person is one white card. Click the empty image at the top of a card to upload their photo. To add a person, click a card, open the three-dot menu in its toolbar, choose **Duplicate**, and change the words; the grid makes room on its own. If a click lands on the text instead of the card, open List View (top left of the editor) and pick the Group that holds that person. To remove someone, select their card and press Delete.
+- Beliefs: each item is a Details block. Click one to change its title or text. To add an item, select one, choose **Duplicate** from its three-dot menu, and edit it. Drag to reorder.
 - Bulletin and Watch pages use **File** blocks for PDFs. Click the placeholder file block, choose Replace or upload, and change the link text to the date.
 
 ## Two things to test once
