@@ -97,46 +97,98 @@ def wide(inner, bg=None):
     return (f'<!-- wp:group {{"align":"full","style":{{"spacing":{{"padding":{{"top":"48px","bottom":"48px","left":"32px","right":"32px"}}}}{color}}},"layout":{{"type":"constrained"}}}} -->\n'
             f'<div class="wp-block-group alignfull{cls}" style="{style}padding:48px 32px">\n{inner}\n</div>\n<!-- /wp:group -->')
 
+# ---- Colour bands that reach under the theme's side image -------------------------------
+# The theme puts page content in a left column and the featured image in a right column.
+# REACH is a negative right margin: on desktop it pulls a block across the gap and the image
+# column (46% of the content column's width); below 782px, where the theme stacks, it is 0.
+# If a band stops short of the image's right edge or pokes past it, change the 46.
+REACH = "calc(-1 * clamp(0px, (100vw - 782px) * 9999, 46%))"
+NAVY, SAND, SKY, GOLD, WHITE, INK = "#14304d", "#f6ecd9", "#e3eef8", "#e8b85c", "#ffffff", "#14304d"
+
+def ch(level, value, color):
+    return (f'<!-- wp:heading {{"level":{level},"style":{{"color":{{"text":"{color}"}}}}}} -->\n'
+            f'<h{level} class="wp-block-heading has-text-color" style="color:{color}">{lines(value)}</h{level}>\n<!-- /wp:heading -->')
+
+def cp(text, color, size=None):
+    typo = f',"typography":{{"fontSize":"{size}"}}' if size else ""
+    fs = f";font-size:{size}" if size else ""
+    return (f'<!-- wp:paragraph {{"style":{{"color":{{"text":"{color}"}}{typo}}}}} -->\n'
+            f'<p class="has-text-color" style="color:{color}{fs}">{lines(text)}</p>\n<!-- /wp:paragraph -->')
+
+def cbuttons(items, bg, text):
+    inner = "".join(
+        f'<!-- wp:button {{"style":{{"color":{{"background":"{bg}","text":"{text}"}}}}}} -->\n'
+        f'<div class="wp-block-button"><a class="wp-block-button__link has-text-color has-background wp-element-button" href="{html.escape(href)}" style="color:{text};background-color:{bg}"'
+        f'{" target=%s_blank%s rel=%snoopener%s" % (chr(34), chr(34), chr(34), chr(34)) if href.startswith("http") else ""}>{inline(label)}</a></div>\n<!-- /wp:button -->\n'
+        for label, href in items)
+    return f'<!-- wp:buttons -->\n<div class="wp-block-buttons">{inner}</div>\n<!-- /wp:buttons -->'
+
+def band(inner, bg, text, reach=True, pad="48px", side="40px"):
+    margin = f'"margin":{{"right":"{REACH}"}},' if reach else ""
+    mstyle = f"margin-right:{REACH};" if reach else ""
+    return (f'<!-- wp:group {{"style":{{"border":{{"radius":"14px"}},"color":{{"text":"{text}","background":"{bg}"}},'
+            f'"spacing":{{{margin}"padding":{{"top":"{pad}","right":"{side}","bottom":"{pad}","left":"{side}"}}}}}},"layout":{{"type":"default"}}}} -->\n'
+            f'<div class="wp-block-group has-text-color has-background" style="border-radius:14px;color:{text};background-color:{bg};{mstyle}'
+            f'padding-top:{pad};padding-right:{side};padding-bottom:{pad};padding-left:{side}">\n{inner}\n</div>\n<!-- /wp:group -->')
+
+def card(inner, bg=WHITE, text=INK):
+    return band(inner, bg, text, reach=False, pad="28px", side="28px")
+
+def first_row(inner):
+    """Row 1 sits beside the theme's featured image. The image is about 29vw tall on desktop and the
+    theme's page title uses roughly 90px of that, so this keeps row 1 at least as tall as the picture.
+    On phones the value is tiny and has no effect. Raise the 29 if a band tucks under the image."""
+    mh = "calc(29vw - 90px)"
+    return (f'<!-- wp:group {{"style":{{"dimensions":{{"minHeight":"{mh}"}}}},"layout":{{"type":"default"}}}} -->\n'
+            f'<div class="wp-block-group" style="min-height:{mh}">\n{inner}\n</div>\n<!-- /wp:group -->')
+
 # ---------------- Home ----------------
-# Row 1 sits beside the theme's featured image (set a portrait photo there).
-# Rows 2+ are full-width groups underneath it.
+# Row 1 (label, headline, intro, buttons) sits beside the theme's featured image.
+# Every band after it reaches across under the image.
 hm = content["home"]
+d = hm["visit"]["details"]
 home = [
-    eyebrow(hm["hero"]["eyebrow"]),
-    big_heading(hm["hero"]["headline"]),
-    lead(hm["hero"]["intro"]),
-    buttons([(hm["hero"]["primaryButton"], "#visit"), (hm["hero"]["secondaryButton"], "/about/")]),
-    spacer(16),
-    detail_rows(hm["visit"]["details"]),
-    spacer(32),
-    wide("\n".join([
-        eyebrow(hm["visit"]["eyebrow"]),
-        f'<!-- wp:heading {{"level":2,"anchor":"visit"}} -->\n<h2 class="wp-block-heading" id="visit">{lines(hm["visit"]["headline"])}</h2>\n<!-- /wp:heading -->',
-        lead(hm["visit"]["lead"]),
-        buttons([(hm["visit"]["link"], CT)]),
-    ]), bg="#f4f0e6"),
-    group("\n".join([eyebrow(hm["story"]["eyebrow"], "#e8c779"), h(2, hm["story"]["headline"]), p(hm["story"]["text"]), buttons([(hm["story"]["link"], "/about/")])]), bg="#182820"),
-    wide("\n".join([
-        eyebrow(hm["nextSteps"]["eyebrow"]), h(2, hm["nextSteps"]["headline"]),
-        columns(["\n".join([h(3, c["title"]), p(c["text"]), buttons([("Go", "/" + c["href"].replace(".html", "") + "/")])]) for c in hm["nextSteps"]["cards"]]),
+    first_row("\n".join([
+        eyebrow(hm["hero"]["eyebrow"]),
+        big_heading(hm["hero"]["headline"]),
+        lead(hm["hero"]["intro"]),
+        cbuttons([(hm["hero"]["primaryButton"], "#visit")], GOLD, INK).replace("</div>\n<!-- /wp:buttons -->",
+            '<!-- wp:button -->\n<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/about/">' + inline(hm["hero"]["secondaryButton"]) + '</a></div>\n<!-- /wp:button -->\n</div>\n<!-- /wp:buttons -->'),
     ])),
+    spacer(24),
+
+    # Band 1: when / where / what to expect, navy
+    band(columns([
+        "\n".join([eyebrow(row["label"], GOLD), cp(row["text"], WHITE, "1.15rem")]) for row in d
+    ]), NAVY, WHITE, pad="40px"),
+
+    # Band 2: a simple Sunday, warm sand
+    band("\n".join([
+        eyebrow(hm["visit"]["eyebrow"]),
+        f'<!-- wp:heading {{"level":2,"anchor":"visit","style":{{"color":{{"text":"{INK}"}}}}}} -->\n<h2 class="wp-block-heading has-text-color" id="visit" style="color:{INK}">{lines(hm["visit"]["headline"])}</h2>\n<!-- /wp:heading -->',
+        cp(hm["visit"]["lead"], INK, "1.15rem"),
+        cbuttons([(hm["visit"]["link"], CT)], NAVY, WHITE),
+    ]), SAND, INK),
+
+    # Band 3: our next chapter, navy with gold
+    band("\n".join([
+        eyebrow(hm["story"]["eyebrow"], GOLD),
+        ch(2, hm["story"]["headline"], WHITE),
+        cp(hm["story"]["text"], "#dbe6f1", "1.1rem"),
+        cbuttons([(hm["story"]["link"], "/about/")], GOLD, INK),
+    ]), NAVY, WHITE),
+
+    # Band 4: next steps, pale blue with white cards
+    band("\n".join([
+        eyebrow(hm["nextSteps"]["eyebrow"]),
+        ch(2, hm["nextSteps"]["headline"], INK),
+        columns([card("\n".join([
+            ch(3, c["title"], INK), cp(c["text"], "#3d5670"),
+            cbuttons([("Go", "/" + c["href"].replace(".html", "") + "/")], NAVY, WHITE),
+        ])) for c in hm["nextSteps"]["cards"]]),
+    ]), SKY, INK),
 ]
 write("home.html", home, hm["hero"])
-
-# ---------------- Home (compact) ----------------
-# For themes with a full-height side column: everything fits in one row beside the image.
-home_compact = [
-    eyebrow(hm["hero"]["eyebrow"]),
-    big_heading(hm["hero"]["headline"]),
-    lead(hm["hero"]["intro"]),
-    buttons([(hm["hero"]["primaryButton"], "/connect/"), (hm["hero"]["secondaryButton"], "/about/")]),
-    separator(),
-    detail_rows(hm["visit"]["details"]),
-    separator(),
-    eyebrow(hm["nextSteps"]["eyebrow"]),
-    buttons([(c["title"], "/" + c["href"].replace(".html", "") + "/") for c in hm["nextSteps"]["cards"]]),
-]
-write("home-compact.html", home_compact, hm["hero"])
 
 # ---------------- About ----------------
 ab = content["about"]
@@ -251,7 +303,6 @@ One file per page, generated from `data/content.json` and `data/staff.json`. Eac
 | Page title | File           | Page link (slug) |
 | ---------- | -------------- | ---------------- |
 | Home       | `home.html`    | set as homepage under Settings → Reading |
-| Home, short version | `home-compact.html` | use instead of `home.html` when the theme keeps a side image column for the whole page |
 | About      | `about.html`   | `about`          |
 | Staff      | `staff.html`   | `staff`          |
 | Beliefs    | `beliefs.html` | `beliefs`        |
@@ -268,7 +319,7 @@ These are built to work with the theme's normal page layout rather than against 
 
 - The theme prints the **page title** as the big heading, so the files do not repeat it. Title each page as in the table above. For the homepage a title such as `Welcome to Calvary Ellicott` reads better than `Home`.
 - The theme shows a **featured image** beside the top of the page. Set one on every page (right sidebar → Page → Featured image). A tall, portrait-shaped photo fits that slot best. The first few blocks in each file are sized to sit next to it.
-- Everything after that first row is wrapped in full-width groups so it runs underneath the image.
+- Everything after that first row is a coloured band with a negative right margin, which pulls it across under the image on desktop and does nothing on phones. If the bands stop short of the image's right edge, or poke past it, open the band in the editor (Styles → Dimensions → Margin → right) and change the `46%` near the end of the value up or down a little. The same number is `REACH` in `tools/generate-blocks.py`.
 
 ## Things to replace after pasting
 

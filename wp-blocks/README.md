@@ -12,7 +12,6 @@ One file per page, generated from `data/content.json` and `data/staff.json`. Eac
 | Page title | File           | Page link (slug) |
 | ---------- | -------------- | ---------------- |
 | Home       | `home.html`    | set as homepage under Settings → Reading |
-| Home, short version | `home-compact.html` | use instead of `home.html` when the theme keeps a side image column for the whole page |
 | About      | `about.html`   | `about`          |
 | Staff      | `staff.html`   | `staff`          |
 | Beliefs    | `beliefs.html` | `beliefs`        |
@@ -29,7 +28,7 @@ These are built to work with the theme's normal page layout rather than against 
 
 - The theme prints the **page title** as the big heading, so the files do not repeat it. Title each page as in the table above. For the homepage a title such as `Welcome to Calvary Ellicott` reads better than `Home`.
 - The theme shows a **featured image** beside the top of the page. Set one on every page (right sidebar → Page → Featured image). A tall, portrait-shaped photo fits that slot best. The first few blocks in each file are sized to sit next to it.
-- Everything after that first row is wrapped in full-width groups so it runs underneath the image.
+- Everything after that first row is a coloured band with a negative right margin, which pulls it across under the image on desktop and does nothing on phones. If the bands stop short of the image's right edge, or poke past it, open the band in the editor (Styles → Dimensions → Margin → right) and change the `46%` near the end of the value up or down a little. The same number is `REACH` in `tools/generate-blocks.py`.
 
 ## Things to replace after pasting
 
