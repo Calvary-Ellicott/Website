@@ -22,6 +22,14 @@ One file per page, generated from `data/content.json` and `data/staff.json`. Eac
 
 Buttons between pages use those slugs (`/about/`, `/events/`, and so on), so keep them.
 
+## How these pages fit the theme
+
+These are built to work with the theme's normal page layout rather than against it. Leave the page template on its default.
+
+- The theme prints the **page title** as the big heading, so the files do not repeat it. Title each page as in the table above. For the homepage a title such as `Welcome to Calvary Ellicott` reads better than `Home`.
+- The theme shows a **featured image** beside the top of the page. Set one on every page (right sidebar → Page → Featured image). A tall, portrait-shaped photo fits that slot best. The first few blocks in each file are sized to sit next to it.
+- Everything after that first row is wrapped in full-width groups so it runs underneath the image.
+
 ## Things to replace after pasting
 
 - Every link that says `https://REPLACE-WITH-CHURCHTRAC-LINK` needs the real public ChurchTrac form or calendar URL. In the visual editor, click the button → the link icon → paste the address.

@@ -81,31 +81,52 @@ def write(name, blocks, banner):
         f.write(body + "\n")
     print("wrote", name)
 
+def big_heading(value):
+    return ('<!-- wp:heading {"level":2,"style":{"typography":{"fontSize":"clamp(2.4rem, 5.5vw, 4.2rem)","lineHeight":"1.02"}}} -->\n'
+            f'<h2 class="wp-block-heading" style="font-size:clamp(2.4rem, 5.5vw, 4.2rem);line-height:1.02">{lines(value)}</h2>\n<!-- /wp:heading -->')
+
+def lead(text):
+    return ('<!-- wp:paragraph {"style":{"typography":{"fontSize":"1.2rem","lineHeight":"1.6"}}} -->\n'
+            f'<p style="font-size:1.2rem;line-height:1.6">{inline(text)}</p>\n<!-- /wp:paragraph -->')
+
+def wide(inner, bg=None):
+    """A full-width row for everything below the first row (which sits beside the theme's featured image)."""
+    color = f',"color":{{"background":"{bg}"}}' if bg else ""
+    cls = " has-background" if bg else ""
+    style = f"background-color:{bg};" if bg else ""
+    return (f'<!-- wp:group {{"align":"full","style":{{"spacing":{{"padding":{{"top":"48px","bottom":"48px","left":"32px","right":"32px"}}}}{color}}},"layout":{{"type":"constrained"}}}} -->\n'
+            f'<div class="wp-block-group alignfull{cls}" style="{style}padding:48px 32px">\n{inner}\n</div>\n<!-- /wp:group -->')
+
 # ---------------- Home ----------------
+# Row 1 sits beside the theme's featured image (set a portrait photo there).
+# Rows 2+ are full-width groups underneath it.
 hm = content["home"]
 home = [
-    cover("https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1900&q=85",
-          "\n".join([eyebrow(hm["hero"]["eyebrow"], "#e8c779"), h(1, hm["hero"]["headline"]), p(hm["hero"]["intro"]),
-                     buttons([(hm["hero"]["primaryButton"], "#visit"), (hm["hero"]["secondaryButton"], "/about/")]),
-                     p(f'**{site["serviceDay"]} worship · {site["serviceTime"]} · {site["addressLine1"]}**'.replace("**", ""))])),
-    f'<!-- wp:heading {{"level":2,"anchor":"visit"}} -->\n<h2 class="wp-block-heading" id="visit">{lines(hm["visit"]["headline"])}</h2>\n<!-- /wp:heading -->',
-    columns([
-        "\n".join([eyebrow(hm["visit"]["eyebrow"]), p(hm["visit"]["lead"]), buttons([(hm["visit"]["link"], CT)])]),
-        detail_rows(hm["visit"]["details"]),
-    ]),
-    separator(),
+    eyebrow(hm["hero"]["eyebrow"]),
+    big_heading(hm["hero"]["headline"]),
+    lead(hm["hero"]["intro"]),
+    buttons([(hm["hero"]["primaryButton"], "#visit"), (hm["hero"]["secondaryButton"], "/about/")]),
+    spacer(16),
+    detail_rows(hm["visit"]["details"]),
+    spacer(32),
+    wide("\n".join([
+        eyebrow(hm["visit"]["eyebrow"]),
+        f'<!-- wp:heading {{"level":2,"anchor":"visit"}} -->\n<h2 class="wp-block-heading" id="visit">{lines(hm["visit"]["headline"])}</h2>\n<!-- /wp:heading -->',
+        lead(hm["visit"]["lead"]),
+        buttons([(hm["visit"]["link"], CT)]),
+    ]), bg="#f4f0e6"),
     group("\n".join([eyebrow(hm["story"]["eyebrow"], "#e8c779"), h(2, hm["story"]["headline"]), p(hm["story"]["text"]), buttons([(hm["story"]["link"], "/about/")])]), bg="#182820"),
-    separator(),
-    eyebrow(hm["nextSteps"]["eyebrow"]), h(2, hm["nextSteps"]["headline"]),
-    columns(["\n".join([h(3, c["title"]), p(c["text"]), buttons([("Go", "/" + c["href"].replace(".html", "") + "/")])]) for c in hm["nextSteps"]["cards"]]),
+    wide("\n".join([
+        eyebrow(hm["nextSteps"]["eyebrow"]), h(2, hm["nextSteps"]["headline"]),
+        columns(["\n".join([h(3, c["title"]), p(c["text"]), buttons([("Go", "/" + c["href"].replace(".html", "") + "/")])]) for c in hm["nextSteps"]["cards"]]),
+    ])),
 ]
 write("home.html", home, hm["hero"])
 
 # ---------------- About ----------------
 ab = content["about"]
 about = [
-    spacer(110),
-    eyebrow(ab["hero"]["eyebrow"]), h(1, ab["hero"]["headline"]), p(ab["hero"]["lead"]),
+    eyebrow(ab["hero"]["eyebrow"]), lead(ab["hero"]["lead"]),
     separator(),
     eyebrow(ab["story"]["eyebrow"]), h(2, ab["story"]["headline"]),
     "\n".join(p(t) for t in ab["story"]["paragraphs"]),
@@ -128,8 +149,7 @@ for person in staff:
     ]))
 cards.append("\n".join([eyebrow(st["invite"]["eyebrow"]), h(3, st["invite"]["headline"]), p(st["invite"]["text"]), buttons([(st["invite"]["link"], CT)])]))
 staff_page = [
-    spacer(110),
-    eyebrow(st["hero"]["eyebrow"]), h(1, st["hero"]["headline"]), p(st["hero"]["lead"]),
+    eyebrow(st["hero"]["eyebrow"]), lead(st["hero"]["lead"]),
     separator(),
     note("To add a person: copy one column below (from the Image block to the paragraph), paste it after the last one, and change the words. Click the empty image to upload their photo."),
     columns(cards),
@@ -139,8 +159,7 @@ write("staff.html", staff_page, st["hero"])
 # ---------------- Beliefs ----------------
 be = content["beliefs"]
 beliefs = [
-    spacer(110),
-    eyebrow(be["hero"]["eyebrow"]), h(1, be["hero"]["headline"]), p(be["hero"]["lead"]),
+    eyebrow(be["hero"]["eyebrow"]), lead(be["hero"]["lead"]),
     separator(),
     eyebrow(be["intro"]["eyebrow"]), h(2, be["intro"]["headline"]), p(be["intro"]["text"]),
     details(be["items"]),
@@ -150,8 +169,7 @@ write("beliefs.html", beliefs, be["hero"])
 # ---------------- Events ----------------
 ev = content["events"]
 events = [
-    spacer(110),
-    eyebrow(ev["hero"]["eyebrow"]), h(1, ev["hero"]["headline"]), p(ev["hero"]["lead"]),
+    eyebrow(ev["hero"]["eyebrow"]), lead(ev["hero"]["lead"]),
     separator(),
     eyebrow(ev["calendar"]["eyebrow"]), h(2, ev["calendar"]["headline"]),
     buttons([(ev["calendar"]["button"], CT)]),
@@ -163,8 +181,7 @@ write("events.html", events, ev["hero"])
 # ---------------- Bulletin ----------------
 bu = content["bulletin"]
 bulletin = [
-    spacer(110),
-    eyebrow(bu["hero"]["eyebrow"]), h(1, bu["hero"]["headline"]), p(bu["hero"]["lead"]),
+    eyebrow(bu["hero"]["eyebrow"]), lead(bu["hero"]["lead"]),
     separator(),
     note("Each week: add a File block at the top of the list below (type /file, upload the PDF), and put the Sunday date as the block's text. Older weeks stay underneath as the archive."),
     h(2, "This week"),
@@ -177,8 +194,7 @@ write("bulletin.html", bulletin, bu["hero"])
 # ---------------- Watch ----------------
 wa = content["watch"]
 watch = [
-    spacer(110),
-    eyebrow(wa["hero"]["eyebrow"]), h(1, wa["hero"]["headline"]), p(wa["hero"]["lead"]),
+    eyebrow(wa["hero"]["eyebrow"]), lead(wa["hero"]["lead"]),
     separator(),
     eyebrow(wa["live"]["eyebrow"]), h(2, wa["live"]["headline"]), p(wa["live"]["text"]),
     note("The box below is the BoxCast player. Replace the address in it with the src address from BoxCast's embed code. If nothing appears after saving, the site is stripping iframes; use a Button linking to the BoxCast channel page instead."),
@@ -197,8 +213,7 @@ write("watch.html", watch, wa["hero"])
 # ---------------- Connect ----------------
 co = content["connect"]
 connect = [
-    spacer(110),
-    eyebrow(co["hero"]["eyebrow"]), h(1, co["hero"]["headline"]), p(co["hero"]["lead"]),
+    eyebrow(co["hero"]["eyebrow"]), lead(co["hero"]["lead"]),
     separator(),
     columns([
         "\n".join([eyebrow(co["intro"]["eyebrow"]), h(2, co["intro"]["headline"]), p(co["intro"]["text"]), detail_rows(co["intro"]["details"])]),
@@ -230,6 +245,14 @@ One file per page, generated from `data/content.json` and `data/staff.json`. Eac
 | Connect    | `connect.html` | `connect`        |
 
 Buttons between pages use those slugs (`/about/`, `/events/`, and so on), so keep them.
+
+## How these pages fit the theme
+
+These are built to work with the theme's normal page layout rather than against it. Leave the page template on its default.
+
+- The theme prints the **page title** as the big heading, so the files do not repeat it. Title each page as in the table above. For the homepage a title such as `Welcome to Calvary Ellicott` reads better than `Home`.
+- The theme shows a **featured image** beside the top of the page. Set one on every page (right sidebar → Page → Featured image). A tall, portrait-shaped photo fits that slot best. The first few blocks in each file are sized to sit next to it.
+- Everything after that first row is wrapped in full-width groups so it runs underneath the image.
 
 ## Things to replace after pasting
 
