@@ -1,9 +1,9 @@
 <?php
 /**
  * One-click starter content: Appearance → Site setup.
- * Creates the standard pages with their templates, sample beliefs and staff,
- * the primary menu, and sets the homepage. Safe to run more than once; it skips
- * anything that already exists.
+ * Creates Home, Discover, Visit, and Learn with their templates, sample beliefs and
+ * staff, the menu (with a Church Connect link), and sets the homepage. Safe to run
+ * more than once; it skips anything that already exists.
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -26,8 +26,8 @@ function ce_setup_page() {
 		}
 		echo '</ul></div>';
 	}
-	echo '<p>This creates the standard pages (Home, About, Staff, Beliefs, Events, Bulletin, Watch, Connect), fills in the statement of faith and two placeholder staff cards, builds the menu, and sets the homepage. It skips anything that already exists, so it is safe to run again.</p>';
-	echo '<p>Afterwards, go to <strong>Appearance → Customize → Calvary Ellicott</strong> to enter the service time, address, ChurchTrac links, and the BoxCast embed.</p>';
+	echo '<p>This creates the four pages (Home, Discover, Visit, Learn), fills in the statement of faith and placeholder staff cards, builds the menu with a Church Connect link, and sets the homepage. It skips anything that already exists, so it is safe to run again.</p>';
+	echo '<p>Afterwards, go to <strong>Appearance → Customize → Calvary Ellicott</strong> to check the service time, address, Church Connect address, and the BoxCast embed.</p>';
 	echo '<form method="post">';
 	wp_nonce_field( 'ce_setup' );
 	submit_button( 'Create starter content', 'primary', 'ce_setup' );
@@ -69,43 +69,31 @@ function ce_run_setup() {
 	$pages = array(
 		array( 'home', 'Home', '', '', 'Calvary Ellicott is a church family in Ellicott, Colorado.', '', 0 ),
 		array(
-			'about',
-			'About',
-			'page-templates/about.php',
-			'About us',
-			'A church family rooted in Ellicott, grateful for our history, and hopeful about what God is building here.',
+			'discover',
+			'Discover',
+			'page-templates/discover.php',
+			'Who we are',
+			'Our story, what we believe, and the people who serve here.',
 			"<!-- wp:paragraph -->\n<p>Our congregation is prayerfully preparing for a new season as a locally led church serving Ellicott and the surrounding plains. While our name and organizational relationship may be changing, our foundation is not: Jesus Christ, the authority of Scripture, and the call to make disciples.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>We’re grateful for our history with Rocky Mountain Calvary and hopeful about what God is building here. We’ll share formal updates with clarity as decisions are finalized.</p>\n<!-- /wp:paragraph -->",
 			1,
 		),
-		array( 'staff', 'Staff', 'page-templates/staff.php', 'People who serve', 'Our leaders are here to teach faithfully, care personally, and equip every person for ministry.', '', 2 ),
 		array(
-			'beliefs',
-			'Beliefs',
-			'page-templates/beliefs.php',
-			'What we believe',
-			'We hold to the historic Christian faith and seek to live it with conviction, humility, and love.',
-			"<!-- wp:paragraph -->\n<p>These convictions shape how we worship, teach, and care for one another.</p>\n<!-- /wp:paragraph -->",
-			3,
+			'visit',
+			'Visit',
+			'page-templates/visit.php',
+			'Plan your Sunday',
+			'When we meet, where to find us, and what to expect on your first visit.',
+			"<!-- wp:paragraph -->\n<p>Whether church is familiar or completely new, we want your first visit to feel easy. Expect genuine people, worship, age-appropriate care for children, and practical teaching through the Bible. Come as you are; there is no dress code and no pressure.</p>\n<!-- /wp:paragraph -->",
+			2,
 		),
-		array( 'events', 'Events', 'page-templates/events.php', 'Life together', 'Sunday worship, studies, and gatherings for every generation. Registration happens right on the calendar.', '', 4 ),
-		array( 'bulletin', 'Bulletin', 'page-templates/bulletin.php', 'This week', 'Announcements, the order of service, and ways to get involved this week.', '', 5 ),
 		array(
-			'watch',
-			'Watch',
-			'page-templates/watch.php',
-			'Watch online',
-			'Can’t make it in person? Worship with us from home.',
+			'learn',
+			'Learn',
+			'page-templates/learn.php',
+			'Grow with us',
+			'Watch the livestream, follow along with sermon notes, and catch up on the weekly bulletin.',
 			"<!-- wp:paragraph -->\n<p>Download this week’s handout to follow along, and check back after the service for the pastor’s full notes.</p>\n<!-- /wp:paragraph -->",
-			6,
-		),
-		array(
-			'connect',
-			'Connect',
-			'page-templates/connect.php',
-			'Your next step',
-			'Plan a visit, ask for prayer, find a group, or learn where you can serve.',
-			"<!-- wp:paragraph -->\n<p>Each option opens a secure ChurchTrac form. If you’d rather talk in person, find us Sunday morning.</p>\n<!-- /wp:paragraph -->",
-			7,
+			3,
 		),
 	);
 
@@ -140,20 +128,21 @@ function ce_run_setup() {
 
 	if ( ! get_posts( array( 'post_type' => 'ce_staff', 'posts_per_page' => 1, 'post_status' => 'any', 'fields' => 'ids' ) ) ) {
 		$staff = array(
-			array( 'Pastor name', 'Lead Pastor', 'A short paragraph about the pastor, their family, and their heart for the Ellicott community.' ),
-			array( 'Staff member name', 'Worship & Ministry', 'A short paragraph about this staff member and the ministry area they serve.' ),
+			array( 'Dr. Dan Hooker', 'Pastor', 'A short paragraph about Pastor Dan, his family, and his heart for the Ellicott community.' ),
+			array( 'Don Drury', 'Assistant Pastor', 'A short paragraph about Pastor Don and the areas of ministry he serves.' ),
+			array( 'Staff member name', 'Role or ministry', 'A short paragraph about this staff member and the ministry area they serve.' ),
 		);
 		foreach ( $staff as $i => $s ) {
 			$id = wp_insert_post( array( 'post_type' => 'ce_staff', 'post_status' => 'publish', 'post_title' => $s[0], 'post_content' => $s[2], 'menu_order' => $i + 1 ) );
 			update_post_meta( $id, '_ce_role', $s[1] );
 		}
-		$done[] = 'Added two placeholder staff cards';
+		$done[] = 'Added three staff cards (two named, one placeholder)';
 	}
 
 	if ( ! has_nav_menu( 'primary' ) ) {
 		$menu_id = wp_create_nav_menu( 'Primary' );
 		if ( ! is_wp_error( $menu_id ) ) {
-			foreach ( array( 'about', 'staff', 'beliefs', 'events', 'bulletin', 'watch', 'connect' ) as $i => $slug ) {
+			foreach ( array( 'discover', 'visit', 'learn' ) as $i => $slug ) {
 				wp_update_nav_menu_item(
 					$menu_id,
 					0,
@@ -163,15 +152,27 @@ function ce_run_setup() {
 						'menu-item-type'      => 'post_type',
 						'menu-item-status'    => 'publish',
 						'menu-item-position'  => $i + 1,
-						'menu-item-classes'   => 'connect' === $slug ? 'nav-cta' : '',
 					)
 				);
 			}
+			wp_update_nav_menu_item(
+				$menu_id,
+				0,
+				array(
+					'menu-item-title'    => ce_opt( 'connect_label' ),
+					'menu-item-url'      => ce_opt( 'connect_url' ),
+					'menu-item-type'     => 'custom',
+					'menu-item-status'   => 'publish',
+					'menu-item-position' => 4,
+					'menu-item-classes'  => 'nav-cta',
+					'menu-item-target'   => '_blank',
+				)
+			);
 			$locations            = get_theme_mod( 'nav_menu_locations', array() );
 			$locations['primary'] = $menu_id;
 			$locations['footer']  = $menu_id;
 			set_theme_mod( 'nav_menu_locations', $locations );
-			$done[] = 'Built the navigation menu';
+			$done[] = 'Built the navigation menu (Discover, Visit, Learn, Church Connect)';
 		}
 	}
 

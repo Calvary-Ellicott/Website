@@ -12,7 +12,7 @@ If anything goes wrong at any point, nothing is lost. Stop and ask Scott. It is 
 
 1. Scott will create a login for you and email you a link to set your password. Open it, choose a password, and write it down somewhere safe.
 2. To sign in later, go to the website address followed by **/wp-admin**, for example `calvaryellicott.org/wp-admin`. Bookmark that page.
-3. After signing in you see the **Dashboard**. The menu down the left side is where everything lives. The items you will use are **Bulletins**, **Sermons**, **Alerts**, **Staff**, and **Pages**.
+3. After signing in you see the **Dashboard**. The menu down the left side is where everything lives. The items you will use are **Bulletins**, **Sermons**, **Alerts**, **Staff**, and **Pages**. The website itself has only four pages: Home, Discover, Visit, and Learn. Everything else (events, sign-ups, groups, giving) happens in Church Connect, which has its own screens.
 
 That is the whole setup. There is nothing to install.
 
@@ -43,7 +43,7 @@ If they ask for a change, they may fix it themselves or ask you to. To fix it yo
 4. On the right, set the date to the Sunday.
 5. Click **Submit for Review**.
 
-The Bulletin page always shows the newest one and lists the older ones underneath.
+The Learn page always shows the newest one and lists the older ones underneath.
 
 ### Post sermon notes
 
@@ -53,7 +53,7 @@ The Bulletin page always shows the newest one and lists the older ones underneat
 4. Set the date to the Sunday and click **Submit for Review**.
 5. After the service, open the same sermon from **Sermons**, add the notes with the second **Choose PDF** button, and click **Submit for Review** again.
 
-The Watch page shows this week's files as buttons and says "notes will be posted after the service" until they are added.
+The Learn page shows this week's files as buttons and says "notes will be posted after the service" until they are added.
 
 ### Put up an announcement banner (snow closure, schedule change)
 
@@ -76,12 +76,12 @@ The banner appears at the top of every page once approved. **To take it down**, 
 
 ### Change the words on a page
 
-1. Left menu: **Pages**. Click the page, for example **About**.
+1. Left menu: **Pages**. Click the page, for example **Discover**.
 2. Click into the text and edit it like a document.
 3. The sentence under the big title at the top of the page is in the **Excerpt** box on the right. The small line above the title is in the **Page banner** box.
 4. Click **Submit for Review**.
 
-The homepage wording, the service time, the address, and the ChurchTrac links are in a different place: **Appearance → Customize → Calvary Ellicott**. That screen is normally handled by Scott, so ask before changing it.
+The homepage wording, the service time, the address, and the Church Connect link are in a different place: **Appearance → Customize → Calvary Ellicott**. That screen is normally handled by Scott, so ask before changing it.
 
 ---
 

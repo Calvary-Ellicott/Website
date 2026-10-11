@@ -3,7 +3,7 @@ Run: python tools/generate-blocks.py   ->  writes wp-blocks/<page>.html (paste i
 import json, os, re, html
 
 ROOT = r"C:\Users\primo\Documents\Calvary Ellicott\Website"
-OUT = os.path.join(ROOT, "wp-blocks")
+OUT = os.path.join(ROOT, "archive", "wp-blocks")
 os.makedirs(OUT, exist_ok=True)
 
 content = json.load(open(os.path.join(ROOT, "data", "content.json"), encoding="utf-8"))

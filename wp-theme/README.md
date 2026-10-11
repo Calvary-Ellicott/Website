@@ -6,14 +6,14 @@ The static site's design as a WordPress theme, with editing screens for the thin
 
 | Screen (left menu)          | What it is                                                                           |
 | --------------------------- | ------------------------------------------------------------------------------------ |
-| **Pages**                   | Home, About, Staff, Beliefs, Events, Bulletin, Watch, Connect. Each has a "Page banner" box for the small line above the title; the excerpt is the sentence under the title. |
-| **Staff**                   | One entry per person. Name is the title, bio is the text, photo is the featured image, role and email are in the box below. Order with the Order field. |
-| **Beliefs**                 | Statement of faith items, one per entry, in menu order.                              |
-| **Bulletins**               | One per week. Set the publish date to the Sunday, attach the PDF.                    |
-| **Sermons**                 | One per week. Set the publish date to the Sunday, attach the handout before service and the notes after. |
+| **Pages**                   | Home, Discover, Visit, Learn. That is the whole public site; everything people *do* (forms, events, groups, serving, giving) happens in ChurchTrac's Church Connect, which the site links to. Each page has a "Page banner" box for the small line above the title; the excerpt is the sentence under the title. |
+| **Staff**                   | One entry per person, shown on Discover. Name is the title, bio is the text, photo is the featured image, role and email are in the box below. Order with the Order field. |
+| **Beliefs**                 | Statement of faith items, one per entry, in menu order. Shown on Discover.           |
+| **Bulletins**               | One per week, shown on Learn. Set the publish date to the Sunday, attach the PDF.    |
+| **Sermons**                 | One per week, shown on Learn. Set the publish date to the Sunday, attach the handout before service and the notes after. |
 | **Alerts**                  | Publish one to show a banner on every page. Draft it to hide it, or set an expiry date. |
-| **Appearance → Customize**  | Under "Calvary Ellicott": service time and address, homepage wording and photos, ChurchTrac links, BoxCast embed, wording for the Staff invite card and empty states. |
-| **Appearance → Site setup** | One button that creates the standard pages, sample beliefs and staff, the menu, and sets the homepage. Safe to run more than once. |
+| **Appearance → Customize**  | Under "Calvary Ellicott": service time and address, homepage wording and photos, the Church Connect address (and optional deeper links), BoxCast embed, beliefs intro, invite card, and empty-state wording. |
+| **Appearance → Site setup** | One button that creates the four pages, sample beliefs and staff, the menu with a Church Connect link, and sets the homepage. Safe to run more than once. |
 
 Helpers never see any of the code. They work in these screens; the theme is the only thing that comes from this repository. See `docs/helper-guide.md` for the helper-facing instructions.
 
@@ -32,7 +32,8 @@ Bump the `Version:` line in `calvary-ellicott/style.css` when you make a change 
 2. Click **Add New Theme** (or **Install theme**), then **Upload Theme**, choose `calvary-ellicott.zip`, and click **Install Now**. WordPress.com may take a minute the first time; it moves the site to its plugin-capable hosting.
 3. Click **Activate**.
 4. **Appearance → Site setup → Create starter content**.
-5. **Appearance → Customize → Calvary Ellicott**: enter the service time, address, ChurchTrac links, and BoxCast embed. Click **Publish**.
+5. **Appearance → Customize → Calvary Ellicott**: check the service time and address, confirm the Church Connect address (`https://connect.calvaryellicott.org`), and paste the BoxCast embed. Click **Publish**.
+   Pages built earlier by hand (from `archive/wp-blocks/`) can be moved to Trash once the new ones look right. The theme finds pages by their template, not their name, so leftovers do no harm.
 6. **Settings → Permalinks**: choose **Post name**, save.
 7. When ready, switch the site from **Coming soon** to public under **Settings → General → Privacy** (or the Launch button on the site card).
 

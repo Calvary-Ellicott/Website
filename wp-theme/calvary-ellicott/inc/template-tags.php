@@ -26,14 +26,30 @@ function ce_https_url( $url ) {
 }
 
 /**
- * Public ChurchTrac URL for a key such as "visit" or "calendarEmbed".
+ * Church Connect (ChurchTrac) address. Everything people do, from forms to events to
+ * giving, lives there. $key picks a deeper link (events, groups, serve, give, forms) if
+ * one is set in the Customizer; otherwise the main Church Connect address is used.
  */
-function ce_churchtrac_url( $key ) {
-	return ce_https_url( ce_opt( 'churchtrac_' . $key ) );
+function ce_connect_url( $key = '' ) {
+	if ( $key ) {
+		$specific = ce_https_url( ce_opt( 'connect_' . $key . '_url' ) );
+		if ( $specific ) {
+			return $specific;
+		}
+	}
+	return ce_https_url( ce_opt( 'connect_url' ) );
 }
 
 /**
- * Find the page that uses a given theme template, e.g. "page-templates/connect.php".
+ * Google Maps directions link for the church address.
+ */
+function ce_maps_url() {
+	$address = ce_opt( 'address_1' ) . ' ' . ce_opt( 'address_2' );
+	return 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode( $address );
+}
+
+/**
+ * Find the page that uses a given theme template, e.g. "page-templates/visit.php".
  */
 function ce_page_by_template( $template ) {
 	static $cache = array();
@@ -59,17 +75,16 @@ function ce_template_url( $template, $fallback = '' ) {
 }
 
 /**
- * A ChurchTrac link. With a URL it opens in a new tab; without one it sends the
- * visitor to the Connect page with a friendly note.
+ * A link into Church Connect, opened in a new tab. If no address is configured at all,
+ * the link points at the Visit page so nothing on the site dead-ends.
  */
-function ce_churchtrac_link( $key, $label, $class = '', $arrow = true ) {
-	$url  = ce_churchtrac_url( $key );
+function ce_connect_link( $key, $label, $class = '', $arrow = true ) {
+	$url  = ce_connect_url( $key );
 	$text = esc_html( $label ) . ( $arrow ? ' <span>→</span>' : '' );
 	if ( $url ) {
 		return sprintf( '<a class="%s" href="%s" target="_blank" rel="noopener noreferrer">%s</a>', esc_attr( $class ), $url, $text );
 	}
-	$connect = add_query_arg( 'soon', $label, ce_template_url( 'page-templates/connect.php' ) ) . '#connect';
-	return sprintf( '<a class="%s" href="%s">%s</a>', esc_attr( $class ), esc_url( $connect ), $text );
+	return sprintf( '<a class="%s" href="%s">%s</a>', esc_attr( $class ), esc_url( ce_template_url( 'page-templates/visit.php' ) ), $text );
 }
 
 /**
@@ -183,26 +198,20 @@ function ce_alert_banner() {
  */
 function ce_nav_fallback( $args ) {
 	$order = array(
-		'page-templates/about.php'    => __( 'About', 'calvary-ellicott' ),
-		'page-templates/staff.php'    => __( 'Staff', 'calvary-ellicott' ),
-		'page-templates/beliefs.php'  => __( 'Beliefs', 'calvary-ellicott' ),
-		'page-templates/events.php'   => __( 'Events', 'calvary-ellicott' ),
-		'page-templates/bulletin.php' => __( 'Bulletin', 'calvary-ellicott' ),
-		'page-templates/watch.php'    => __( 'Watch', 'calvary-ellicott' ),
-		'page-templates/connect.php'  => __( 'Connect', 'calvary-ellicott' ),
+		'page-templates/discover.php' => __( 'Discover', 'calvary-ellicott' ),
+		'page-templates/visit.php'    => __( 'Visit', 'calvary-ellicott' ),
+		'page-templates/learn.php'    => __( 'Learn', 'calvary-ellicott' ),
 	);
-	$items = array();
 	foreach ( $order as $template => $label ) {
 		$id = ce_page_by_template( $template );
 		if ( $id ) {
-			$items[] = array( 'url' => get_permalink( $id ), 'label' => get_the_title( $id ), 'current' => is_page( $id ) );
+			printf( '<a href="%s"%s>%s</a>', esc_url( get_permalink( $id ) ), is_page( $id ) ? ' aria-current="page"' : '', esc_html( get_the_title( $id ) ) );
 		}
 	}
-	$last = count( $items ) - 1;
-	foreach ( $items as $i => $item ) {
-		$class = ( $i === $last && ! empty( $args['ce_cta_last'] ) ) ? ' class="nav-cta"' : '';
-		$aria  = $item['current'] ? ' aria-current="page"' : '';
-		printf( '<a href="%s"%s%s>%s</a>', esc_url( $item['url'] ), $class, $aria, esc_html( $item['label'] ) );
+	$connect = ce_connect_url();
+	if ( $connect ) {
+		$class = ! empty( $args['ce_cta_last'] ) ? ' class="nav-cta"' : '';
+		printf( '<a href="%s"%s target="_blank" rel="noopener noreferrer">%s</a>', $connect, $class, esc_html( ce_opt( 'connect_label' ) ) );
 	}
 }
 
