@@ -45,7 +45,7 @@ function ce_customizer_defaults() {
 		'connect_headline'       => 'Events, groups, giving, and more.',
 		'connect_text'           => 'Church Connect is where you register for events, join a group, sign up to serve, give, and keep your family’s information up to date. Create an account once and everything is in one place.',
 		'connect_button'         => 'Open Church Connect',
-		'calendar_embed'         => 'https://www.churchtrac.com/public_calendar?ui=609F3F85&view=listMonth',
+		'calendar_embed'         => 'https://www.churchtrac.com/public_calendar?ui=609F3F85',
 		'calendar_eyebrow'       => 'Life together',
 		'calendar_headline'      => 'Upcoming events',
 		'calendar_text'          => 'Tap an event for details. Registration and sign-ups happen in Church Connect.',
