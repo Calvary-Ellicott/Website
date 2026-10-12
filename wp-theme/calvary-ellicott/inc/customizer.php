@@ -45,6 +45,10 @@ function ce_customizer_defaults() {
 		'connect_headline'       => 'Events, groups, giving, and more.',
 		'connect_text'           => 'Church Connect is where you register for events, join a group, sign up to serve, give, and keep your family’s information up to date. Create an account once and everything is in one place.',
 		'connect_button'         => 'Open Church Connect',
+		'calendar_embed'         => 'https://www.churchtrac.com/public_calendar?ui=609F3F85&view=listMonth',
+		'calendar_eyebrow'       => 'Life together',
+		'calendar_headline'      => 'Upcoming events',
+		'calendar_text'          => 'Tap an event for details. Registration and sign-ups happen in Church Connect.',
 
 		'beliefs_eyebrow'        => 'What we believe',
 		'beliefs_headline'       => 'Historic faith. Everyday hope.',
@@ -125,6 +129,10 @@ function ce_customize_register( $wp_customize ) {
 		'connect_headline'       => array( 'ce_church', 'Homepage band: headline', 'text' ),
 		'connect_text'           => array( 'ce_church', 'Homepage band: paragraph', 'textarea' ),
 		'connect_button'         => array( 'ce_church', 'Homepage band: button label', 'text' ),
+		'calendar_embed'         => array( 'ce_church', 'Public calendar embed address (from ChurchTrac → Events → Options → Embed Calendar). Blank hides the calendar on the homepage. Add &view=listMonth for a list instead of a month grid.', 'url' ),
+		'calendar_eyebrow'       => array( 'ce_church', 'Calendar section: small line', 'text' ),
+		'calendar_headline'      => array( 'ce_church', 'Calendar section: headline', 'text' ),
+		'calendar_text'          => array( 'ce_church', 'Calendar section: sentence', 'text' ),
 
 		'boxcast_embed'          => array( 'ce_watch', 'BoxCast embed URL (the src="…" address from the embed code)', 'url' ),
 		'boxcast_embed_code'     => array( 'ce_watch', 'Or paste BoxCast’s whole embed code here (used instead of the address above if filled in)', 'textarea' ),
