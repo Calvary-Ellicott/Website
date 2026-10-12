@@ -23,6 +23,10 @@ while ( have_posts() ) :
 		</div>
 		<div class="watch-shell">
 			<?php
+			$embed_code = ce_opt( 'boxcast_embed_code' );
+			if ( $embed_code ) {
+				echo $embed_code; // Admin-entered embed code from BoxCast, output as pasted.
+			} else {
 			ce_embed(
 				ce_opt( 'boxcast_embed' ),
 				__( 'Livestream', 'calvary-ellicott' ),
@@ -30,6 +34,7 @@ while ( have_posts() ) :
 				__( 'Our online service will appear here once the BoxCast link is added.', 'calvary-ellicott' ),
 				true
 			);
+			}
 			?>
 		</div>
 	</section>

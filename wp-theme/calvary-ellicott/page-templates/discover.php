@@ -28,7 +28,7 @@ while ( have_posts() ) :
 		</div>
 		<div class="belief-list">
 			<?php foreach ( $beliefs as $i => $belief ) : ?>
-				<details<?php echo 0 === $i ? ' open' : ''; ?>>
+				<details open>
 					<summary><span><?php printf( '%02d', $i + 1 ); ?></span><?php echo esc_html( $belief->post_title ); ?></summary>
 					<p><?php echo esc_html( wp_strip_all_tags( $belief->post_content ) ); ?></p>
 				</details>

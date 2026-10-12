@@ -51,6 +51,7 @@ function ce_customizer_defaults() {
 		'beliefs_text'           => 'We hold to the historic Christian faith and seek to live it with conviction, humility, and love.',
 
 		'boxcast_embed'          => '',
+		'boxcast_embed_code'     => '',
 		'watch_live_eyebrow'     => 'Livestream',
 		'watch_live_text'        => 'The stream starts a few minutes before the service. Past services are available in the player.',
 		'watch_notes_eyebrow'    => 'Follow along',
@@ -126,6 +127,7 @@ function ce_customize_register( $wp_customize ) {
 		'connect_button'         => array( 'ce_church', 'Homepage band: button label', 'text' ),
 
 		'boxcast_embed'          => array( 'ce_watch', 'BoxCast embed URL (the src="…" address from the embed code)', 'url' ),
+		'boxcast_embed_code'     => array( 'ce_watch', 'Or paste BoxCast’s whole embed code here (used instead of the address above if filled in)', 'textarea' ),
 		'watch_live_eyebrow'     => array( 'ce_watch', 'Livestream: small line', 'text' ),
 		'watch_live_text'        => array( 'ce_watch', 'Livestream: paragraph', 'textarea' ),
 		'watch_notes_eyebrow'    => array( 'ce_watch', 'Sermon notes: small line', 'text' ),
@@ -149,7 +151,9 @@ function ce_customize_register( $wp_customize ) {
 	foreach ( $fields as $key => $f ) {
 		list( $section, $label, $type ) = $f;
 		$sanitize = 'sanitize_text_field';
-		if ( 'textarea' === $type ) {
+		if ( 'boxcast_embed_code' === $key ) {
+			$sanitize = 'ce_sanitize_embed_code';
+		} elseif ( 'textarea' === $type ) {
 			$sanitize = 'sanitize_textarea_field';
 		} elseif ( 'url' === $type ) {
 			$sanitize = 'ce_sanitize_https';
@@ -171,4 +175,8 @@ add_action( 'customize_register', 'ce_customize_register' );
 function ce_sanitize_https( $value ) {
 	$value = trim( (string) $value );
 	return preg_match( '#^https://#i', $value ) ? esc_url_raw( $value ) : '';
+}
+
+function ce_sanitize_embed_code( $value ) {
+	return current_user_can( 'unfiltered_html' ) ? trim( (string) $value ) : '';
 }
