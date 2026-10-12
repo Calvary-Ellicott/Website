@@ -155,6 +155,10 @@ function ce_save_meta( $post_id ) {
 	if ( ! ce_meta_nonce_ok() || ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || ! current_user_can( 'edit_post', $post_id ) ) {
 		return;
 	}
+	// Only the post whose form was submitted; related pages touched during the same request are skipped.
+	if ( isset( $_POST['post_ID'] ) && (int) $_POST['post_ID'] !== (int) $post_id ) {
+		return;
+	}
 	foreach ( array( '_ce_eyebrow', '_ce_role', '_ce_link_text', '_ce_expires' ) as $key ) {
 		if ( isset( $_POST[ $key ] ) ) {
 			update_post_meta( $post_id, $key, sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) );
@@ -176,6 +180,47 @@ function ce_save_meta( $post_id ) {
 	}
 }
 add_action( 'save_post', 'ce_save_meta' );
+
+/* ---------- keep the pages that show these items fresh ---------- */
+
+/**
+ * Hosts cache pages for logged-out visitors and only purge a post's own address when it
+ * is saved. Staff and beliefs show on Discover, sermons and bulletins on Learn, alerts
+ * everywhere, so "touch" those pages too: updating them fires the host's normal purge.
+ */
+function ce_touch_related_pages( $post_id ) {
+	$type = get_post_type( $post_id );
+	if ( ! in_array( $type, CE_FORM_TYPES, true ) || ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) ) {
+		return;
+	}
+	$templates = array(
+		'ce_staff'    => array( 'page-templates/discover.php' ),
+		'ce_belief'   => array( 'page-templates/discover.php' ),
+		'ce_sermon'   => array( 'page-templates/learn.php' ),
+		'ce_bulletin' => array( 'page-templates/learn.php' ),
+		'ce_alert'    => array( 'page-templates/discover.php', 'page-templates/visit.php', 'page-templates/learn.php' ),
+	);
+	$ids = array();
+	foreach ( $templates[ $type ] as $template ) {
+		$id = ce_page_by_template( $template );
+		if ( $id ) {
+			$ids[] = $id;
+		}
+	}
+	if ( 'ce_alert' === $type && (int) get_option( 'page_on_front' ) ) {
+		$ids[] = (int) get_option( 'page_on_front' );
+	}
+	remove_action( 'save_post', 'ce_touch_related_pages', 20 );
+	foreach ( array_unique( $ids ) as $id ) {
+		clean_post_cache( $id );
+		wp_update_post( array( 'ID' => $id ) );
+	}
+	add_action( 'save_post', 'ce_touch_related_pages', 20 );
+}
+add_action( 'save_post', 'ce_touch_related_pages', 20 );
+add_action( 'trashed_post', 'ce_touch_related_pages' );
+add_action( 'untrashed_post', 'ce_touch_related_pages' );
+add_action( 'deleted_post', 'ce_touch_related_pages' );
 
 /* ---------- admin polish ---------- */
 
