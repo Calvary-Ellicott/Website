@@ -1,4 +1,4 @@
-/* "Choose PDF" buttons on bulletin and sermon edit screens. */
+/* "Choose PDF" and "Remove" buttons on the bulletin and sermon forms. */
 jQuery(function ($) {
   $(document).on("click", ".ce-pick-pdf", function (event) {
     event.preventDefault();
@@ -14,5 +14,9 @@ jQuery(function ($) {
       target.val(file.url).trigger("change");
     });
     frame.open();
+  });
+  $(document).on("click", ".ce-clear-pdf", function (event) {
+    event.preventDefault();
+    $("#" + $(this).data("target")).val("").trigger("change");
   });
 });

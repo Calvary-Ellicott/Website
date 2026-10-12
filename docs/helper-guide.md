@@ -29,7 +29,7 @@ Every kind of update follows the same four moves.
 
 If they ask for a change, they may fix it themselves or ask you to. To fix it yourself, open the item again from the left menu, make the change, and click **Submit for Review** again.
 
-**A note on dates.** Bulletins and sermons are filed by their Sunday. On the right side of the screen there is a **Publish** or **Date** line. Click it and set it to the Sunday the item belongs to, even if you are adding it on a Thursday.
+**A note on dates.** Bulletins and sermons are filed by their Sunday. Each form has a **Sunday** box at the top; it starts on the coming Sunday, so you can add things on a Thursday and they are filed correctly.
 
 ---
 
@@ -39,8 +39,8 @@ If they ask for a change, they may fix it themselves or ask you to. To fix it yo
 
 1. Left menu: **Bulletins → Add new**.
 2. Title: anything you like, for example `September 20 bulletin`.
-3. Under **Bulletin PDF**, click **Choose PDF**. Click **Upload files**, pick the PDF from your computer, then click **Use this file**.
-4. On the right, set the date to the Sunday.
+3. Check the **Sunday** box shows the right date.
+4. Next to **Bulletin PDF**, click **Choose PDF**. Click **Upload files**, pick the PDF from your computer, then click **Use this file**.
 5. Click **Submit for Review**.
 
 The Learn page always shows the newest one and lists the older ones underneath.
@@ -49,8 +49,8 @@ The Learn page always shows the newest one and lists the older ones underneath.
 
 1. Left menu: **Sermons → Add new**.
 2. Title: the sermon title or passage, for example `John 15:1–11`.
-3. Under **Sermon files**, use **Choose PDF** next to **Sermon handout** to add the handout. Leave **Pastor's notes** blank for now.
-4. Set the date to the Sunday and click **Submit for Review**.
+3. Check the **Sunday** box, then click **Choose PDF** next to **Sermon handout** to add the handout. Leave **Pastor's notes** blank for now.
+4. Click **Submit for Review**.
 5. After the service, open the same sermon from **Sermons**, add the notes with the second **Choose PDF** button, and click **Submit for Review** again.
 
 The Learn page shows this week's files as buttons and says "notes will be posted after the service" until they are added.
@@ -58,10 +58,9 @@ The Learn page shows this week's files as buttons and says "notes will be posted
 ### Put up an announcement banner (snow closure, schedule change)
 
 1. Left menu: **Alerts → Add new**.
-2. Title: a short name for your own reference, for example `Snow closure`.
-3. In the big text box, type the message people will see, for example `Sunday services are canceled this week due to snow. Stay safe and warm!`
-4. Under **Alert settings**, choose **Warning** (red) for closures or **Information** (gold) for ordinary notices. If you want the banner to disappear on its own, put a date in **Hide automatically after**.
-5. Click **Submit for Review**.
+2. Title: the message people will see, for example `Sunday services are canceled this week due to snow. Stay safe and warm!`
+3. Choose **Warning** (red) for closures or **Information** (gold) for ordinary notices. If you want the banner to disappear on its own, put a date in **Hide after**.
+4. Click **Submit for Review**.
 
 The banner appears at the top of every page once approved. **To take it down**, open the alert from **Alerts** and either change its date to yesterday or ask Scott to switch it to a draft.
 
@@ -69,10 +68,9 @@ The banner appears at the top of every page once approved. **To take it down**, 
 
 1. Left menu: **Staff → Add new** (or click a name to change it).
 2. Title: the person's name.
-3. Big text box: one or two sentences about them.
-4. Under **Staff details**, fill in the role (for example `Lead Pastor`) and, if wanted, an email address.
-5. On the right, click **Set featured image** and upload their photo. A landscape photo works best.
-6. Click **Submit for Review**.
+3. Fill in the role (for example `Pastor`), a one- or two-sentence bio, and, if wanted, an email address.
+4. On the right, in the **Photo** box, click **Add photo** and upload their picture. A landscape photo works best.
+5. Click **Submit for Review**.
 
 ### Change the words on a page
 

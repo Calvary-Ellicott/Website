@@ -46,7 +46,8 @@ while ( have_posts() ) :
 					$notes   = get_post_meta( $latest_sermon->ID, '_ce_notes', true );
 					?>
 					<p class="eyebrow"><?php echo esc_html( ce_long_date( $latest_sermon ) ); ?></p>
-					<?php if ( $latest_sermon->post_title ) : ?><h3 style="margin:0 0 14px;font-size:1.6rem"><?php echo esc_html( $latest_sermon->post_title ); ?></h3><?php endif; ?>
+					<?php if ( $latest_sermon->post_title ) : ?><h3 style="margin:0 0 10px;font-size:1.6rem"><?php echo esc_html( $latest_sermon->post_title ); ?></h3><?php endif; ?>
+					<?php if ( trim( $latest_sermon->post_content ) ) : ?><p style="margin:0 0 16px;color:var(--muted)"><?php echo esc_html( wp_strip_all_tags( $latest_sermon->post_content ) ); ?></p><?php endif; ?>
 					<div class="sermon-buttons">
 						<?php echo ce_pdf_link( $handout, __( 'Sermon handout', 'calvary-ellicott' ), 'button primary' ); ?>
 						<?php echo ce_pdf_link( $notes, __( 'Pastor’s notes', 'calvary-ellicott' ), 'button outline' ); ?>

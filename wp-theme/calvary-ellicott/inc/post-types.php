@@ -21,9 +21,9 @@ function ce_register_post_types() {
 	register_post_type(
 		'ce_staff',
 		$common + array(
-			'labels'      => ce_labels( 'Staff member', 'Staff' ),
+			'labels'      => ce_labels( 'Staff member', 'Staff' ) + array( 'featured_image' => 'Photo', 'set_featured_image' => 'Add photo', 'remove_featured_image' => 'Remove photo', 'use_featured_image' => 'Use as photo' ),
 			'menu_icon'   => 'dashicons-groups',
-			'supports'    => array( 'title', 'editor', 'thumbnail', 'page-attributes' ),
+			'supports'    => array( 'title', 'thumbnail', 'page-attributes' ),
 			'description' => 'People shown on the Staff page. Title is the name, the content is the bio, the featured image is the photo.',
 		)
 	);
@@ -33,7 +33,7 @@ function ce_register_post_types() {
 		$common + array(
 			'labels'      => ce_labels( 'Belief', 'Beliefs' ),
 			'menu_icon'   => 'dashicons-book-alt',
-			'supports'    => array( 'title', 'editor', 'page-attributes' ),
+			'supports'    => array( 'title', 'page-attributes' ),
 			'description' => 'Statement of faith items shown on the Beliefs page, in menu order.',
 		)
 	);
@@ -44,7 +44,7 @@ function ce_register_post_types() {
 			'labels'      => ce_labels( 'Bulletin', 'Bulletins' ),
 			'menu_icon'   => 'dashicons-media-document',
 			'supports'    => array( 'title' ),
-			'description' => 'Weekly bulletin PDFs. The post date is the Sunday it belongs to.',
+			'description' => 'Weekly bulletin PDFs, shown on the Learn page.',
 		)
 	);
 
@@ -53,8 +53,8 @@ function ce_register_post_types() {
 		$common + array(
 			'labels'      => ce_labels( 'Sermon', 'Sermons' ),
 			'menu_icon'   => 'dashicons-microphone',
-			'supports'    => array( 'title', 'editor' ),
-			'description' => 'Weekly sermon handout and pastor notes. The post date is the Sunday it belongs to.',
+			'supports'    => array( 'title' ),
+			'description' => 'Weekly sermon handout and pastor notes, shown on the Learn page.',
 		)
 	);
 
@@ -63,8 +63,8 @@ function ce_register_post_types() {
 		$common + array(
 			'labels'      => ce_labels( 'Alert', 'Alerts' ),
 			'menu_icon'   => 'dashicons-megaphone',
-			'supports'    => array( 'title', 'editor' ),
-			'description' => 'Site-wide banner. Publish to show it, move to draft to hide it, or set an expiry date.',
+			'supports'    => array( 'title' ),
+			'description' => 'Site-wide banner. The title is the message. Publish to show it, draft or trash to hide it, or set an expiry date.',
 		)
 	);
 }

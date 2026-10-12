@@ -7,11 +7,11 @@ The static site's design as a WordPress theme, with editing screens for the thin
 | Screen (left menu)          | What it is                                                                           |
 | --------------------------- | ------------------------------------------------------------------------------------ |
 | **Pages**                   | Home, Discover, Visit, Learn. That is the whole public site; everything people *do* (forms, events, groups, serving, giving) happens in ChurchTrac's Church Connect, which the site links to. Each page has a "Page banner" box for the small line above the title; the excerpt is the sentence under the title. |
-| **Staff**                   | One entry per person, shown on Discover. Name is the title, bio is the text, photo is the featured image, role and email are in the box below. Order with the Order field. |
+| **Staff**                   | One entry per person, shown on Discover. A single form: name, role, bio, email; photo in the box on the right. Order with the Order field. |
 | **Beliefs**                 | Statement of faith items, one per entry, in menu order. Shown on Discover.           |
-| **Bulletins**               | One per week, shown on Learn. Set the publish date to the Sunday, attach the PDF.    |
-| **Sermons**                 | One per week, shown on Learn. Set the publish date to the Sunday, attach the handout before service and the notes after. |
-| **Alerts**                  | Publish one to show a banner on every page. Draft it to hide it, or set an expiry date. |
+| **Bulletins**               | One per week, shown on Learn. A single form: Sunday date and the PDF.                |
+| **Sermons**                 | One per week, shown on Learn. A single form: Sunday date, handout (before service), notes (after), optional summary. |
+| **Alerts**                  | The title is the message. Publish one to show a banner on every page; draft or trash it to hide it, or set an expiry date. |
 | **Appearance → Customize**  | Under "Calvary Ellicott": service time and address, homepage wording and photos, the Church Connect address (and optional deeper links), BoxCast embed, beliefs intro, invite card, and empty-state wording. |
 | **Appearance → Site setup** | One button that creates the four pages, sample beliefs and staff, the menu with a Church Connect link, and sets the homepage. Safe to run more than once. |
 
