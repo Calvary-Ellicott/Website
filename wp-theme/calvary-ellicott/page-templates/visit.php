@@ -29,6 +29,20 @@ while ( have_posts() ) :
 		?>
 	</section>
 
+	<section id="map" class="section map-section">
+		<div class="section-heading">
+			<div>
+				<p class="eyebrow"><?php esc_html_e( 'Find us', 'calvary-ellicott' ); ?></p>
+				<h2><?php echo esc_html( ce_opt( 'address_1' ) ); ?></h2>
+				<p><?php echo esc_html( ce_opt( 'address_2' ) ); ?></p>
+			</div>
+			<a class="button primary" href="<?php echo esc_url( ce_maps_url() ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Open in Google Maps', 'calvary-ellicott' ); ?></a>
+		</div>
+		<div class="map-shell">
+			<iframe src="<?php echo esc_url( ce_map_embed_url() ); ?>" title="<?php echo esc_attr( sprintf( __( 'Map to %s', 'calvary-ellicott' ), get_bloginfo( 'name' ) ) ); ?>" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+		</div>
+	</section>
+
 	<section id="sunday" class="section story">
 		<div class="story-image" role="img" aria-label="<?php esc_attr_e( 'Open Colorado prairie beneath a wide sky', 'calvary-ellicott' ); ?>"></div>
 		<div class="story-copy">

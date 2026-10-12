@@ -23,6 +23,13 @@ containing "churchtrac", so the subdomain is `connect` instead (chosen 2026-10-1
 product name). The old
 WordPress.com zone had no MX or TXT records, so no email was affected. DNSSEC is not enabled yet.
 
+**Done 2026-10-11 (evening):** working. ChurchTrac's Cloudflare-API path failed with error D653 ("error retrieving
+your domain information from Cloudflare") even with a valid token (Zone:Read + DNS:Edit on the zone). What worked:
+in ChurchTrac's Domain Setup, choose the option saying the domain is **not** on Cloudflare and add the records it
+shows by hand. Result: `connect` is a **DNS-only** CNAME to a ChurchTrac CloudFront host (`dxxo0f0orhwmb.cloudfront.net`)
+and serves Church Connect over HTTPS. Keep it DNS only (CloudFront holds the certificate), and do not delete any
+underscore-prefixed validation CNAMEs ChurchTrac asked for. Root and `www` serve WordPress.
+
 Two facts shape the design:
 
 - WordPress.com **allows** moving nameservers to Cloudflare but asks that the records for the WordPress site stay

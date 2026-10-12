@@ -49,6 +49,19 @@ function ce_maps_url() {
 }
 
 /**
+ * Embeddable map. A Customizer value wins (paste the src from Google Maps → Share → Embed a map);
+ * otherwise the address is used directly, which needs no API key.
+ */
+function ce_map_embed_url() {
+	$custom = ce_https_url( ce_opt( 'map_embed' ) );
+	if ( $custom ) {
+		return $custom;
+	}
+	$address = ce_opt( 'address_1' ) . ', ' . ce_opt( 'address_2' );
+	return 'https://www.google.com/maps?q=' . rawurlencode( $address ) . '&output=embed';
+}
+
+/**
  * Find the page that uses a given theme template, e.g. "page-templates/visit.php".
  */
 function ce_page_by_template( $template ) {

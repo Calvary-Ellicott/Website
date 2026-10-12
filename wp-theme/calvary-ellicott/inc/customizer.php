@@ -12,6 +12,7 @@ function ce_customizer_defaults() {
 		'service_time'           => '9:30 AM',
 		'address_1'              => '2150 N. Ellicott Hwy',
 		'address_2'              => 'Calhan, CO 80808',
+		'map_embed'              => '',
 
 		'hero_eyebrow'           => 'A church family in Ellicott, Colorado',
 		'hero_line1'             => 'Rooted in truth.',
@@ -90,6 +91,7 @@ function ce_customize_register( $wp_customize ) {
 		'service_time'           => array( 'ce_site', 'Service time', 'text' ),
 		'address_1'              => array( 'ce_site', 'Address line 1', 'text' ),
 		'address_2'              => array( 'ce_site', 'Address line 2', 'text' ),
+		'map_embed'              => array( 'ce_site', 'Map embed address (optional). Leave blank to map the address above; or in Google Maps use Share, Embed a map, and paste the address inside src="..."', 'url' ),
 
 		'hero_eyebrow'           => array( 'ce_home', 'Small line above the headline', 'text' ),
 		'hero_line1'             => array( 'ce_home', 'Headline, first line', 'text' ),
