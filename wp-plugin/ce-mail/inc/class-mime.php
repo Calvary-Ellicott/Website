@@ -212,7 +212,7 @@ class CE_Mail_MIME {
 	 */
 	public static function safe_html( $html ) {
 		$html = preg_replace( '#<(script|iframe|object|embed|form|meta|link|base)[^>]*>.*?</\1>#is', '', $html );
-		$html = preg_replace( '#<(script|iframe|object|embed|form|meta|link|base)[^>]*/?>#i', '', $html );
+		$html = preg_replace( '#<(script|iframe|object|embed|form|meta|link|base)[^>]*/?[>]#i', '', $html );
 		$allowed = wp_kses_allowed_html( 'post' );
 		foreach ( array( 'table', 'tr', 'td', 'th', 'tbody', 'thead', 'div', 'span', 'p', 'a', 'img', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'blockquote', 'center', 'font', 'strong', 'em', 'b', 'i', 'u', 'hr', 'br', 'pre', 'code' ) as $tag ) {
 			if ( ! isset( $allowed[ $tag ] ) ) {
