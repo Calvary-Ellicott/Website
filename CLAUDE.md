@@ -34,6 +34,11 @@ Static multi-page church website for Calvary Ellicott (Ellicott/Calhan, Colorado
 - `docs/helper-guide.md` is written for the WordPress dashboard (Contributor role, Submit for Review). `update-guide.html` is regenerated from it by the scratch generator.
 - Content review on WordPress uses roles (Contributor/Editor) and optionally PublishPress; the GitHub two-approval rule now only covers theme code.
 
+## Mail portal plugin (wp-plugin/ce-mail)
+- Separate plugin at `/mail` for staff: Purelymail inboxes over IMAP/SMTP (per-user login stored encrypted in usermeta `ce_mail_mailbox`), marketing campaigns via Resend Broadcasts + one Audience, ChurchTrac CSV import into `wp_ce_mail_contacts`, campaigns in `wp_ce_mail_campaigns`. Preview mode with sample data when no mailbox / no Resend key. Docs: `docs/mail-portal.md`.
+- Structure: `ce-mail.php` bootstrap; `inc/class-imap.php` (own TLS IMAP client, literal-aware), `class-mime.php` (headers, multipart, decoding, safe HTML, message builder), `class-mailbox.php` (per-user glue, PHPMailer SMTP send + APPEND to Sent), `class-resend.php`, `class-store.php` (tables, CSV import), `class-rest.php` (namespace `ce-mail/v1`, capability `ce_mail_access`), `class-admin.php` (Mail → Settings), `class-frontend.php` (rewrite `^mail/?$`, renders `templates/app.php`), `assets/app.js` (vanilla SPA) + `app.css`.
+- Package with `tools/package-plugin.bat` → `wp-plugin/dist/ce-mail.zip` (gitignored). Never run on this machine (no PHP); first activation on WordPress.com is the real test. Outbound IMAP 993 / SMTP 465 from WordPress.com is unverified.
+
 ## History
 - Started as an RMCE Ellicott mockup with a Planning Center backend, then rebranded to Calvary Ellicott with ChurchTrac and a small Node admin panel.
 - On 2026-09-06 the Node server was removed, the site was made fully static, and it was moved into this fresh repo so the church org owns it outright.
