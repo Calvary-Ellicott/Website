@@ -29,12 +29,14 @@ $ver = CE_MAIL_VERSION;
 		<nav class="nav">
 			<p class="nav-label">Mail</p>
 			<ul id="folder-list"></ul>
+			<div id="marketing-nav" hidden>
 			<p class="nav-label">Marketing</p>
 			<ul>
 				<li><a href="#campaigns" data-view="campaigns">Campaigns</a></li>
 				<li><a href="#contacts" data-view="contacts">Contacts</a></li>
 				<li><a href="#import" data-view="import">Import from ChurchTrac</a></li>
 			</ul>
+			</div>
 			<p class="nav-label">Account</p>
 			<ul>
 				<li><a href="#settings" data-view="settings">Settings</a></li>

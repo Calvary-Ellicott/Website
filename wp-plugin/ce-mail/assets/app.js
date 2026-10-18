@@ -58,6 +58,7 @@
 
   /* ---------- navigation ---------- */
   function setView(view, extra) {
+    if (!state.me.marketing.enabled && ["campaigns", "campaign", "contacts", "import"].includes(view)) view = "inbox";
     state.view = view;
     $("#app").dataset.view = view;
     $("#app").dataset.menu = "";
@@ -385,7 +386,7 @@
     v.innerHTML = '<div class="topbar"><h1>Settings</h1></div><div class="pane">' +
       '<div class="card"><h2>Your mailbox</h2>' + (mb.linked ? '<p>Connected as <strong>' + esc(mb.email) + '</strong>. Your inbox, sent mail, and replies all use this account.</p><div class="row"><button class="button ghost danger" data-action="unlink">Disconnect</button><a class="button ghost" href="' + esc(CFG.webmail) + '" target="_blank" rel="noopener">Open in Purelymail</a></div>' :
         '<p class="help">Enter the email address and password of your church mailbox. The password is stored encrypted and only used to talk to the mail server (' + esc(CFG.imap_host) + ').</p><form id="link-form"><div class="row"><label class="field grow"><span>Email address</span><input type="email" name="email" value="' + esc(state.me.email) + '" required /></label><label class="field grow"><span>Password</span><input type="password" name="password" required autocomplete="current-password" /></label></div><div class="row"><button type="submit" class="button primary">Connect mailbox</button><a class="button ghost" href="' + esc(CFG.webmail) + '" target="_blank" rel="noopener">Open Purelymail instead</a></div></form>') + "</div>" +
-      '<div class="card"><h2>Marketing email</h2>' + (state.me.marketing.ready ? "<p>Campaigns send through Resend from <strong>" + esc(state.me.marketing.from) + "</strong>" + (state.me.marketing.reply_to ? ", replies go to <strong>" + esc(state.me.marketing.reply_to) + "</strong>" : "") + ".</p>" : '<p class="help">Not connected yet. ' + (state.me.admin ? 'Set it up under <a href="' + esc(CFG.site.settings) + '">Mail → Settings</a> in the dashboard: a Resend API key, an audience, and the sending address.' : "The website admin sets this up in the dashboard.") + "</p>") + "</div>" +
+      (state.me.marketing.enabled ? '<div class="card"><h2>Marketing email</h2>' + (state.me.marketing.ready ? "<p>Campaigns send through Resend from <strong>" + esc(state.me.marketing.from) + "</strong>" + (state.me.marketing.reply_to ? ", replies go to <strong>" + esc(state.me.marketing.reply_to) + "</strong>" : "") + ".</p>" : '<p class="help">Not connected yet. ' + (state.me.admin ? 'Set it up under <a href="' + esc(CFG.site.settings) + '">Mail → Settings</a> in the dashboard: a Resend API key, an audience, and the sending address.' : "The website admin sets this up in the dashboard.") + "</p>") + "</div>" : '<div class="card"><h2>Newsletters and mass email</h2><p class="help">Those go out from ChurchTrac. This portal is for your own mailbox.</p></div>') +
       '<div class="card"><h2>Signed in as</h2><p>' + esc(state.me.name) + " · " + esc(state.me.email) + (state.me.admin ? ' · <a href="' + esc(CFG.site.settings) + '">Portal settings</a>' : "") + "</p></div></div>";
     showDemoBanner();
     const form = $("#link-form");
@@ -463,7 +464,7 @@
   $("#modal").addEventListener("click", (e) => { if (e.target.id === "modal") closeModal(); });
 
   /* ---------- boot ---------- */
-  async function loadMe() { state.me = await api("me"); $("#side-user").textContent = state.me.name; }
+  async function loadMe() { state.me = await api("me"); $("#side-user").textContent = state.me.name; $("#marketing-nav").hidden = !state.me.marketing.enabled; }
   (async function boot() {
     try {
       await loadMe();

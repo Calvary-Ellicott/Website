@@ -12,7 +12,8 @@ class CE_Mail_REST {
 
 	public static function register() {
 		$r = function ( $route, $methods, $cb, $args = array() ) {
-			register_rest_route( self::NS, $route, array( 'methods' => $methods, 'callback' => array( __CLASS__, $cb ), 'permission_callback' => array( __CLASS__, 'can' ), 'args' => $args ) );
+			$perm = ( 0 === strpos( $route, '/contacts' ) || 0 === strpos( $route, '/campaigns' ) ) ? 'can_market' : 'can';
+			register_rest_route( self::NS, $route, array( 'methods' => $methods, 'callback' => array( __CLASS__, $cb ), 'permission_callback' => array( __CLASS__, $perm ), 'args' => $args ) );
 		};
 		$r( '/me', 'GET', 'me' );
 		$r( '/mailbox', 'POST', 'mailbox_link' );
@@ -59,6 +60,13 @@ class CE_Mail_REST {
 		return ! CE_Mail_Settings::marketing_ready();
 	}
 
+	/**
+	 * Marketing routes answer only while the section is switched on in settings.
+	 */
+	public static function can_market() {
+		return self::can() && CE_Mail_Settings::marketing_enabled();
+	}
+
 	/* ---------- account ---------- */
 
 	public static function me() {
@@ -71,6 +79,7 @@ class CE_Mail_REST {
 			'admin'     => current_user_can( 'manage_options' ),
 			'mailbox'   => array( 'linked' => (bool) $c, 'email' => $c ? $c['email'] : '' ),
 			'marketing' => array(
+				'enabled'  => CE_Mail_Settings::marketing_enabled(),
 				'ready'    => CE_Mail_Settings::marketing_ready(),
 				'from'     => $s['marketing_from'],
 				'name'     => $s['marketing_name'],

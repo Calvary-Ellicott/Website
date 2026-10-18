@@ -32,6 +32,7 @@ class CE_Mail_Admin {
 			'marketing_reply' => sanitize_email( isset( $in['marketing_reply'] ) ? $in['marketing_reply'] : '' ),
 			'roles'           => array_values( array_filter( array_map( 'sanitize_key', isset( $in['roles'] ) ? (array) $in['roles'] : array() ) ) ),
 			'demo'            => empty( $in['demo'] ) ? 0 : 1,
+			'marketing_enabled' => empty( $in['marketing_enabled'] ) ? 0 : 1,
 			'page_size'       => max( 10, min( 100, (int) ( isset( $in['page_size'] ) ? $in['page_size'] : 25 ) ) ),
 			'org_name'        => sanitize_text_field( isset( $in['org_name'] ) ? $in['org_name'] : $cur['org_name'] ),
 			'org_address'     => sanitize_text_field( isset( $in['org_address'] ) ? $in['org_address'] : $cur['org_address'] ),
@@ -63,7 +64,11 @@ class CE_Mail_Admin {
 		// status
 		$ready = CE_Mail_Settings::marketing_ready();
 		echo '<div class="notice ' . ( $ready ? 'notice-success' : 'notice-info' ) . ' inline"><p>';
-		echo $ready ? 'Marketing email is set up: campaigns send through Resend from <strong>' . esc_html( $s['marketing_from'] ) . '</strong>.' : 'Marketing email is not set up yet. Add a Resend API key, an audience ID, and the sending address below. Inbox access works independently of this.';
+		if ( empty( $s['marketing_enabled'] ) ) {
+			echo 'The portal currently shows inboxes only. Marketing email (Resend) is switched off and hidden; mass email goes out from ChurchTrac.';
+		} else {
+			echo $ready ? 'Marketing email is set up: campaigns send through Resend from <strong>' . esc_html( $s['marketing_from'] ) . '</strong>.' : 'Marketing email is shown but not set up yet. Add a Resend API key, an audience ID, and the sending address below.';
+		}
 		echo '</p></div>';
 
 		echo '<form method="post" action="options.php">';
@@ -78,7 +83,8 @@ class CE_Mail_Admin {
 		self::field( 'webmail_url', 'Provider webmail link', $s['webmail_url'], 'url', 'Shown in the portal as a fallback ("Open in Purelymail").' );
 		echo '</table>';
 
-		echo '<h2>Marketing email (Resend)</h2><table class="form-table" role="presentation">';
+		echo '<h2>Marketing email (Resend)</h2><p class="description">Off by default: the church sends newsletters and mass email from ChurchTrac. Everything below stays saved in the background and can be switched on later.</p><table class="form-table" role="presentation">';
+		printf( '<tr><th scope="row">Show in the portal</th><td><label><input type="checkbox" name="%s[marketing_enabled]" value="1" %s /> Show the Campaigns, Contacts, and Import sections to portal users</label></td></tr>', $opt, checked( ! empty( $s['marketing_enabled'] ), true, false ) );
 		printf( '<tr><th scope="row"><label for="resend_key">Resend API key</label></th><td><input type="password" id="resend_key" name="%1$s[resend_key]" value="" class="regular-text" placeholder="%2$s" autocomplete="new-password" /><p class="description">%3$s</p></td></tr>', $opt, $s['resend_key'] ? 'Saved. Enter a new key to replace it.' : 're_…', $s['resend_key'] ? 'A key is saved. Leave blank to keep it, or <label><input type="checkbox" name="' . $opt . '[resend_key_clear]" value="1" /> clear it</label>.' : 'From resend.com → API Keys. The key needs sending access and the domain <code>calvaryellicott.org</code> verified in Resend.' );
 		self::field( 'resend_audience', 'Audience ID', $s['resend_audience'], 'text', 'From resend.com → Audiences. Create one audience (for example "Church family") and paste its ID. Contacts imported in the portal are synced to it.' );
 		self::field( 'marketing_from', 'Send from', $s['marketing_from'], 'email', 'The address campaigns come from. Must be on a domain verified in Resend.' );

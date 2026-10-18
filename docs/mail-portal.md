@@ -7,7 +7,7 @@ A WordPress plugin, `wp-plugin/ce-mail/`, that adds a staff-only mail app at `ca
 | Area | How it works |
 | --- | --- |
 | **Inbox** | Each staff member connects their own Purelymail mailbox (email + password, stored encrypted). The portal reads it over IMAP and sends over SMTP, so mail looks the same in Purelymail's own webmail or a phone app. Read, reply, reply all, forward, flag, archive, delete, search, attachments. |
-| **Marketing** | Campaigns go through Resend's Broadcasts from `info@calvaryellicott.org`. Resend adds a per-recipient unsubscribe link and handles bounces and complaints. Draft, preview, send a test to yourself, send to everyone. |
+| **Marketing** (off by default) | Hidden unless *Show in the portal* is ticked under Mail → Settings, because the church sends mass email from ChurchTrac. When on, campaigns go through Resend's Broadcasts from `info@calvaryellicott.org`. Resend adds a per-recipient unsubscribe link and handles bounces and complaints. Draft, preview, send a test to yourself, send to everyone. |
 | **Contacts** | A local list mirrored to one Resend audience. Add people one at a time or import the ChurchTrac People export (CSV). Columns are matched by name. Sync pushes new people to Resend in batches. |
 | **Preview** | Anyone with access who has not connected a mailbox sees the full interface with sample messages, contacts, and campaigns, with a banner saying so. Nothing in preview is sent. |
 

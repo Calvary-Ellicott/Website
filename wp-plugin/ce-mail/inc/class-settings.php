@@ -24,6 +24,7 @@ class CE_Mail_Settings {
 			'marketing_reply'   => '',
 			'roles'             => array( 'editor' ),
 			'demo'              => 1,
+			'marketing_enabled' => 0,
 			'page_size'         => 25,
 			'org_name'          => 'Calvary Ellicott',
 			'org_address'       => '2150 N. Ellicott Hwy, Calhan, CO 80808',
@@ -49,6 +50,10 @@ class CE_Mail_Settings {
 	/**
 	 * Marketing is "configured" when Resend has a key, an audience, and a from address.
 	 */
+	public static function marketing_enabled() {
+		return (bool) self::get( 'marketing_enabled' );
+	}
+
 	public static function marketing_ready() {
 		$s = self::all();
 		return ! empty( $s['resend_key'] ) && ! empty( $s['resend_audience'] ) && is_email( $s['marketing_from'] );
