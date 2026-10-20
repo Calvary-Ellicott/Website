@@ -37,6 +37,8 @@ while ( have_posts() ) :
 	</section>
 	<?php endif; ?>
 
+	<?php $staff_mode = ce_opt( 'staff_mode' ); $staff_url = ce_https_url( ce_opt( 'connect_staff_url' ) ); ?>
+	<?php if ( 'off' !== $staff_mode && ( 'grid' === $staff_mode || ! $staff_url ) ) : ?>
 	<section id="staff" class="section staff-section">
 		<div class="section-heading narrow"><div>
 			<p class="eyebrow"><?php esc_html_e( 'People who serve', 'calvary-ellicott' ); ?></p>
@@ -71,6 +73,23 @@ while ( have_posts() ) :
 			</article>
 		</div>
 	</section>
+	<?php elseif ( 'off' !== $staff_mode ) : ?>
+	<section id="staff" class="section staff-section">
+		<div class="section-heading">
+			<div>
+				<p class="eyebrow"><?php esc_html_e( 'People who serve', 'calvary-ellicott' ); ?></p>
+				<h2><?php esc_html_e( 'Meet our staff', 'calvary-ellicott' ); ?></h2>
+				<p><?php echo esc_html( ce_opt( 'staff_connect_text' ) ); ?></p>
+			</div>
+			<a class="button primary" href="<?php echo $staff_url; ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html( ce_opt( 'staff_link_text' ) ); ?></a>
+		</div>
+		<?php if ( 'embed' === $staff_mode ) : ?>
+		<div class="calendar-shell staff-embed">
+			<iframe src="<?php echo $staff_url; ?>" title="<?php esc_attr_e( 'Our staff', 'calvary-ellicott' ); ?>" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+		</div>
+		<?php endif; ?>
+	</section>
+	<?php endif; ?>
 	<?php
 	ce_next_steps( __( 'Keep going', 'calvary-ellicott' ), __( 'Plan a visit, or keep learning.', 'calvary-ellicott' ), array( 'page-templates/visit.php', 'page-templates/learn.php' ) );
 endwhile;

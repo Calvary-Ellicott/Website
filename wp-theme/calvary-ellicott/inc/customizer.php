@@ -50,6 +50,10 @@ function ce_customizer_defaults() {
 		'calendar_headline'      => 'Upcoming events',
 		'calendar_text'          => 'Tap an event for details. Registration and sign-ups happen in Church Connect.',
 
+		'staff_mode'             => 'grid',
+		'connect_staff_url'      => 'https://connect.calvaryellicott.org/staff',
+		'staff_link_text'        => 'See our staff in Church Connect',
+		'staff_connect_text'     => 'Our pastors and ministry team, with their contact details, are listed in Church Connect.',
 		'beliefs_eyebrow'        => 'What we believe',
 		'beliefs_headline'       => 'Historic faith. Everyday hope.',
 		'beliefs_text'           => 'We hold to the historic Christian faith and seek to live it with conviction, humility, and love.',
@@ -143,6 +147,10 @@ function ce_customize_register( $wp_customize ) {
 		'watch_notes_pending'    => array( 'ce_watch', 'Shown when only the handout is up', 'text' ),
 		'watch_notes_empty'      => array( 'ce_watch', 'Shown when there are no sermons yet', 'text' ),
 
+		'staff_mode'             => array( 'ce_staff', 'Staff section comes from', 'select', array( 'grid' => 'WordPress (the Staff screen in the dashboard)', 'link' => 'Church Connect, as a button', 'embed' => 'Church Connect, embedded on the page', 'off' => 'Hide the staff section' ) ),
+		'connect_staff_url'      => array( 'ce_staff', 'Church Connect staff page address', 'url' ),
+		'staff_link_text'        => array( 'ce_staff', 'Button label for the Church Connect staff page', 'text' ),
+		'staff_connect_text'     => array( 'ce_staff', 'Sentence shown with that button', 'textarea' ),
 		'beliefs_eyebrow'        => array( 'ce_staff', 'Beliefs: small line', 'text' ),
 		'beliefs_headline'       => array( 'ce_staff', 'Beliefs: headline', 'text' ),
 		'beliefs_text'           => array( 'ce_staff', 'Beliefs: intro sentence', 'textarea' ),
@@ -158,6 +166,7 @@ function ce_customize_register( $wp_customize ) {
 
 	foreach ( $fields as $key => $f ) {
 		list( $section, $label, $type ) = $f;
+		$choices = isset( $f[3] ) ? $f[3] : array();
 		$sanitize = 'sanitize_text_field';
 		if ( 'boxcast_embed_code' === $key ) {
 			$sanitize = 'ce_sanitize_embed_code';
@@ -169,10 +178,14 @@ function ce_customize_register( $wp_customize ) {
 			$sanitize = 'absint';
 		} elseif ( 'image' === $type ) {
 			$sanitize = 'esc_url_raw';
+		} elseif ( 'select' === $type ) {
+			$sanitize = 'sanitize_key';
 		}
 		$wp_customize->add_setting( $key, array( 'default' => $d[ $key ], 'sanitize_callback' => $sanitize, 'transport' => 'refresh' ) );
 		if ( 'image' === $type ) {
 			$wp_customize->add_control( new WP_Customize_Image_Control( $wp_customize, $key, array( 'label' => $label, 'section' => $section ) ) );
+		} elseif ( 'select' === $type ) {
+			$wp_customize->add_control( $key, array( 'label' => $label, 'section' => $section, 'type' => 'select', 'choices' => $choices ) );
 		} else {
 			$wp_customize->add_control( $key, array( 'label' => $label, 'section' => $section, 'type' => $type ) );
 		}
