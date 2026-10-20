@@ -10,12 +10,8 @@ a,.underline,.text-auto-primary,.member-connect .text-primary,.text-danger{color
 #connect-sidebar-nav .fal{color:#f0c77b}
 #wrapper #connect-sidebar-nav a.list-group-item:not(.active):hover,.list-group-item:not(.active):hover,#connect-sidebar-nav .active{background:#b75c3d!important;color:#fff!important}
 .member-connect .card:not(.song-card),.cards .card{border-radius:14px!important;border:1px solid #e1ddd2!important;box-shadow:none!important;overflow:hidden}
-.card-img-container{border-radius:0!important}
 .card-header,.card-form,.card-page{background:#182820!important;color:#fff!important}
 .card-form .card-text,.card-page .card-text{color:#fff!important}
 .member-connect .btn,.btn{border-radius:9px!important;font-weight:700!important}
 .member-connect .btn-primary,.btn-primary,.member-connect .btn-default.active,.member-connect .btn-group-indicator{background:#b75c3d!important;border-color:#b75c3d!important;color:#fff!important}
-.member-connect .btn-group .btn{color:#b75c3d!important;border-color:#b75c3d!important}
-.member-connect .btn-group .btn:not(.active):hover{background:#b75c3d!important;color:#fff!important}
-.form-control:focus{border-color:#d2a24a!important;box-shadow:0 0 0 3px #d2a24a40!important}
 #mainpanel>.rounded-0,#footer-container{background:#182820!important}
