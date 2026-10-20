@@ -1,0 +1,140 @@
+/* Calvary Ellicott: custom CSS for Church Connect (connect.calvaryellicott.org)
+   Paste the whole file into Connect's custom CSS box.
+   Connect is Bootstrap 4 with many of its own !important rules, so most of these use !important too.
+   Palette matches the main site: forest green, cream, rust, gold. */
+
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap");
+
+:root {
+  --ce-forest: #182820;
+  --ce-forest-2: #243d31;
+  --ce-cream: #f4f0e6;
+  --ce-paper: #fbfaf5;
+  --ce-rust: #b75c3d;
+  --ce-gold: #d2a24a;
+  --ce-gold-light: #f0c77b;
+  --ce-ink: #1b2822;
+  --ce-muted: #647169;
+  --ce-line: #e1ddd2;
+  --ce-sans: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ce-serif: Newsreader, Georgia, serif;
+}
+
+/* ---------- page ---------- */
+body, .member-connect, #wrapper, #page-wrapper, #mainpanel {
+  background-color: var(--ce-paper) !important;
+  font-family: var(--ce-sans) !important;
+  color: var(--ce-ink);
+}
+#page-container { padding-top: 24px; }
+h1, h2, h3, .h1, .h2, .h3, .h4, #title, .card-title, .page-card-body h1, .page-card-body h2, .page-card-body h3 {
+  font-family: var(--ce-serif) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em;
+  color: var(--ce-ink);
+}
+a, .underline, .text-auto-primary, .member-connect .text-primary, .member-connect .text-accent {
+  color: var(--ce-rust) !important;
+}
+.text-muted { color: var(--ce-muted) !important; }
+.text-danger { color: var(--ce-rust) !important; }
+
+/* ---------- top bar ---------- */
+#connect-nav {
+  background-color: var(--ce-forest) !important;
+  min-height: 58px !important;
+  height: 58px !important;
+  border-radius: 0 !important;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.18);
+}
+#mode-text {
+  font-family: var(--ce-serif) !important;
+  font-size: 1.35rem !important;
+  letter-spacing: 0.01em;
+}
+#connect-nav .nav-links a, #connect-nav .text-light { color: #ffffff !important; }
+#signin-btn, .member-connect #home-btn {
+  border: 1px solid var(--ce-gold-light) !important;
+  color: var(--ce-gold-light) !important;
+  border-radius: 8px !important;
+  font-weight: 700;
+}
+#signin-btn:hover, .member-connect #home-btn:hover {
+  background-color: var(--ce-rust) !important;
+  border-color: var(--ce-rust) !important;
+  color: #ffffff !important;
+}
+#wrapper #connect-sidebar-nav, .member-connect #connect-links { top: 58px !important; }
+
+/* ---------- side menu ---------- */
+#connect-sidebar-nav, #connect-links { background-color: var(--ce-forest-2) !important; }
+#connect-sidebar-nav .list-group-item, #connect-links .list-group-item {
+  background-color: transparent !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  font-weight: 500;
+}
+#connect-sidebar-nav .list-group-item .fal, #connect-links .list-group-item .fal { color: var(--ce-gold-light); }
+#wrapper #connect-sidebar-nav a.list-group-item:not(.active):hover,
+#wrapper.toggled #connect-sidebar-nav a.list-group-item:not(.active):hover,
+.list-group-item:not(.active):hover {
+  background-color: var(--ce-rust) !important;
+  color: #ffffff !important;
+}
+#connect-sidebar-nav .list-group-item.active { background-color: var(--ce-rust) !important; border-color: var(--ce-rust) !important; }
+
+/* ---------- cards on the home screen ---------- */
+.member-connect .card:not(.song-card), .welcome-page .card, .cards .card {
+  border-radius: 14px !important;
+  border: 1px solid var(--ce-line) !important;
+  box-shadow: 0 1px 2px rgba(24, 40, 32, 0.04) !important;
+  overflow: hidden;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.member-connect .card:not(.song-card):hover, .welcome-page .card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(24, 40, 32, 0.10) !important;
+}
+.card-img-container { border-radius: 0 !important; }
+.card-header { background-color: var(--ce-forest) !important; color: #ffffff !important; border-radius: 0 !important; font-family: var(--ce-serif); font-size: 1.15rem; }
+.card-title, .card-title.h5 { font-size: 1.3rem !important; }
+.card-text.small { font-size: 0.92rem; color: var(--ce-muted); }
+.card-link.underline { color: var(--ce-rust) !important; font-weight: 700; }
+/* the blue form/page cards Connect ships with: keep them readable on brand colours */
+.card-form, .card-page { background-color: var(--ce-forest) !important; }
+.card-form .card-text, .card-page .card-text { color: #ffffff !important; }
+/* event date block */
+.card-registration .col-3 .text-danger, .upcoming-events-card .text-danger { color: var(--ce-rust) !important; letter-spacing: 0.08em; }
+.card-registration .col-3 .h1 { font-family: var(--ce-serif) !important; font-weight: 500 !important; }
+.card-registration .border-right { border-color: var(--ce-line) !important; }
+/* scripture card */
+.card-verse .blockquote { font-family: var(--ce-serif); font-size: 1.15rem; color: var(--ce-ink); }
+
+/* ---------- buttons and forms ---------- */
+.member-connect .btn, .btn { border-radius: 9px !important; font-weight: 700 !important; }
+.member-connect .btn-primary, .btn-primary, .member-connect .btn-default.active, .btn-group-indicator, .member-connect .btn-group-indicator {
+  background-color: var(--ce-rust) !important;
+  border-color: var(--ce-rust) !important;
+  color: #ffffff !important;
+}
+.member-connect .btn-primary:hover, .btn-primary:hover { filter: brightness(0.92); }
+.member-connect .btn-outline-primary, .member-connect .btn-group .btn { color: var(--ce-rust) !important; border-color: var(--ce-rust) !important; }
+.member-connect .btn-group .btn:not(.active, .btn-danger-hover):hover, .member-connect .btn-outline-primary:hover { background-color: var(--ce-rust) !important; color: #ffffff !important; }
+.form-control { border-radius: 9px !important; border-color: var(--ce-line) !important; }
+.form-control:focus { border-color: var(--ce-gold) !important; box-shadow: 0 0 0 3px rgba(210, 162, 74, 0.25) !important; }
+.member-connect .custom-control-input:checked ~ .custom-control-label::before { background-color: var(--ce-rust) !important; border-color: var(--ce-rust) !important; }
+.alert-info, .member-connect .alert-info { background-color: var(--ce-cream) !important; border-color: var(--ce-gold) !important; color: var(--ce-ink) !important; }
+.shadow-sm.rounded { border-radius: 14px !important; border: 1px solid var(--ce-line); }
+
+/* ---------- page cards (the pages you build, including the staff page) ---------- */
+.page-card-body, .editor-content { font-size: 1.02rem; line-height: 1.65; color: var(--ce-ink); }
+#title { font-size: 2.2rem; }
+
+/* ---------- footer ---------- */
+#mainpanel > .rounded-0, #footer-container { background-color: var(--ce-forest) !important; }
+#footer-container .h3 { font-family: var(--ce-serif) !important; }
+#footer-container .text-color-light, #footer-container a { color: #ffffffcc !important; }
+#footer-container a.underline { color: var(--ce-gold-light) !important; }
+
+/* ---------- loading screen ---------- */
+.startup-overlay { background-color: var(--ce-paper) !important; color: var(--ce-muted); font-family: var(--ce-serif) !important; }
