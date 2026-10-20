@@ -1,17 +1,17 @@
 @import url("https://fonts.googleapis.com/css2?family=Newsreader:wght@500;600&family=DM+Sans:wght@400;700&display=swap");
 body,#wrapper,#page-wrapper,#mainpanel{background:#fbfaf5!important;font-family:"DM Sans",system-ui,sans-serif!important;color:#1b2822}
 h1,h2,h3,.h1,.h2,.h3,.h4,#title,.card-title,#mode-text,#footer-container .h3{font-family:Newsreader,Georgia,serif!important;font-weight:600!important}
-a,.underline,.text-auto-primary,.member-connect .text-primary,.text-danger{color:#b75c3d!important}
+a,.underline,.text-auto-primary,.member-connect .text-primary,.text-danger,.text-color-accent{color:#b75c3d!important}
 #connect-nav{background:#182820!important;height:58px!important;min-height:58px!important;border-radius:0!important}
 #wrapper #connect-sidebar-nav,.member-connect #connect-links{top:58px!important}
 #signin-btn,.member-connect #home-btn{border:1px solid #f0c77b!important;color:#f0c77b!important;border-radius:8px!important}
 #signin-btn:hover,.member-connect #home-btn:hover{background:#b75c3d!important;color:#fff!important}
 #connect-sidebar-nav,#connect-links,#connect-sidebar-nav .list-group-item,#connect-links .list-group-item{background:#243d31!important;color:#fff!important;border-color:#ffffff14!important}
-#connect-sidebar-nav .fal{color:#f0c77b}
 #wrapper #connect-sidebar-nav a.list-group-item:not(.active):hover,.list-group-item:not(.active):hover,#connect-sidebar-nav .active{background:#b75c3d!important;color:#fff!important}
-.member-connect .card:not(.song-card),.cards .card{border-radius:14px!important;border:1px solid #e1ddd2!important;box-shadow:none!important;overflow:hidden}
+.member-connect .card:not(.song-card),.cards .card,.connect-template .template-tile{border-radius:14px!important;border:1px solid #e1ddd2!important;box-shadow:none!important;overflow:hidden}
 .card-header,.card-form,.card-page{background:#182820!important;color:#fff!important}
 .card-form .card-text,.card-page .card-text{color:#fff!important}
-.member-connect .btn,.btn{border-radius:9px!important;font-weight:700!important}
-.member-connect .btn-primary,.btn-primary,.member-connect .btn-default.active,.member-connect .btn-group-indicator{background:#b75c3d!important;border-color:#b75c3d!important;color:#fff!important}
+.btn{border-radius:9px!important;font-weight:700!important}
+.member-connect .btn-primary,.btn-primary,.member-connect .btn-default.active{background:#b75c3d!important;border-color:#b75c3d!important;color:#fff!important}
+.template-eyebrow{text-transform:uppercase;font-size:.74rem}
 #mainpanel>.rounded-0,#footer-container{background:#182820!important}
