@@ -187,6 +187,51 @@ function ce_run_setup() {
 			set_theme_mod( 'nav_menu_locations', $locations );
 			$done[] = 'Built the navigation menu (Discover, Visit, Learn, Events, Church Connect)';
 		}
+	} else {
+		// The menu already exists (built by an earlier version): add any page that is not in it yet,
+		// keeping the Church Connect link last.
+		$locations = get_nav_menu_locations();
+		$menu_id   = isset( $locations['primary'] ) ? (int) $locations['primary'] : 0;
+		$items     = $menu_id ? wp_get_nav_menu_items( $menu_id ) : array();
+		if ( $menu_id && false !== $items ) {
+			$in_menu  = array();
+			$cta      = null;
+			$position = 0;
+			foreach ( $items as $item ) {
+				$position = max( $position, (int) $item->menu_order );
+				if ( 'post_type' === $item->type ) {
+					$in_menu[] = (int) $item->object_id;
+				} elseif ( 'custom' === $item->type && in_array( 'nav-cta', (array) $item->classes, true ) ) {
+					$cta = $item;
+				}
+			}
+			$added = array();
+			foreach ( array( 'discover', 'visit', 'learn', 'events' ) as $slug ) {
+				if ( empty( $ids[ $slug ] ) || in_array( (int) $ids[ $slug ], $in_menu, true ) ) {
+					continue;
+				}
+				$position++;
+				wp_update_nav_menu_item(
+					$menu_id,
+					0,
+					array(
+						'menu-item-object-id' => $ids[ $slug ],
+						'menu-item-object'    => 'page',
+						'menu-item-type'      => 'post_type',
+						'menu-item-status'    => 'publish',
+						'menu-item-position'  => $position,
+					)
+				);
+				$added[] = get_the_title( $ids[ $slug ] );
+			}
+			if ( $added && $cta ) {
+				// Move the Church Connect link back to the end.
+				wp_update_post( array( 'ID' => $cta->ID, 'menu_order' => $position + 1 ) );
+			}
+			if ( $added ) {
+				$done[] = 'Added to the menu: ' . implode( ', ', $added );
+			}
+		}
 	}
 
 	if ( ! $done ) {
