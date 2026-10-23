@@ -185,7 +185,7 @@ add_action( 'save_post', 'ce_save_meta' );
 
 /**
  * Hosts cache pages for logged-out visitors and only purge a post's own address when it
- * is saved. Staff and beliefs show on Discover, sermons and bulletins on Learn, alerts
+ * is saved. Staff and beliefs show on Discover, sermons on Learn, alerts
  * everywhere, so "touch" those pages too: updating them fires the host's normal purge.
  */
 function ce_touch_related_pages( $post_id ) {

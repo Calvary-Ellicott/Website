@@ -92,7 +92,7 @@ function ce_run_setup() {
 			'Learn',
 			'page-templates/learn.php',
 			'Grow with us',
-			'Watch the livestream, follow along with sermon notes, and catch up on the weekly bulletin.',
+			'Watch the livestream, follow along with sermon notes, and see what’s happening this week.',
 			"<!-- wp:paragraph -->\n<p>Download this week’s handout to follow along, and check back after the service for the pastor’s full notes.</p>\n<!-- /wp:paragraph -->",
 			4,
 		),

@@ -1,6 +1,6 @@
 <?php
 /**
- * Custom post types: staff, beliefs, bulletins, sermons, alerts.
+ * Custom post types: staff, mission statements, beliefs, sermons, alerts.
  * None of them get their own public URL; the page templates display them.
  */
 

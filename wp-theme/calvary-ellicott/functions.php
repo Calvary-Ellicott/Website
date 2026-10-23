@@ -4,7 +4,7 @@
  *
  * The theme keeps the hand-built design of the static site and adds WordPress
  * editing on top: pages for copy, custom post types for staff, beliefs,
- * bulletins, sermons and alerts, and Customizer fields for site details,
+ * mission statements, sermons and alerts, and site settings for details,
  * ChurchTrac links and the BoxCast embed.
  */
 
