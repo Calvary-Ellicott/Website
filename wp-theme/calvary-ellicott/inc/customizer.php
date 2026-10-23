@@ -51,7 +51,9 @@ function ce_fields() {
 		'hero_intro'           => array( 'ce_home', 'Intro sentence', 'textarea' ),
 		'hero_primary_label'   => array( 'ce_home', 'Red button label (goes to Visit)', 'text' ),
 		'hero_secondary_label' => array( 'ce_home', 'Cream button label (goes to Discover)', 'text' ),
-		'hero_image'           => array( 'ce_home', 'Banner photo (wide landscape)', 'image' ),
+		'hero_images'          => array( 'ce_home', 'Banner photos (the album)', 'gallery', 'Pick as many as you like; the banner fades from one to the next. Wide landscape photos work best. One URL per line in the Customizer.' ),
+		'hero_interval'        => array( 'ce_home', 'Seconds between photos', 'number' ),
+		'hero_image'           => array( 'ce_home', 'Single banner photo (used only if the album is empty)', 'image' ),
 		'visit_eyebrow'        => array( 'ce_home', 'Visit section: small line', 'text' ),
 		'visit_headline'       => array( 'ce_home', 'Visit section: headline (one line per row)', 'textarea' ),
 		'visit_lead'           => array( 'ce_home', 'Visit section: paragraph', 'textarea' ),
@@ -134,6 +136,8 @@ function ce_customizer_defaults() {
 		'hero_intro'           => 'Come as you are and join us as we study God’s Word, follow Jesus, and love our neighbors—together.',
 		'hero_primary_label'   => 'Plan your visit',
 		'hero_secondary_label' => 'Get to know us',
+		'hero_images'          => '',
+		'hero_interval'        => 7,
 		'hero_image'           => '',
 		'visit_eyebrow'        => 'You’re welcome here',
 		'visit_headline'       => "A simple Sunday.\nA meaningful community.",
@@ -196,6 +200,8 @@ function ce_field_sanitizer( $key, $type ) {
 		return 'ce_sanitize_embed_code';
 	}
 	switch ( $type ) {
+		case 'gallery':
+			return 'ce_sanitize_url_list';
 		case 'textarea':
 			return 'sanitize_textarea_field';
 		case 'url':
@@ -232,7 +238,7 @@ function ce_customize_register( $wp_customize ) {
 		} elseif ( 'select' === $type ) {
 			$wp_customize->add_control( $key, $args + array( 'type' => 'select', 'choices' => is_array( $extra ) ? $extra : array() ) );
 		} else {
-			$wp_customize->add_control( $key, $args + array( 'type' => 'email' === $type ? 'email' : $type ) );
+			$wp_customize->add_control( $key, $args + array( 'type' => 'email' === $type ? 'email' : ( 'gallery' === $type ? 'textarea' : $type ) ) );
 		}
 	}
 }
@@ -241,6 +247,29 @@ add_action( 'customize_register', 'ce_customize_register' );
 function ce_sanitize_https( $value ) {
 	$value = trim( (string) $value );
 	return preg_match( '#^https://#i', $value ) ? esc_url_raw( $value ) : '';
+}
+
+function ce_sanitize_url_list( $value ) {
+	$out = array();
+	foreach ( preg_split( '/[\r\n,]+/', (string) $value ) as $line ) {
+		$line = trim( $line );
+		if ( preg_match( '#^https://#i', $line ) ) {
+			$out[] = esc_url_raw( $line );
+		}
+	}
+	return implode( "\n", array_unique( $out ) );
+}
+
+/**
+ * The banner album as an array of URLs (falls back to the single photo, then the stock shot).
+ */
+function ce_hero_images() {
+	$list = array_filter( array_map( 'trim', explode( "\n", (string) ce_opt( 'hero_images' ) ) ) );
+	if ( ! $list ) {
+		$single = ce_opt( 'hero_image' );
+		$list   = array( $single ? $single : 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1900&q=85' );
+	}
+	return array_values( $list );
 }
 
 function ce_sanitize_embed_code( $value ) {

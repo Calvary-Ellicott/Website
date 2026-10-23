@@ -30,6 +30,19 @@
     });
   }
 
+  /* Hero album: crossfade through the banner photos. */
+  const slides = Array.from(document.querySelectorAll(".hero-slide"));
+  if (slides.length > 1 && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const interval = ((window.CE_HERO && +window.CE_HERO.interval) || 7) * 1000;
+    let current = 0;
+    slides.slice(1).forEach((s) => { const img = new Image(); img.src = s.style.backgroundImage.slice(5, -2).replace(/^["']|["']$/g, ""); });
+    setInterval(() => {
+      slides[current].classList.remove("is-active");
+      current = (current + 1) % slides.length;
+      slides[current].classList.add("is-active");
+    }, interval);
+  }
+
   /* Alert banner: keep the fixed header below it; dismiss for the session. */
   const banner = document.querySelector(".site-alert");
   if (banner) {

@@ -59,6 +59,7 @@ function ce_enqueue_assets() {
 	wp_enqueue_style( 'ce-style', get_stylesheet_uri(), array( 'ce-fonts' ), CE_THEME_VERSION );
 	wp_add_inline_style( 'ce-style', ce_inline_image_css() );
 	wp_enqueue_script( 'ce-site', CE_THEME_URI . '/assets/site.js', array(), CE_THEME_VERSION, true );
+	wp_localize_script( 'ce-site', 'CE_HERO', array( 'interval' => max( 3, (int) ce_opt( 'hero_interval' ) ) ) );
 }
 add_action( 'wp_enqueue_scripts', 'ce_enqueue_assets' );
 
@@ -78,10 +79,8 @@ add_filter( 'wp_resource_hints', 'ce_resource_hints', 10, 2 );
  * Hero and story background images: Customizer choice, else the original stock photos.
  */
 function ce_inline_image_css() {
-	$hero  = esc_url( ce_opt( 'hero_image', 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1900&q=85' ) );
 	$story = esc_url( ce_opt( 'story_image', 'https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1200&q=83' ) );
-	return '.hero-media{background:linear-gradient(90deg,#13231ddd 0%,#13231d9c 48%,#13231d38),linear-gradient(0deg,#13231d99,transparent 45%),url("' . $hero . '") center/cover;transform:scale(1.01)}'
-		. '.story-image{background:linear-gradient(#18282022,#18282044),url("' . $story . '") center/cover}';
+	return '.story-image{background:linear-gradient(#18282022,#18282044),url("' . $story . '") center/cover}';
 }
 
 /**

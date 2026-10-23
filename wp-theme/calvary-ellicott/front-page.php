@@ -8,7 +8,11 @@ $discover_url = ce_template_url( 'page-templates/discover.php' );
 $visit_url    = ce_template_url( 'page-templates/visit.php' );
 ?>
 <section id="home" class="hero" aria-labelledby="hero-title">
-	<div class="hero-media" aria-hidden="true"></div>
+	<div class="hero-media" aria-hidden="true">
+		<?php foreach ( ce_hero_images() as $i => $img ) : ?>
+			<div class="hero-slide<?php echo 0 === $i ? ' is-active' : ''; ?>" style="background-image:url(<?php echo esc_url( $img ); ?>)"></div>
+		<?php endforeach; ?>
+	</div>
 	<div class="hero-content">
 		<p class="eyebrow"><?php echo esc_html( ce_opt( 'hero_eyebrow' ) ); ?></p>
 		<h1 id="hero-title"><?php echo esc_html( ce_opt( 'hero_line1' ) ); ?><br /><em><?php echo esc_html( ce_opt( 'hero_line2' ) ); ?></em></h1>

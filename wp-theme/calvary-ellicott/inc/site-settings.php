@@ -17,7 +17,7 @@ function ce_site_settings_assets( $hook ) {
 	}
 	wp_enqueue_media();
 	wp_enqueue_script( 'ce-admin', CE_THEME_URI . '/assets/admin.js', array( 'jquery' ), CE_THEME_VERSION, true );
-	wp_add_inline_style( 'wp-admin', '.ce-settings .postbox{max-width:960px}.ce-settings .inside{padding:6px 16px 14px}.ce-settings .form-table th{width:240px}.ce-settings input.regular-text,.ce-settings textarea,.ce-settings select{width:100%;max-width:640px}.ce-settings .ce-image-preview{display:block;max-width:260px;max-height:160px;margin:8px 0;border:1px solid #dcdcde;border-radius:6px}.ce-settings .ce-image-preview[src=""]{display:none}.ce-quick{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 18px}.ce-quick a{display:inline-block;padding:8px 14px;background:#fff;border:1px solid #c3c4c7;border-radius:6px;text-decoration:none;font-weight:600}' );
+	wp_add_inline_style( 'wp-admin', '.ce-settings .postbox{max-width:960px}.ce-settings .inside{padding:6px 16px 14px}.ce-settings .form-table th{width:240px}.ce-settings input.regular-text,.ce-settings textarea,.ce-settings select{width:100%;max-width:640px}.ce-settings .ce-image-preview{display:block;max-width:260px;max-height:160px;margin:8px 0;border:1px solid #dcdcde;border-radius:6px}.ce-settings .ce-image-preview[src=""]{display:none}.ce-quick{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 18px}.ce-quick a{display:inline-block;padding:8px 14px;background:#fff;border:1px solid #c3c4c7;border-radius:6px;text-decoration:none;font-weight:600}.ce-gallery-grid{display:flex;flex-wrap:wrap;gap:10px;margin:4px 0 10px}.ce-gallery-item{position:relative;margin:0;width:150px;height:96px;border:1px solid #dcdcde;border-radius:6px;overflow:hidden;background:#f0f0f1}.ce-gallery-item img{width:100%;height:100%;object-fit:cover;display:block}.ce-gallery-remove{position:absolute;top:4px;right:4px;width:24px;height:24px;border:0;border-radius:50%;background:#1d2327cc;color:#fff;font-size:16px;line-height:1;cursor:pointer}' );
 }
 add_action( 'admin_enqueue_scripts', 'ce_site_settings_assets' );
 
@@ -105,6 +105,15 @@ function ce_site_settings_page() {
 				break;
 			case 'image':
 				printf( '<img class="ce-image-preview" src="%2$s" alt="" /><span style="display:flex;gap:8px;max-width:640px"><input type="url" id="%1$s" name="%1$s" value="%2$s" class="regular-text" placeholder="No picture yet" readonly style="flex:1" /><button type="button" class="button ce-pick-image" data-target="%1$s">Choose picture</button><button type="button" class="button ce-clear-image" data-target="%1$s">Remove</button></span>', esc_attr( $key ), esc_attr( $value ) );
+				break;
+			case 'gallery':
+				$urls = array_filter( array_map( 'trim', explode( "\n", (string) $value ) ) );
+				echo '<div class="ce-gallery" data-target="' . esc_attr( $key ) . '"><div class="ce-gallery-grid">';
+				foreach ( $urls as $u ) {
+					echo '<figure class="ce-gallery-item" data-url="' . esc_attr( $u ) . '"><img src="' . esc_url( $u ) . '" alt="" /><button type="button" class="ce-gallery-remove" aria-label="Remove">×</button></figure>';
+				}
+				echo '</div><p><button type="button" class="button ce-gallery-add">Add pictures</button> <span class="description">Drag is not needed; they play in the order shown. Remove with the ×.</span></p>';
+				printf( '<textarea id="%1$s" name="%1$s" class="ce-gallery-value" hidden>%2$s</textarea></div>', esc_attr( $key ), esc_textarea( $value ) );
 				break;
 			case 'number':
 				printf( '<input type="number" id="%1$s" name="%1$s" value="%2$s" class="small-text" min="1" max="100" />', esc_attr( $key ), esc_attr( $value ) );
