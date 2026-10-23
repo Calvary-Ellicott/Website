@@ -26,8 +26,8 @@ function ce_setup_page() {
 		}
 		echo '</ul></div>';
 	}
-	echo '<p>This creates the four pages (Home, Discover, Visit, Learn), fills in the statement of faith and placeholder staff cards, builds the menu with a Church Connect link, and sets the homepage. It skips anything that already exists, so it is safe to run again.</p>';
-	echo '<p>Afterwards, go to <strong>Appearance → Customize → Calvary Ellicott</strong> to check the service time, address, Church Connect address, and the BoxCast embed.</p>';
+	echo '<p>This creates the pages (Home, Discover, Visit, Learn, Events), fills in the mission and vision, the statement of faith, and placeholder staff cards, builds the menu with a Church Connect link, and sets the homepage. It skips anything that already exists, so it is safe to run again.</p>';
+	echo '<p>Afterwards, open <strong>Site settings</strong> in the left menu to check the service time, address, Church Connect links, and the BoxCast embed.</p>';
 	echo '<form method="post">';
 	wp_nonce_field( 'ce_setup' );
 	submit_button( 'Create starter content', 'primary', 'ce_setup' );
@@ -86,6 +86,7 @@ function ce_run_setup() {
 			"<!-- wp:paragraph -->\n<p>Whether church is familiar or completely new, we want your first visit to feel easy. Expect genuine people, worship, age-appropriate care for children, and practical teaching through the Bible. Come as you are; there is no dress code and no pressure.</p>\n<!-- /wp:paragraph -->",
 			2,
 		),
+		array( 'events', 'Events', 'page-templates/events.php', 'Life together', 'Sunday worship, studies, and gatherings for every generation. Registration happens in Church Connect.', '', 3 ),
 		array(
 			'learn',
 			'Learn',
@@ -93,7 +94,7 @@ function ce_run_setup() {
 			'Grow with us',
 			'Watch the livestream, follow along with sermon notes, and catch up on the weekly bulletin.',
 			"<!-- wp:paragraph -->\n<p>Download this week’s handout to follow along, and check back after the service for the pastor’s full notes.</p>\n<!-- /wp:paragraph -->",
-			3,
+			4,
 		),
 	);
 
@@ -110,6 +111,18 @@ function ce_run_setup() {
 		update_option( 'show_on_front', 'page' );
 		update_option( 'page_on_front', $ids['home'] );
 		$done[] = 'Set Home as the homepage';
+	}
+
+	if ( ! get_posts( array( 'post_type' => 'ce_mission', 'posts_per_page' => 1, 'post_status' => 'any', 'fields' => 'ids' ) ) ) {
+		$mission = array(
+			array( 'Our mission', 'To know Jesus and make Him known: worshiping God, growing together in His Word, and serving Ellicott and the plains with His love.' ),
+			array( 'Our vision', 'A church family where every person is welcomed, discipled, and sent to love their neighbors.' ),
+			array( 'Our values', 'The authority of Scripture, grace-filled community, faithful teaching, and generous service.' ),
+		);
+		foreach ( $mission as $i => $m ) {
+			wp_insert_post( array( 'post_type' => 'ce_mission', 'post_status' => 'publish', 'post_title' => $m[0], 'post_content' => $m[1], 'menu_order' => $i + 1 ) );
+		}
+		$done[] = 'Added mission, vision, and values placeholders';
 	}
 
 	if ( ! get_posts( array( 'post_type' => 'ce_belief', 'posts_per_page' => 1, 'post_status' => 'any', 'fields' => 'ids' ) ) ) {
@@ -142,7 +155,7 @@ function ce_run_setup() {
 	if ( ! has_nav_menu( 'primary' ) ) {
 		$menu_id = wp_create_nav_menu( 'Primary' );
 		if ( ! is_wp_error( $menu_id ) ) {
-			foreach ( array( 'discover', 'visit', 'learn' ) as $i => $slug ) {
+			foreach ( array( 'discover', 'visit', 'learn', 'events' ) as $i => $slug ) {
 				wp_update_nav_menu_item(
 					$menu_id,
 					0,
@@ -163,7 +176,7 @@ function ce_run_setup() {
 					'menu-item-url'      => ce_opt( 'connect_url' ),
 					'menu-item-type'     => 'custom',
 					'menu-item-status'   => 'publish',
-					'menu-item-position' => 4,
+					'menu-item-position' => 5,
 					'menu-item-classes'  => 'nav-cta',
 					'menu-item-target'   => '_blank',
 				)
@@ -172,7 +185,7 @@ function ce_run_setup() {
 			$locations['primary'] = $menu_id;
 			$locations['footer']  = $menu_id;
 			set_theme_mod( 'nav_menu_locations', $locations );
-			$done[] = 'Built the navigation menu (Discover, Visit, Learn, Church Connect)';
+			$done[] = 'Built the navigation menu (Discover, Visit, Learn, Events, Church Connect)';
 		}
 	}
 

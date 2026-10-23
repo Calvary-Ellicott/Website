@@ -1,14 +1,14 @@
 <?php
 /**
  * Prebuilt forms for the theme's content types. Each type gets one form directly under
- * the title, no block editor: Staff (role, email, bio), Beliefs (text), Bulletins
- * (Sunday, PDF), Sermons (Sunday, handout, notes, summary), Alerts (style, expiry, link).
+ * the title, no block editor: Staff (role, email, bio), Beliefs (text), Mission & Vision
+ * (text), Sermons (Sunday, handout, notes, summary), Alerts (style, expiry, link).
  * Pages keep the block editor and get a small "Page banner" box in the sidebar.
  */
 
 defined( 'ABSPATH' ) || exit;
 
-const CE_FORM_TYPES = array( 'ce_staff', 'ce_belief', 'ce_bulletin', 'ce_sermon', 'ce_alert' );
+const CE_FORM_TYPES = array( 'ce_staff', 'ce_belief', 'ce_mission', 'ce_sermon', 'ce_alert' );
 
 /**
  * Classic edit screen for our types, so the form is the whole page.
@@ -81,9 +81,9 @@ function ce_render_form( $post ) {
 			ce_row( 'Order', '<em>Use the <strong>Order</strong> number in the Attributes box on the right.</em>' );
 			break;
 
-		case 'ce_bulletin':
-			ce_row( 'Sunday', ce_sunday_input( $post ), 'The Sunday this bulletin is for. Newest shows on the Learn page; older ones are listed under it.' );
-			ce_row( 'Bulletin PDF', ce_pdf_input( '_ce_pdf', $m( '_ce_pdf' ) ) );
+		case 'ce_mission':
+			ce_row( 'Statement', ce_textarea( '_ce_body', $post->post_content, 5 ), 'The title above is the heading (for example "Our mission"); this is the statement shown under it on the Discover page.' );
+			ce_row( 'Order', '<em>Use the <strong>Order</strong> number in the Attributes box on the right. Lower numbers come first.</em>' );
 			break;
 
 		case 'ce_sermon':
@@ -164,7 +164,7 @@ function ce_save_meta( $post_id ) {
 			update_post_meta( $post_id, $key, sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) );
 		}
 	}
-	foreach ( array( '_ce_pdf', '_ce_handout', '_ce_notes', '_ce_link' ) as $key ) {
+	foreach ( array( '_ce_handout', '_ce_notes', '_ce_link' ) as $key ) {
 		if ( isset( $_POST[ $key ] ) ) {
 			update_post_meta( $post_id, $key, esc_url_raw( wp_unslash( $_POST[ $key ] ) ) );
 		}
@@ -196,8 +196,8 @@ function ce_touch_related_pages( $post_id ) {
 	$templates = array(
 		'ce_staff'    => array( 'page-templates/discover.php' ),
 		'ce_belief'   => array( 'page-templates/discover.php' ),
+		'ce_mission'  => array( 'page-templates/discover.php' ),
 		'ce_sermon'   => array( 'page-templates/learn.php' ),
-		'ce_bulletin' => array( 'page-templates/learn.php' ),
 		'ce_alert'    => array( 'page-templates/discover.php', 'page-templates/visit.php', 'page-templates/learn.php' ),
 	);
 	$ids = array();
@@ -225,7 +225,7 @@ add_action( 'deleted_post', 'ce_touch_related_pages' );
 /* ---------- admin polish ---------- */
 
 /**
- * Media picker for the PDF fields, on every form screen.
+ * Media picker for the PDF and picture fields, on every form screen.
  */
 function ce_admin_assets( $hook ) {
 	if ( ! in_array( $hook, array( 'post.php', 'post-new.php' ), true ) ) {
@@ -256,7 +256,7 @@ function ce_title_placeholder( $text, $post ) {
 	$map = array(
 		'ce_staff'    => 'Person’s name',
 		'ce_belief'   => 'Heading, for example "The Bible"',
-		'ce_bulletin' => 'For your reference, for example "October 12 bulletin"',
+		'ce_mission'  => 'Heading, for example "Our mission"',
 		'ce_sermon'   => 'Sermon title or passage',
 		'ce_alert'    => 'The message people will see',
 	);

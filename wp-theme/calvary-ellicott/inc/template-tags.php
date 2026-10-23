@@ -214,6 +214,7 @@ function ce_nav_fallback( $args ) {
 		'page-templates/discover.php' => __( 'Discover', 'calvary-ellicott' ),
 		'page-templates/visit.php'    => __( 'Visit', 'calvary-ellicott' ),
 		'page-templates/learn.php'    => __( 'Learn', 'calvary-ellicott' ),
+		'page-templates/events.php'   => __( 'Events', 'calvary-ellicott' ),
 	);
 	foreach ( $order as $template => $label ) {
 		$id = ce_page_by_template( $template );
@@ -257,7 +258,7 @@ function ce_next_steps( $eyebrow, $headline, $templates ) {
 }
 
 /**
- * PDF link helper for bulletins and sermons.
+ * PDF link helper for sermon files.
  */
 function ce_pdf_link( $url, $label, $class = '' ) {
 	$url = esc_url( $url );

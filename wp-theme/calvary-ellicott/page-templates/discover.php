@@ -8,6 +8,7 @@ while ( have_posts() ) :
 	the_post();
 	ce_page_hero();
 	$beliefs = get_posts( array( 'post_type' => 'ce_belief', 'post_status' => 'publish', 'posts_per_page' => -1, 'orderby' => array( 'menu_order' => 'ASC', 'date' => 'ASC' ) ) );
+	$mission = get_posts( array( 'post_type' => 'ce_mission', 'post_status' => 'publish', 'posts_per_page' => -1, 'orderby' => array( 'menu_order' => 'ASC', 'date' => 'ASC' ) ) );
 	$people  = get_posts( array( 'post_type' => 'ce_staff', 'post_status' => 'publish', 'posts_per_page' => -1, 'orderby' => array( 'menu_order' => 'ASC', 'title' => 'ASC' ) ) );
 	?>
 	<section id="story" class="section story">
@@ -18,6 +19,25 @@ while ( have_posts() ) :
 			<div class="prose"><?php the_content(); ?></div>
 		</div>
 	</section>
+
+	<?php if ( $mission ) : ?>
+	<section id="mission" class="section mission-section">
+		<div class="section-heading narrow"><div>
+			<p class="eyebrow"><?php echo esc_html( ce_opt( 'mission_eyebrow' ) ); ?></p>
+			<h2><?php echo esc_html( ce_opt( 'mission_headline' ) ); ?></h2>
+			<?php if ( ce_opt( 'mission_text' ) ) : ?><p><?php echo esc_html( ce_opt( 'mission_text' ) ); ?></p><?php endif; ?>
+		</div></div>
+		<div class="mission-grid">
+			<?php foreach ( $mission as $i => $m ) : ?>
+				<article class="mission-card">
+					<span class="detail-number"><?php printf( '%02d', $i + 1 ); ?></span>
+					<h3><?php echo esc_html( $m->post_title ); ?></h3>
+					<p><?php echo nl2br( esc_html( wp_strip_all_tags( $m->post_content ) ) ); ?></p>
+				</article>
+			<?php endforeach; ?>
+		</div>
+	</section>
+	<?php endif; ?>
 
 	<?php if ( $beliefs ) : ?>
 	<section id="beliefs" class="section beliefs-section">
@@ -91,6 +111,6 @@ while ( have_posts() ) :
 	</section>
 	<?php endif; ?>
 	<?php
-	ce_next_steps( __( 'Keep going', 'calvary-ellicott' ), __( 'Plan a visit, or keep learning.', 'calvary-ellicott' ), array( 'page-templates/visit.php', 'page-templates/learn.php' ) );
+	ce_next_steps( __( 'Keep going', 'calvary-ellicott' ), __( 'Plan a visit, or keep learning.', 'calvary-ellicott' ), array( 'page-templates/visit.php', 'page-templates/learn.php', 'page-templates/events.php' ) );
 endwhile;
 get_footer();

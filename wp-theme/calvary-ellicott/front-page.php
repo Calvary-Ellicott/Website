@@ -49,23 +49,8 @@ $visit_url    = ce_template_url( 'page-templates/visit.php' );
 	</div>
 </section>
 
-<?php ce_next_steps( ce_opt( 'next_eyebrow' ), ce_opt( 'next_headline' ), array( 'page-templates/discover.php', 'page-templates/visit.php', 'page-templates/learn.php' ) ); ?>
+<?php ce_next_steps( ce_opt( 'next_eyebrow' ), ce_opt( 'next_headline' ), array( 'page-templates/discover.php', 'page-templates/visit.php', 'page-templates/learn.php', 'page-templates/events.php' ) ); ?>
 
-<?php if ( ce_https_url( ce_opt( 'calendar_embed' ) ) ) : ?>
-<section id="events" class="section events-section">
-	<div class="section-heading">
-		<div>
-			<p class="eyebrow"><?php echo esc_html( ce_opt( 'calendar_eyebrow' ) ); ?></p>
-			<h2><?php echo esc_html( ce_opt( 'calendar_headline' ) ); ?></h2>
-			<p><?php echo esc_html( ce_opt( 'calendar_text' ) ); ?></p>
-		</div>
-		<?php echo ce_connect_link( 'events', __( 'All events in Church Connect', 'calvary-ellicott' ), 'button outline', false ); ?>
-	</div>
-	<div class="calendar-shell">
-		<?php ce_embed( ce_opt( 'calendar_embed' ), __( 'Event calendar', 'calvary-ellicott' ), '', '' ); ?>
-	</div>
-</section>
-<?php endif; ?>
 
 <section id="connect" class="section connect-section">
 	<div>

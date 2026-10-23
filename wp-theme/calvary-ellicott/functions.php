@@ -19,6 +19,7 @@ require CE_THEME_DIR . '/inc/post-types.php';
 require CE_THEME_DIR . '/inc/meta-boxes.php';
 require CE_THEME_DIR . '/inc/customizer.php';
 require CE_THEME_DIR . '/inc/setup.php';
+require CE_THEME_DIR . '/inc/site-settings.php';
 
 /**
  * Theme supports, menus, image sizes.
@@ -128,10 +129,10 @@ function ce_excerpt_more() {
 add_filter( 'excerpt_more', 'ce_excerpt_more' );
 
 /**
- * Sermons and bulletins are listed by their own date, so order them newest first everywhere.
+ * Sermons are listed by their own date, so order them newest first everywhere.
  */
 function ce_dated_post_types_order( $query ) {
-	if ( is_admin() && $query->is_main_query() && in_array( $query->get( 'post_type' ), array( 'ce_bulletin', 'ce_sermon' ), true ) && ! $query->get( 'orderby' ) ) {
+	if ( is_admin() && $query->is_main_query() && 'ce_sermon' === $query->get( 'post_type' ) && ! $query->get( 'orderby' ) ) {
 		$query->set( 'orderby', 'date' );
 		$query->set( 'order', 'DESC' );
 	}

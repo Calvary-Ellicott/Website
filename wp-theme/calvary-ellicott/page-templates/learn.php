@@ -1,25 +1,30 @@
 <?php
 /**
  * Template Name: Learn
- * Livestream (BoxCast), sermon handouts and notes, and the weekly bulletin.
+ * Livestream (BoxCast) with a video archive link, sermon handouts and notes,
+ * and an announcements card that links into Church Connect.
  */
 get_header();
 while ( have_posts() ) :
 	the_post();
 	ce_page_hero();
-	$count   = max( 1, (int) ce_opt( 'archive_count' ) ) + 1;
-	$sermons = get_posts( array( 'post_type' => 'ce_sermon', 'post_status' => 'publish', 'posts_per_page' => $count, 'orderby' => 'date', 'order' => 'DESC' ) );
+	$count         = max( 1, (int) ce_opt( 'archive_count' ) ) + 1;
+	$sermons       = get_posts( array( 'post_type' => 'ce_sermon', 'post_status' => 'publish', 'posts_per_page' => $count, 'orderby' => 'date', 'order' => 'DESC' ) );
 	$latest_sermon = array_shift( $sermons );
-	$bulletins = get_posts( array( 'post_type' => 'ce_bulletin', 'post_status' => 'publish', 'posts_per_page' => $count, 'orderby' => 'date', 'order' => 'DESC', 'meta_key' => '_ce_pdf', 'meta_compare' => '!=', 'meta_value' => '' ) );
-	$latest_bulletin = array_shift( $bulletins );
+	$archive_url   = ce_https_url( ce_opt( 'video_archive_url' ) );
+	$announce_url  = ce_connect_url( 'announcements' );
+	$announce_img  = ce_https_url( ce_opt( 'announce_image' ) );
 	?>
 	<section id="watch" class="section watch-section">
-		<div class="section-heading narrow">
+		<div class="section-heading">
 			<div>
 				<p class="eyebrow"><?php echo esc_html( ce_opt( 'watch_live_eyebrow' ) ); ?></p>
 				<h2><?php echo esc_html( ce_opt( 'service_day' ) . 's at ' . ce_opt( 'service_time' ) ); ?></h2>
 				<p><?php echo esc_html( ce_opt( 'watch_live_text' ) ); ?></p>
 			</div>
+			<?php if ( $archive_url ) : ?>
+				<a class="button gold" href="<?php echo $archive_url; ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html( ce_opt( 'video_archive_label' ) ); ?></a>
+			<?php endif; ?>
 		</div>
 		<div class="watch-shell">
 			<?php
@@ -27,13 +32,13 @@ while ( have_posts() ) :
 			if ( $embed_code ) {
 				echo $embed_code; // Admin-entered embed code from BoxCast, output as pasted.
 			} else {
-			ce_embed(
-				ce_opt( 'boxcast_embed' ),
-				__( 'Livestream', 'calvary-ellicott' ),
-				__( 'The livestream is being connected', 'calvary-ellicott' ),
-				__( 'Our online service will appear here once the BoxCast link is added.', 'calvary-ellicott' ),
-				true
-			);
+				ce_embed(
+					ce_opt( 'boxcast_embed' ),
+					__( 'Livestream', 'calvary-ellicott' ),
+					__( 'The livestream is being connected', 'calvary-ellicott' ),
+					__( 'Our online service will appear here once the BoxCast link is added under Site settings.', 'calvary-ellicott' ),
+					true
+				);
 			}
 			?>
 		</div>
@@ -81,33 +86,22 @@ while ( have_posts() ) :
 		<?php endif; ?>
 	</section>
 
-	<section id="bulletin" class="section bulletin-section">
-		<div class="bulletin-current">
-			<?php if ( $latest_bulletin ) : ?>
-				<?php $pdf = get_post_meta( $latest_bulletin->ID, '_ce_pdf', true ); ?>
-				<div class="bulletin-heading">
-					<p class="eyebrow"><?php echo esc_html( sprintf( __( 'Bulletin · %s', 'calvary-ellicott' ), ce_long_date( $latest_bulletin ) ) ); ?></p>
-					<?php echo ce_pdf_link( $pdf, __( 'Open PDF', 'calvary-ellicott' ), 'button primary' ); ?>
-				</div>
-				<iframe src="<?php echo esc_url( $pdf ); ?>#view=FitH" title="<?php echo esc_attr( sprintf( __( 'Bulletin for %s', 'calvary-ellicott' ), ce_long_date( $latest_bulletin ) ) ); ?>" loading="lazy"></iframe>
-			<?php else : ?>
-				<div class="calendar-placeholder"><span class="calendar-icon" aria-hidden="true">CE</span><h3><?php echo esc_html( ce_opt( 'bulletin_empty_title' ) ); ?></h3><p><?php echo esc_html( ce_opt( 'bulletin_empty_text' ) ); ?></p></div>
-			<?php endif; ?>
-		</div>
-		<aside class="bulletin-archive">
-			<h2><?php esc_html_e( 'Previous bulletins', 'calvary-ellicott' ); ?></h2>
-			<?php if ( $bulletins ) : ?>
-				<ul>
-					<?php foreach ( $bulletins as $b ) : ?>
-						<li><?php echo ce_pdf_link( get_post_meta( $b->ID, '_ce_pdf', true ), ce_long_date( $b ) ); ?></li>
-					<?php endforeach; ?>
-				</ul>
-			<?php else : ?>
-				<p><?php esc_html_e( 'Older bulletins will be listed here.', 'calvary-ellicott' ); ?></p>
-			<?php endif; ?>
-		</aside>
+	<?php if ( $announce_url ) : ?>
+	<section id="announcements" class="section announce-section">
+		<a class="announce-card" href="<?php echo $announce_url; ?>" target="_blank" rel="noopener noreferrer">
+			<div class="announce-media"<?php echo $announce_img ? ' style="background-image:url(' . esc_url( $announce_img ) . ')"' : ''; ?>>
+				<?php if ( ! $announce_img ) : ?><span class="calendar-icon" aria-hidden="true">CE</span><?php endif; ?>
+			</div>
+			<div class="announce-copy">
+				<p class="eyebrow"><?php echo esc_html( ce_opt( 'announce_eyebrow' ) ); ?></p>
+				<h2><?php echo esc_html( ce_opt( 'announce_headline' ) ); ?></h2>
+				<p><?php echo esc_html( ce_opt( 'announce_text' ) ); ?></p>
+				<span class="button primary"><?php echo esc_html( ce_opt( 'announce_button' ) ); ?></span>
+			</div>
+		</a>
 	</section>
+	<?php endif; ?>
 	<?php
-	ce_next_steps( __( 'Keep going', 'calvary-ellicott' ), __( 'Get to know us, or plan a visit.', 'calvary-ellicott' ), array( 'page-templates/discover.php', 'page-templates/visit.php' ) );
+	ce_next_steps( __( 'Keep going', 'calvary-ellicott' ), __( 'Get to know us, or plan a visit.', 'calvary-ellicott' ), array( 'page-templates/discover.php', 'page-templates/visit.php', 'page-templates/events.php' ) );
 endwhile;
 get_footer();

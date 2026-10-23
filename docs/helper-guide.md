@@ -12,7 +12,7 @@ If anything goes wrong at any point, nothing is lost. Stop and ask Scott. It is 
 
 1. Scott will create a login for you and email you a link to set your password. Open it, choose a password, and write it down somewhere safe.
 2. To sign in later, go to the website address followed by **/wp-admin**, for example `calvaryellicott.org/wp-admin`. Bookmark that page.
-3. After signing in you see the **Dashboard**. The menu down the left side is where everything lives. The items you will use are **Bulletins**, **Sermons**, **Alerts**, **Staff**, and **Pages**. The website itself has only four pages: Home, Discover, Visit, and Learn. Everything else (events, sign-ups, groups, giving) happens in Church Connect, which has its own screens.
+3. After signing in you see the **Dashboard**. The menu down the left side is where everything lives. The items you will use are **Site settings**, **Sermons**, **Alerts**, **Staff**, **Mission & Vision**, and **Pages**. The website itself has five pages: Home, Discover, Visit, Learn, and Events. Everything else (events, sign-ups, groups, giving) happens in Church Connect, which has its own screens.
 
 That is the whole setup. There is nothing to install.
 
@@ -29,21 +29,11 @@ Every kind of update follows the same four moves.
 
 If they ask for a change, they may fix it themselves or ask you to. To fix it yourself, open the item again from the left menu, make the change, and click **Submit for Review** again.
 
-**A note on dates.** Bulletins and sermons are filed by their Sunday. Each form has a **Sunday** box at the top; it starts on the coming Sunday, so you can add things on a Thursday and they are filed correctly.
+**A note on dates.** Sermons are filed by their Sunday. Each form has a **Sunday** box at the top; it starts on the coming Sunday, so you can add things on a Thursday and they are filed correctly.
 
 ---
 
 ## Part 3: Common tasks
-
-### Post this week's bulletin
-
-1. Left menu: **Bulletins → Add new**.
-2. Title: anything you like, for example `September 20 bulletin`.
-3. Check the **Sunday** box shows the right date.
-4. Next to **Bulletin PDF**, click **Choose PDF**. Click **Upload files**, pick the PDF from your computer, then click **Use this file**.
-5. Click **Submit for Review**.
-
-The Learn page always shows the newest one and lists the older ones underneath.
 
 ### Post sermon notes
 
@@ -79,7 +69,7 @@ The banner appears at the top of every page once approved. **To take it down**, 
 3. The sentence under the big title at the top of the page is in the **Excerpt** box on the right. The small line above the title is in the **Page banner** box.
 4. Click **Submit for Review**.
 
-The homepage wording, the service time, the address, and the Church Connect link are in a different place: **Appearance → Customize → Calvary Ellicott**. That screen is normally handled by Scott, so ask before changing it.
+The service time, address, church email, Church Connect links, homepage wording, and the pictures are under **Site settings** at the top of the left menu. Pick the tab, change the box, click **Save changes**. Ask before changing the Church Connect links or the livestream code.
 
 ---
 

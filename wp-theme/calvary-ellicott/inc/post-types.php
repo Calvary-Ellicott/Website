@@ -29,22 +29,22 @@ function ce_register_post_types() {
 	);
 
 	register_post_type(
+		'ce_mission',
+		$common + array(
+			'labels'      => ce_labels( 'Statement', 'Mission & Vision' ),
+			'menu_icon'   => 'dashicons-flag',
+			'supports'    => array( 'title', 'page-attributes' ),
+			'description' => 'Mission, vision, and values statements shown on the Discover page, in menu order.',
+		)
+	);
+
+	register_post_type(
 		'ce_belief',
 		$common + array(
 			'labels'      => ce_labels( 'Belief', 'Beliefs' ),
 			'menu_icon'   => 'dashicons-book-alt',
 			'supports'    => array( 'title', 'page-attributes' ),
 			'description' => 'Statement of faith items shown on the Beliefs page, in menu order.',
-		)
-	);
-
-	register_post_type(
-		'ce_bulletin',
-		$common + array(
-			'labels'      => ce_labels( 'Bulletin', 'Bulletins' ),
-			'menu_icon'   => 'dashicons-media-document',
-			'supports'    => array( 'title' ),
-			'description' => 'Weekly bulletin PDFs, shown on the Learn page.',
 		)
 	);
 
@@ -97,8 +97,6 @@ function ce_admin_columns( $columns ) {
 	}
 	if ( 'ce_sermon' === $screen->post_type ) {
 		$columns = array( 'cb' => $columns['cb'], 'title' => 'Title', 'ce_sunday' => 'Sunday', 'ce_files' => 'Files' );
-	} elseif ( 'ce_bulletin' === $screen->post_type ) {
-		$columns = array( 'cb' => $columns['cb'], 'title' => 'Title', 'ce_sunday' => 'Sunday', 'ce_files' => 'PDF' );
 	} elseif ( 'ce_alert' === $screen->post_type ) {
 		$columns = array( 'cb' => $columns['cb'], 'title' => 'Message', 'ce_status' => 'Showing?', 'ce_expires' => 'Expires' );
 	} elseif ( 'ce_staff' === $screen->post_type ) {
@@ -107,7 +105,6 @@ function ce_admin_columns( $columns ) {
 	return $columns;
 }
 add_filter( 'manage_ce_sermon_posts_columns', 'ce_admin_columns' );
-add_filter( 'manage_ce_bulletin_posts_columns', 'ce_admin_columns' );
 add_filter( 'manage_ce_alert_posts_columns', 'ce_admin_columns' );
 add_filter( 'manage_ce_staff_posts_columns', 'ce_admin_columns' );
 
@@ -118,9 +115,6 @@ function ce_admin_column_content( $column, $post_id ) {
 			break;
 		case 'ce_files':
 			$parts = array();
-			if ( get_post_meta( $post_id, '_ce_pdf', true ) ) {
-				$parts[] = 'PDF';
-			}
 			if ( get_post_meta( $post_id, '_ce_handout', true ) ) {
 				$parts[] = 'Handout';
 			}
@@ -148,6 +142,5 @@ function ce_admin_column_content( $column, $post_id ) {
 	}
 }
 add_action( 'manage_ce_sermon_posts_custom_column', 'ce_admin_column_content', 10, 2 );
-add_action( 'manage_ce_bulletin_posts_custom_column', 'ce_admin_column_content', 10, 2 );
 add_action( 'manage_ce_alert_posts_custom_column', 'ce_admin_column_content', 10, 2 );
 add_action( 'manage_ce_staff_posts_custom_column', 'ce_admin_column_content', 10, 2 );

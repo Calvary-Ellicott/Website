@@ -17,6 +17,7 @@ while ( have_posts() ) :
 				<?php echo ce_connect_link( 'forms', __( 'Tell us you’re coming', 'calvary-ellicott' ), 'button primary', false ); ?>
 				<a class="button outline" href="<?php echo esc_url( ce_maps_url() ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Get directions', 'calvary-ellicott' ); ?></a>
 			</div>
+			<?php if ( is_email( ce_opt( 'contact_email' ) ) ) : ?><p class="visit-contact"><?php esc_html_e( 'Questions?', 'calvary-ellicott' ); ?> <a href="mailto:<?php echo esc_attr( ce_opt( 'contact_email' ) ); ?>"><?php echo esc_html( ce_opt( 'contact_email' ) ); ?></a><?php if ( ce_opt( 'phone' ) ) : ?> · <?php echo esc_html( ce_opt( 'phone' ) ); ?><?php endif; ?></p><?php endif; ?>
 		</div>
 		<?php
 		ce_details_card(
