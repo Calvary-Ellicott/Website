@@ -25,6 +25,7 @@ function ce_field_sections() {
  */
 function ce_fields() {
 	return array(
+		'site_logo'            => array( 'ce_site', 'Logo', 'image', 'Shown at the top of every page and in the footer in place of the "CE" mark. A wide logo on a plain or transparent background works best.' ),
 		'service_day'          => array( 'ce_site', 'Service day', 'text' ),
 		'service_time'         => array( 'ce_site', 'Service time', 'text' ),
 		'address_1'            => array( 'ce_site', 'Address line 1', 'text' ),
@@ -142,6 +143,7 @@ function ce_customizer_defaults() {
 		'hero_secondary_label' => 'Get to know us',
 		'hero_images'          => '',
 		'hero_interval'        => 7,
+		'site_logo'            => '',
 		'hero_image'           => '',
 		'visit_eyebrow'        => 'You’re welcome here',
 		'visit_headline'       => "A simple Sunday.\nA meaningful community.",

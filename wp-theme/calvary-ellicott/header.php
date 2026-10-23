@@ -10,10 +10,7 @@
 <?php ce_alert_banner(); ?>
 <a class="skip-link" href="#main"><?php esc_html_e( 'Skip to content', 'calvary-ellicott' ); ?></a>
 <header class="site-header" data-scrolled="false">
-	<a class="brand" href="<?php echo esc_url( home_url( '/' ) ); ?>" aria-label="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?> home">
-		<span class="brand-mark" aria-hidden="true">CE</span>
-		<span><strong>Calvary</strong><small>Ellicott</small></span>
-	</a>
+	<?php ce_brand(); ?>
 	<button class="nav-toggle" type="button" aria-label="<?php esc_attr_e( 'Toggle navigation', 'calvary-ellicott' ); ?>" aria-expanded="false"><span></span><span></span><span></span></button>
 	<nav class="nav-links" aria-label="<?php esc_attr_e( 'Primary navigation', 'calvary-ellicott' ); ?>">
 		<?php

@@ -1,7 +1,7 @@
 </main>
 
 <footer class="site-footer">
-	<a class="brand footer-brand" href="<?php echo esc_url( home_url( '/' ) ); ?>"><span class="brand-mark">CE</span><span><strong>Calvary</strong><small>Ellicott</small></span></a>
+	<?php ce_brand( 'footer-brand' ); ?>
 	<div>
 		<strong><?php echo esc_html( ce_service_line() ); ?></strong>
 		<p><?php echo esc_html( ce_opt( 'address_1' ) . ', ' . ce_opt( 'address_2' ) ); ?></p>

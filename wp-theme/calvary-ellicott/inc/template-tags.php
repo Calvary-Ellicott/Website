@@ -41,13 +41,27 @@ function ce_connect_url( $key = '' ) {
 }
 
 /**
+ * The brand block in the header and footer: the chosen logo, or the "CE" mark with the name.
+ */
+function ce_brand( $class = '' ) {
+	$logo = ce_https_url( ce_opt( 'site_logo' ) );
+	printf( '<a class="brand%s" href="%s" aria-label="%s">', $class ? ' ' . esc_attr( $class ) : '', esc_url( home_url( '/' ) ), esc_attr( get_bloginfo( 'name' ) . ' ' . __( 'home', 'calvary-ellicott' ) ) );
+	if ( $logo ) {
+		printf( '<img class="brand-logo" src="%s" alt="" />', $logo );
+	} else {
+		echo '<span class="brand-mark" aria-hidden="true">CE</span><span><strong>Calvary</strong><small>Ellicott</small></span>';
+	}
+	echo '</a>';
+}
+
+/**
  * The photo panel used by the story-style sections. Shows the chosen picture, or a
  * branded placeholder when none is set, instead of hotlinking a stock photo.
  */
 function ce_story_image( $key, $alt = '' ) {
 	$url = ce_https_url( ce_opt( $key ) );
 	if ( $url ) {
-		printf( '<div class="story-image has-photo" role="img" aria-label="%s" style="background-image:linear-gradient(#18282022,#18282044),url(%s)"></div>', esc_attr( $alt ), $url );
+		printf( '<div class="story-image has-photo"><img src="%s" alt="%s" loading="lazy" /></div>', $url, esc_attr( $alt ) );
 	} else {
 		echo '<div class="story-image" aria-hidden="true"><span class="calendar-icon">CE</span></div>';
 	}

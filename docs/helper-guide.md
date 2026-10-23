@@ -71,7 +71,7 @@ The banner appears at the top of every page once approved. **To take it down**, 
 
 The service time, address, church email, Church Connect links, homepage wording, and the pictures are under **Site settings** at the top of the left menu. Pick the tab, change the box, click **Save changes**. Ask before changing the Church Connect links or the livestream code.
 
-**Pictures.** Each picture has a **Choose picture** button next to it: the banner photo album and the story photo on the **Homepage** tab, the story photo on the **Discover** tab, the Sunday photo on the **Visit** tab, and the announcements picture on the **Learn** tab. Until a photo is chosen, the website shows a plain green panel with the church initials in its place.
+**Pictures.** Each picture has a **Choose picture** button next to it: the church logo on the **Church details** tab (it replaces the "CE" mark at the top of every page and in the footer), the banner photo album and the story photo on the **Homepage** tab, the story photo on the **Discover** tab, the Sunday photo on the **Visit** tab, and the announcements picture on the **Learn** tab. Until a photo is chosen, the website shows a plain green panel with the church initials in its place.
 
 ---
 
