@@ -13,6 +13,7 @@ function ce_field_sections() {
 		'ce_church' => array( 'Church Connect links', 'The ChurchTrac Church Connect site. Every form, event, group, serving sign-up, and gift happens there; this site links to it. Deeper links are optional: leave one blank and its button goes to the main address.' ),
 		'ce_home'   => array( 'Homepage', 'The big banner and the sections under it.' ),
 		'ce_staff'  => array( 'Discover page', 'Mission and vision intro, beliefs intro, staff section, and the gold invite card.' ),
+		'ce_visit'  => array( 'Visit page', 'The photo beside "What a Sunday looks like".' ),
 		'ce_events' => array( 'Events page', 'The embedded ChurchTrac calendar.' ),
 		'ce_watch'  => array( 'Learn page', 'Livestream, video archive, sermon notes, and the announcements card.' ),
 		'ce_files'  => array( 'Sermons', 'How many past weeks to list.' ),
@@ -63,10 +64,11 @@ function ce_fields() {
 		'story_headline'       => array( 'ce_home', 'Story section: headline', 'text' ),
 		'story_text'           => array( 'ce_home', 'Story section: paragraph', 'textarea' ),
 		'story_link_label'     => array( 'ce_home', 'Story section: link label (goes to Discover)', 'text' ),
-		'story_image'          => array( 'ce_home', 'Story section photo', 'image' ),
+		'story_image'          => array( 'ce_home', 'Story section photo', 'image', 'The photo beside "Our next chapter" on the homepage.' ),
 		'next_eyebrow'         => array( 'ce_home', 'Cards section: small line', 'text' ),
 		'next_headline'        => array( 'ce_home', 'Cards section: headline', 'text' ),
 
+		'discover_image'       => array( 'ce_staff', 'Story photo', 'image', 'The photo beside the story at the top of the Discover page.' ),
 		'mission_eyebrow'      => array( 'ce_staff', 'Mission and vision: small line', 'text' ),
 		'mission_headline'     => array( 'ce_staff', 'Mission and vision: headline', 'text' ),
 		'mission_text'         => array( 'ce_staff', 'Mission and vision: intro sentence (optional)', 'textarea', 'The statements themselves are entries under Mission & Vision in the dashboard.' ),
@@ -81,6 +83,8 @@ function ce_fields() {
 		'invite_headline'      => array( 'ce_staff', 'Invite card: headline', 'text' ),
 		'invite_text'          => array( 'ce_staff', 'Invite card: text', 'textarea' ),
 		'invite_link_label'    => array( 'ce_staff', 'Invite card: link label (opens Church Connect forms)', 'text' ),
+
+		'visit_image'          => array( 'ce_visit', 'Sunday photo', 'image', 'The photo beside "What a Sunday looks like".' ),
 
 		'calendar_embed'       => array( 'ce_events', 'Public calendar embed address', 'url', 'From ChurchTrac → Events → Options → Embed Calendar. Add &view=listMonth for a list instead of a month grid.' ),
 		'calendar_eyebrow'     => array( 'ce_events', 'Small line', 'text' ),
@@ -152,6 +156,8 @@ function ce_customizer_defaults() {
 		'next_eyebrow'         => 'Take a look around',
 		'next_headline'        => 'Discover, visit, learn.',
 
+		'discover_image'       => '',
+		'visit_image'          => '',
 		'mission_eyebrow'      => 'Our purpose',
 		'mission_headline'     => 'Mission and vision',
 		'mission_text'         => '',

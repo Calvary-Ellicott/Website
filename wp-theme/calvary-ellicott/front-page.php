@@ -44,7 +44,7 @@ $visit_url    = ce_template_url( 'page-templates/visit.php' );
 </section>
 
 <section class="section story">
-	<div class="story-image" role="img" aria-label="<?php esc_attr_e( 'Open Colorado prairie beneath a wide sky', 'calvary-ellicott' ); ?>"></div>
+	<?php ce_story_image( 'story_image', ce_opt( 'story_headline' ) ); ?>
 	<div class="story-copy">
 		<p class="eyebrow"><?php echo esc_html( ce_opt( 'story_eyebrow' ) ); ?></p>
 		<h2><?php echo esc_html( ce_opt( 'story_headline' ) ); ?></h2>

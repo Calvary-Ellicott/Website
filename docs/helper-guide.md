@@ -69,7 +69,9 @@ The banner appears at the top of every page once approved. **To take it down**, 
 3. The sentence under the big title at the top of the page is in the **Excerpt** box on the right. The small line above the title is in the **Page banner** box.
 4. Click **Submit for Review**.
 
-The service time, address, church email, Church Connect links, homepage wording, and the pictures (including the banner photo album on the Homepage tab) are under **Site settings** at the top of the left menu. Pick the tab, change the box, click **Save changes**. Ask before changing the Church Connect links or the livestream code.
+The service time, address, church email, Church Connect links, homepage wording, and the pictures are under **Site settings** at the top of the left menu. Pick the tab, change the box, click **Save changes**. Ask before changing the Church Connect links or the livestream code.
+
+**Pictures.** Each picture has a **Choose picture** button next to it: the banner photo album and the story photo on the **Homepage** tab, the story photo on the **Discover** tab, the Sunday photo on the **Visit** tab, and the announcements picture on the **Learn** tab. Until a photo is chosen, the website shows a plain green panel with the church initials in its place.
 
 ---
 

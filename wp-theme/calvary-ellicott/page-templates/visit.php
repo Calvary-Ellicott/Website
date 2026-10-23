@@ -45,7 +45,7 @@ while ( have_posts() ) :
 	</section>
 
 	<section id="sunday" class="section story">
-		<div class="story-image" role="img" aria-label="<?php esc_attr_e( 'Open Colorado prairie beneath a wide sky', 'calvary-ellicott' ); ?>"></div>
+		<?php ce_story_image( 'visit_image', __( 'What a Sunday looks like', 'calvary-ellicott' ) ); ?>
 		<div class="story-copy">
 			<p class="eyebrow"><?php esc_html_e( 'What a Sunday looks like', 'calvary-ellicott' ); ?></p>
 			<h2><?php esc_html_e( 'Simple, warm, and centered on Jesus.', 'calvary-ellicott' ); ?></h2>

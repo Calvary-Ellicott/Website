@@ -12,7 +12,7 @@ while ( have_posts() ) :
 	$people  = get_posts( array( 'post_type' => 'ce_staff', 'post_status' => 'publish', 'posts_per_page' => -1, 'orderby' => array( 'menu_order' => 'ASC', 'title' => 'ASC' ) ) );
 	?>
 	<section id="story" class="section story">
-		<div class="story-image" role="img" aria-label="<?php esc_attr_e( 'Open Colorado prairie beneath a wide sky', 'calvary-ellicott' ); ?>"></div>
+		<?php ce_story_image( 'discover_image', get_bloginfo( 'name' ) ); ?>
 		<div class="story-copy">
 			<p class="eyebrow"><?php echo esc_html( ce_opt( 'story_eyebrow' ) ); ?></p>
 			<h2><?php echo esc_html( get_bloginfo( 'name' ) ); ?></h2>

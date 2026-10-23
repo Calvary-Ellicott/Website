@@ -41,6 +41,19 @@ function ce_connect_url( $key = '' ) {
 }
 
 /**
+ * The photo panel used by the story-style sections. Shows the chosen picture, or a
+ * branded placeholder when none is set, instead of hotlinking a stock photo.
+ */
+function ce_story_image( $key, $alt = '' ) {
+	$url = ce_https_url( ce_opt( $key ) );
+	if ( $url ) {
+		printf( '<div class="story-image has-photo" role="img" aria-label="%s" style="background-image:linear-gradient(#18282022,#18282044),url(%s)"></div>', esc_attr( $alt ), $url );
+	} else {
+		echo '<div class="story-image" aria-hidden="true"><span class="calendar-icon">CE</span></div>';
+	}
+}
+
+/**
  * Google Maps directions link for the church address.
  */
 function ce_maps_url() {

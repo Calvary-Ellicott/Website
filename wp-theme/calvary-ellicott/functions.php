@@ -57,7 +57,6 @@ function ce_enqueue_assets() {
 		null
 	);
 	wp_enqueue_style( 'ce-style', get_stylesheet_uri(), array( 'ce-fonts' ), CE_THEME_VERSION );
-	wp_add_inline_style( 'ce-style', ce_inline_image_css() );
 	wp_enqueue_script( 'ce-site', CE_THEME_URI . '/assets/site.js', array(), CE_THEME_VERSION, true );
 	wp_localize_script( 'ce-site', 'CE_HERO', array( 'interval' => max( 3, (int) ce_opt( 'hero_interval' ) ) ) );
 }
@@ -74,14 +73,6 @@ function ce_resource_hints( $urls, $relation_type ) {
 	return $urls;
 }
 add_filter( 'wp_resource_hints', 'ce_resource_hints', 10, 2 );
-
-/**
- * Hero and story background images: Customizer choice, else the original stock photos.
- */
-function ce_inline_image_css() {
-	$story = esc_url( ce_opt( 'story_image', 'https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1200&q=83' ) );
-	return '.story-image{background:linear-gradient(#18282022,#18282044),url("' . $story . '") center/cover}';
-}
 
 /**
  * Theme colour and load the theme stylesheet in the block editor too.
