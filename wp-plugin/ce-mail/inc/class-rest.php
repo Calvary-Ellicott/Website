@@ -51,6 +51,7 @@ class CE_Mail_REST {
 		$r( '/admin/groups/(?P<id>\d+)', 'PUT', 'admin_group_save' );
 		$r( '/admin/groups/(?P<id>\d+)', 'DELETE', 'admin_group_delete' );
 		$r( '/admin/groups/(?P<id>\d+)/members', 'PUT', 'admin_group_members' );
+		$r( '/admin/suggestions', 'GET', 'admin_suggestions' );
 		$r( '/admin/rules', 'GET', 'admin_rules' );
 		$r( '/admin/sync', 'POST', 'admin_sync' );
 	}
@@ -549,6 +550,54 @@ class CE_Mail_REST {
 			return self::fail( $res->get_error_message(), 502 );
 		}
 		return array( 'ok' => true, 'email' => $email, 'password' => $password );
+	}
+
+	/**
+	 * Addresses the member picker can offer: mailboxes on the domain, website users,
+	 * and people already in a group. One entry per address, mailboxes first.
+	 */
+	public static function admin_suggestions() {
+		$out = array();
+		$add = function ( $email, $label, $source ) use ( &$out ) {
+			$email = strtolower( trim( (string) $email ) );
+			if ( ! is_email( $email ) ) {
+				return;
+			}
+			if ( isset( $out[ $email ] ) ) {
+				if ( '' !== $label && '' === $out[ $email ]['label'] ) {
+					$out[ $email ]['label'] = $label;
+				}
+				return;
+			}
+			$out[ $email ] = array( 'email' => $email, 'label' => (string) $label, 'source' => $source );
+		};
+		if ( self::demo_admin() ) {
+			foreach ( array( 'dan@example.org', 'don@example.org', 'scott@example.org' ) as $u ) {
+				$add( $u, '', 'mailbox' );
+			}
+		} else {
+			$users = get_transient( 'ce_mail_pm_users' );
+			if ( ! is_array( $users ) ) {
+				$users = CE_Mail_Purelymail::users();
+				if ( ! is_wp_error( $users ) ) {
+					set_transient( 'ce_mail_pm_users', $users, 60 );
+				}
+			}
+			if ( is_array( $users ) ) {
+				foreach ( $users as $u ) {
+					$add( $u, '', 'mailbox' );
+				}
+			}
+		}
+		foreach ( get_users( array( 'number' => 300, 'orderby' => 'display_name' ) ) as $u ) {
+			$add( $u->user_email, $u->display_name, 'website user' );
+		}
+		foreach ( CE_Mail_Groups::all() as $g ) {
+			foreach ( $g['members'] as $m ) {
+				$add( $m, '', 'in ' . $g['name'] );
+			}
+		}
+		return array( 'items' => array_values( $out ) );
 	}
 
 	public static function admin_groups() {

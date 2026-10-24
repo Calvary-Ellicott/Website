@@ -148,3 +148,16 @@ textarea{min-height:160px;resize:vertical}
 .pane>.table{margin-top:16px}
 label.field input[type=checkbox]{width:auto;margin-right:6px}
 @media(max-width:640px){.group .members{columns:1}}
+
+/* ---------- email picker ---------- */
+.picker-box{position:relative}
+.picker .chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px;min-height:28px}
+.chip{display:inline-flex;align-items:center;gap:5px;max-width:100%;padding:4px 4px 4px 11px;border-radius:999px;background:var(--cream);font-size:.9rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip b{font-weight:600}
+.chip button{border:0;border-radius:999px;background:transparent;width:22px;height:22px;line-height:1;font-size:1rem;cursor:pointer;color:var(--muted)}
+.chip button:hover{background:#0001;color:var(--bad)}
+.picker-list{position:absolute;left:0;right:0;top:100%;z-index:5;max-height:260px;overflow:auto;margin-top:4px;border:1px solid var(--line);border-radius:9px;background:#fff;box-shadow:0 10px 30px #0002}
+.picker-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 12px;cursor:pointer;border-bottom:1px solid var(--paper)}
+.picker-item:last-child{border-bottom:0}
+.picker-item.hi,.picker-item:hover{background:var(--sky)}
+.picker-item b{font-weight:600}

@@ -6,7 +6,8 @@
   const $$ = (sel, el) => Array.from((el || document).querySelectorAll(sel));
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
-  const state = { status: null, view: "groups", groups: [], demoGroups: false, mailboxes: [], demoMail: false, rules: [], report: null };
+  const state = { status: null, view: "groups", groups: [], demoGroups: false, mailboxes: [], demoMail: false, rules: [], report: null, suggestions: [] };
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   /* ---------- api ---------- */
   async function api(path, opts) {
@@ -89,19 +90,89 @@
     return '<div class="card"><div class="row between"><h2>Last sync</h2><button class="button small ghost" data-action="hide-report">Hide</button></div><table class="table"><thead><tr><th>Group</th><th>Address</th><th>Result</th><th>Detail</th></tr></thead><tbody>' + rows + "</tbody></table></div>";
   }
 
+  /* ---------- email picker: search + dropdown + chips ---------- */
+  async function loadSuggestions() {
+    try { const r = await api("suggestions"); state.suggestions = r.items; } catch (e) { state.suggestions = []; }
+  }
+
+  function emailPicker(host, selected) {
+    const sel = (selected || []).map((s) => String(s).toLowerCase());
+    const sugg = state.suggestions;
+    let q = "", hi = 0;
+    host.className = "picker";
+    host.innerHTML = '<div class="chips"></div><div class="picker-box"><input type="text" class="picker-input" placeholder="Search names or addresses, or type an address and press Enter" autocomplete="off" spellcheck="false" /><div class="picker-list" hidden></div></div>' +
+      '<div class="row" style="margin-top:8px"><button type="button" class="button small ghost" data-pick="all-mailboxes">Add every mailbox</button><button type="button" class="button small ghost" data-pick="clear">Remove all</button></div>';
+    const chips = $(".chips", host), input = $(".picker-input", host), list = $(".picker-list", host);
+    const labelOf = (e) => { const s = sugg.find((x) => x.email === e); return s && s.label ? s.label : ""; };
+
+    function renderChips() {
+      chips.innerHTML = sel.length ? sel.map((e) => '<span class="chip" title="' + esc(e) + '">' + (labelOf(e) ? "<b>" + esc(labelOf(e)) + "</b> " : "") + esc(e) + '<button type="button" data-remove="' + esc(e) + '" aria-label="Remove ' + esc(e) + '">×</button></span>').join("") : '<span class="help">Nobody yet. Search below or type an address.</span>';
+    }
+    function matches() {
+      const t = q.trim().toLowerCase();
+      return sugg.filter((s) => !sel.includes(s.email) && (!t || s.email.includes(t) || s.label.toLowerCase().includes(t))).slice(0, 12);
+    }
+    function renderList() {
+      const m = matches(), typed = q.trim().toLowerCase();
+      const canAdd = EMAIL_RE.test(typed) && !sel.includes(typed) && !m.some((s) => s.email === typed);
+      const n = m.length + (canAdd ? 1 : 0);
+      if (!n) { list.hidden = true; return; }
+      hi = Math.max(0, Math.min(hi, n - 1));
+      list.innerHTML = m.map((s, i) => '<div class="picker-item' + (i === hi ? " hi" : "") + '" data-email="' + esc(s.email) + '"><span>' + (s.label ? "<b>" + esc(s.label) + "</b> " : "") + esc(s.email) + '</span><span class="pill">' + esc(s.source) + "</span></div>").join("") +
+        (canAdd ? '<div class="picker-item' + (m.length === hi ? " hi" : "") + '" data-email="' + esc(typed) + '"><span>Add <b>' + esc(typed) + '</b></span><span class="pill">new address</span></div>' : "");
+      list.hidden = false;
+      const cur = $(".picker-item.hi", list); if (cur && cur.scrollIntoView) cur.scrollIntoView({ block: "nearest" });
+    }
+    function add(emails) {
+      let bad = 0;
+      [].concat(emails).forEach((e) => { e = String(e).trim().toLowerCase(); if (!e) return; if (!EMAIL_RE.test(e)) { bad++; return; } if (!sel.includes(e)) sel.push(e); });
+      if (bad) toast(bad + " item(s) did not look like an email address and were skipped", "bad");
+      q = ""; input.value = ""; hi = 0; renderChips(); renderList(); input.focus();
+    }
+
+    input.oninput = () => { q = input.value; hi = 0; renderList(); };
+    input.onfocus = () => renderList();
+    input.onblur = () => setTimeout(() => { list.hidden = true; }, 150);
+    input.onpaste = (e) => { const t = (e.clipboardData || window.clipboardData).getData("text"); if (/[\s,;]/.test(t.trim())) { e.preventDefault(); add(t.split(/[\s,;]+/)); } };
+    input.onkeydown = (e) => {
+      const items = $$(".picker-item", list);
+      if (e.key === "ArrowDown") { e.preventDefault(); if (list.hidden) renderList(); else { hi = Math.min(hi + 1, items.length - 1); renderList(); } }
+      else if (e.key === "ArrowUp") { e.preventDefault(); hi = Math.max(hi - 1, 0); renderList(); }
+      else if (e.key === "Enter" || e.key === "Tab" && !list.hidden && input.value) {
+        e.preventDefault();
+        const it = !list.hidden ? items[hi] : null;
+        if (it) add(it.dataset.email);
+        else if (input.value.trim()) add(input.value);
+      }
+      else if (e.key === "Escape") { if (!list.hidden) { e.stopPropagation(); list.hidden = true; } }
+      else if (e.key === "Backspace" && !input.value && sel.length) { sel.pop(); renderChips(); }
+    };
+    list.onmousedown = (e) => { const it = e.target.closest(".picker-item"); if (it) { e.preventDefault(); add(it.dataset.email); } };
+    host.onclick = (e) => {
+      const rm = e.target.closest("[data-remove]"); if (rm) { sel.splice(sel.indexOf(rm.dataset.remove), 1); renderChips(); input.focus(); return; }
+      const pick = e.target.closest("[data-pick]"); if (!pick) return;
+      if (pick.dataset.pick === "all-mailboxes") { const m = sugg.filter((s) => s.source === "mailbox").map((s) => s.email); if (!m.length) toast("No mailboxes known yet. Connect the API token first.", "bad"); else add(m); }
+      if (pick.dataset.pick === "clear") { sel.length = 0; renderChips(); }
+    };
+    renderChips();
+    return { values: () => sel.slice() };
+  }
+
   function groupForm(g) {
     g = g || { id: 0, name: "", address: "", description: "", members: [] };
     const card = modal('<h2>' + (g.id ? "Edit group" : "New group") + '</h2><form id="group-form">' +
       '<label class="field"><span>Name</span><input type="text" name="name" value="' + esc(g.name) + '" required placeholder="Staff" /></label>' +
       '<label class="field"><span>Address (optional)</span><div class="row" style="gap:6px"><input type="text" name="address" value="' + esc(g.address) + '" placeholder="info" pattern="[A-Za-z0-9][A-Za-z0-9._-]*" style="max-width:220px" /><span>@' + esc(state.status ? state.status.domain : CFG.domain) + "</span></div><p class=\"help\">Leave blank for a list with no address of its own. Do not create a Purelymail mailbox with this name; the routing rule takes its place.</p></label>" +
       '<label class="field"><span>Description (optional)</span><input type="text" name="description" value="' + esc(g.description) + '" /></label>' +
-      '<label class="field"><span>Members, one per line</span><textarea name="members" placeholder="dan@' + esc(state.status ? state.status.domain : CFG.domain) + '">' + esc(g.members.join("\n")) + "</textarea></label>" +
-      (state.mailboxes.length ? '<p class="help">Mailboxes on the domain: ' + state.mailboxes.map((m) => '<a href="#" data-action="add-member" data-email="' + esc(m) + '">' + esc(m) + "</a>").join(", ") + "</p>" : "") +
+      '<div class="field"><span class="field-label">Members</span><div id="member-picker"></div><p class="help">Suggestions come from the mailboxes on the domain, people with a website login, and other groups. Any other address can be typed in; pasting a list separated by commas or new lines works too.</p></div>' +
       '<div class="modal-foot"><button type="button" class="button ghost" data-action="close">Cancel</button><button type="submit" class="button primary">Save group</button></div></form>');
+    const picker = emailPicker($("#member-picker", card), g.members);
     $("#group-form", card).onsubmit = async (e) => {
       e.preventDefault(); const btn = $("button[type=submit]", card); busy(btn, true);
       const f = Object.fromEntries(new FormData(e.target).entries());
-      const members = f.members.split(/[\n,;]+/).map((s) => s.trim()).filter(Boolean);
+      const pending = $(".picker-input", card).value.trim();
+      const members = picker.values();
+      if (pending && EMAIL_RE.test(pending.toLowerCase()) && !members.includes(pending.toLowerCase())) members.push(pending.toLowerCase());
       try {
         await api(g.id ? "groups/" + g.id : "groups", { method: g.id ? "PUT" : "POST", body: { name: f.name, address: f.address, description: f.description, members } });
         closeModal(); toast("Group saved. Sync to Purelymail when the list is right.", "ok"); refreshGroups();
@@ -205,9 +276,8 @@
     const a = btn.dataset.action;
     if (a === "menu") { const app = $("#app"); app.dataset.menu = app.dataset.menu === "open" ? "" : "open"; }
     if (a === "close") closeModal();
-    if (a === "new-group") { await loadMailboxes(); groupForm(); }
-    if (a === "edit-group") { await loadMailboxes(); groupForm(state.groups.find((g) => g.id === +btn.dataset.id)); }
-    if (a === "add-member") { e.preventDefault(); const ta = $("#group-form textarea"); if (ta && !ta.value.split(/\s+/).includes(btn.dataset.email)) ta.value = (ta.value.trim() ? ta.value.trim() + "\n" : "") + btn.dataset.email; }
+    if (a === "new-group") { busy(btn, true); await loadSuggestions(); busy(btn, false); groupForm(); }
+    if (a === "edit-group") { busy(btn, true); await loadSuggestions(); busy(btn, false); groupForm(state.groups.find((g) => g.id === +btn.dataset.id)); }
     if (a === "delete-group") {
       const g = state.groups.find((x) => x.id === +btn.dataset.id);
       if (g && await confirmBox("Delete “" + g.name + "”?" + (g.address && g.rule_id ? " Its routing rule in Purelymail is removed too, so mail to " + full(g.address) + " will bounce." : ""), "Delete")) {
