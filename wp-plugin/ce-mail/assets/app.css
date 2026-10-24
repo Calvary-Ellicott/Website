@@ -1,5 +1,6 @@
 :root{--forest:#182820;--forest-2:#243d31;--cream:#f4f0e6;--paper:#fbfaf5;--rust:#b75c3d;--gold:#d2a24a;--ink:#1b2822;--muted:#647169;--line:#e1ddd2;--sky:#e3eef8;--ok:#2f7a4f;--bad:#b3261e;--sans:"DM Sans",system-ui,sans-serif}
 *{box-sizing:border-box}
+[hidden]{display:none !important}
 html,body{margin:0;height:100%;background:var(--paper);color:var(--ink);font:15px/1.5 var(--sans)}
 a{color:var(--rust)}
 button{font:inherit}

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Calvary Ellicott Mail
  * Description: A simple staff mail portal at /mail: Purelymail inboxes, marketing email through Resend, and a ChurchTrac contact import. Administrators get /emailadmin: mailboxes and mail groups kept in sync with Purelymail's routing rules. Can be installed without being used; signed-in staff see a preview with sample data until a mailbox is connected.
- * Version: 0.2.0
+ * Version: 0.2.1
  * Requires at least: 6.4
  * Requires PHP: 7.4
  * Author: Calvary Ellicott
@@ -11,7 +11,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CE_MAIL_VERSION', '0.2.0' );
+define( 'CE_MAIL_VERSION', '0.2.1' );
 define( 'CE_MAIL_FILE', __FILE__ );
 define( 'CE_MAIL_DIR', plugin_dir_path( __FILE__ ) );
 define( 'CE_MAIL_URL', plugin_dir_url( __FILE__ ) );
@@ -62,6 +62,19 @@ function ce_mail_apply_roles() {
 
 add_action( 'init', array( 'CE_Mail_Frontend', 'add_rewrite' ) );
 add_action( 'init', array( 'CE_Mail_Store', 'maybe_upgrade' ) );
+
+/**
+ * "Replace current with uploaded" does not re-run activation, so after an update
+ * flush the rewrite rules once (new routes such as /emailadmin would otherwise 404
+ * until Settings → Permalinks is saved).
+ */
+function ce_mail_maybe_flush() {
+	if ( get_option( 'ce_mail_version' ) !== CE_MAIL_VERSION ) {
+		flush_rewrite_rules();
+		update_option( 'ce_mail_version', CE_MAIL_VERSION, false );
+	}
+}
+add_action( 'init', 'ce_mail_maybe_flush', 20 );
 add_action( 'rest_api_init', array( 'CE_Mail_REST', 'register' ) );
 add_action( 'admin_menu', array( 'CE_Mail_Admin', 'menu' ) );
 add_action( 'admin_init', array( 'CE_Mail_Admin', 'register_settings' ) );
