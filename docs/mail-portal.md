@@ -17,7 +17,7 @@ A WordPress plugin, `wp-plugin/ce-mail/`, that adds a staff-only mail app at `ca
 2. WordPress → Plugins → Add New → Upload Plugin → the zip → Activate.
 3. Visit `/mail`. Administrators have access immediately. To let Editors in, go to **Mail → Settings** in the dashboard and tick the role.
 
-Activation creates two tables (`wp_ce_mail_contacts`, `wp_ce_mail_campaigns`) and the `/mail` address. Deactivating removes the address and leaves the tables.
+Activation creates four tables (`wp_ce_mail_contacts`, `wp_ce_mail_campaigns`, `wp_ce_mail_groups`, `wp_ce_mail_group_members`) and the `/mail` and `/emailadmin` addresses. Deactivating removes the addresses and leaves the tables.
 
 ## Setting up Purelymail (inboxes)
 
@@ -33,6 +33,48 @@ DNS for Purelymail goes in Cloudflare (the zone is already there, see `cloudflar
 | CNAME | `_dmarc` | `dmarcroot.purelymail.com` |
 
 Keep these **DNS only** (grey cloud). Copy the exact values from Purelymail; the names above are from their docs at the time of writing.
+
+## Email admin (`/emailadmin`): mailboxes and groups
+
+Administrators (WordPress `manage_options`) get a second page at `calvaryellicott.org/emailadmin`, also linked
+from the Mail toolbar menu. It talks to Purelymail's account API (`https://purelymail.com/api/v0/`, token in a
+`Purelymail-Api-Token` header), so it needs the account's API token pasted into **Mail → Settings → Email
+administration**. The token is stored encrypted like mailbox passwords. Until it is saved the page shows sample
+data and does nothing.
+
+| Tab | What it does |
+| --- | --- |
+| **Groups** | Lists kept in WordPress (`wp_ce_mail_groups`, `wp_ce_mail_group_members`). A group may have an address (the part before `@`, for example `info`). **Sync to Purelymail** writes one exact-match routing rule per addressed group, targets = members, and replaces the rule whenever the members change. Groups without an address are plain lists. Members can be any email address. Deleting a group removes its rule. A group with an address and no members has no rule, so mail to it bounces; the page says so. |
+| **Mailboxes** | Real mailboxes on the domain, read live (`listUser`). Create a mailbox (`createUser`, password shown once, optional recovery email) or reset a password (`modifyUser`). Deleting a mailbox is deliberately left to Purelymail's own portal. |
+| **Routing rules** | Everything Purelymail has for the domain, read-only, marked as "group: X" or "made in Purelymail". Sync never touches rules it does not own. |
+
+Purelymail notes that matter here: routing rules act on the envelope recipient and run before spam scoring and
+before any Sieve, a rule takes precedence over a mailbox of the same name, and there is no API for Sieve
+scripts, so the account-wide filter in `purelymail-mail-rules.md` stays a paste job. The `info@` rule from that doc
+is exactly what the "Staff" group produces, so keep one or the other, not both.
+
+API calls used: `checkAccountCredit` (connection check), `listUser`, `createUser`, `modifyUser`,
+`listRoutingRules`, `createRoutingRule`, `deleteRoutingRule`. There is no "update rule" call; sync deletes and
+recreates. Purelymail does not publish a reference page for the API at the time of writing; the request shapes
+were taken from the open-source Raycast Purelymail extension and should be confirmed against the live account
+on first use. The REST routes live under `ce-mail/v1/admin/*` and refuse anyone without `manage_options`.
+
+### Short addresses: `mail.` and `mailadmin.` subdomains
+
+WordPress.com cannot serve one path of the site on a different hostname, so a subdomain pointed at the site
+would just bounce to `calvaryellicott.org`. The practical option is a Cloudflare redirect, the same pattern as
+route B in `cloudflare-and-churchtrac.md`:
+
+1. DNS: `AAAA` records `mail` and `mailadmin` → `100::`, **proxied** (orange cloud). Purelymail's own records
+   (`MX`, `_dmarc`, `purelymail*._domainkey`) do not use the `mail` name, so there is no clash.
+2. Rules → Redirect Rules: `https://mail.calvaryellicott.org/*` → `https://calvaryellicott.org/mail/`
+   (301, do not preserve the path) and `https://mailadmin.calvaryellicott.org/*` →
+   `https://calvaryellicott.org/emailadmin/`.
+3. The address bar ends up on `calvaryellicott.org/mail`; the subdomain is a memorable door, not a mask.
+
+Hosting the mail tools somewhere else (GitHub Pages, Cloudflare Pages) was considered on 2026-10-23. A static
+host cannot keep the Purelymail token or talk IMAP, so it would need Cloudflare Pages Functions + D1 + Access
+and a rewrite of the plugin in JavaScript. Not worth it while the WordPress plugin does the job.
 
 ## Setting up Resend (marketing)
 

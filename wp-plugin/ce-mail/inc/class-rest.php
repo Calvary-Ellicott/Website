@@ -13,6 +13,9 @@ class CE_Mail_REST {
 	public static function register() {
 		$r = function ( $route, $methods, $cb, $args = array() ) {
 			$perm = ( 0 === strpos( $route, '/contacts' ) || 0 === strpos( $route, '/campaigns' ) ) ? 'can_market' : 'can';
+			if ( 0 === strpos( $route, '/admin' ) ) {
+				$perm = 'can_admin';
+			}
 			register_rest_route( self::NS, $route, array( 'methods' => $methods, 'callback' => array( __CLASS__, $cb ), 'permission_callback' => array( __CLASS__, $perm ), 'args' => $args ) );
 		};
 		$r( '/me', 'GET', 'me' );
@@ -38,10 +41,26 @@ class CE_Mail_REST {
 		$r( '/campaigns/(?P<id>\d+)/test', 'POST', 'campaign_test' );
 		$r( '/campaigns/(?P<id>\d+)/send', 'POST', 'campaign_send' );
 		$r( '/campaigns/(?P<id>\d+)/preview', 'GET', 'campaign_preview' );
+		// administrators only: Purelymail account, mailboxes, groups → routing rules
+		$r( '/admin/status', 'GET', 'admin_status' );
+		$r( '/admin/mailboxes', 'GET', 'admin_mailboxes' );
+		$r( '/admin/mailboxes', 'POST', 'admin_mailbox_create' );
+		$r( '/admin/mailboxes/password', 'POST', 'admin_mailbox_password' );
+		$r( '/admin/groups', 'GET', 'admin_groups' );
+		$r( '/admin/groups', 'POST', 'admin_group_save' );
+		$r( '/admin/groups/(?P<id>\d+)', 'PUT', 'admin_group_save' );
+		$r( '/admin/groups/(?P<id>\d+)', 'DELETE', 'admin_group_delete' );
+		$r( '/admin/groups/(?P<id>\d+)/members', 'PUT', 'admin_group_members' );
+		$r( '/admin/rules', 'GET', 'admin_rules' );
+		$r( '/admin/sync', 'POST', 'admin_sync' );
 	}
 
 	public static function can() {
 		return is_user_logged_in() && current_user_can( CE_MAIL_CAP );
+	}
+
+	public static function can_admin() {
+		return is_user_logged_in() && current_user_can( 'manage_options' );
 	}
 
 	private static function fail( $message, $status = 400 ) {
@@ -449,5 +468,151 @@ class CE_Mail_REST {
 		}
 		CE_Mail_Store::set_campaign_status( $c['id'], 'sent' );
 		return array( 'ok' => true, 'campaign' => CE_Mail_Store::campaign( $c['id'] ) );
+	}
+
+	/* ---------- email administration (Purelymail account) ---------- */
+
+	private static function demo_admin() {
+		return ! CE_Mail_Purelymail::ready();
+	}
+
+	public static function admin_status() {
+		$out = array(
+			'connected' => CE_Mail_Purelymail::ready(),
+			'domain'    => CE_Mail_Purelymail::domain(),
+			'settings'  => admin_url( 'admin.php?page=ce-mail' ),
+			'credit'    => '',
+			'error'     => '',
+		);
+		if ( $out['connected'] ) {
+			$check = CE_Mail_Purelymail::check();
+			if ( is_wp_error( $check ) ) {
+				$out['error'] = $check->get_error_message();
+			} else {
+				$out['credit'] = $check['credit'];
+			}
+		}
+		return $out;
+	}
+
+	public static function admin_mailboxes() {
+		if ( self::demo_admin() ) {
+			return array( 'demo' => true, 'items' => array( 'dan@example.org', 'don@example.org', 'scott@example.org' ) );
+		}
+		$users = CE_Mail_Purelymail::users();
+		if ( is_wp_error( $users ) ) {
+			return $users;
+		}
+		return array( 'demo' => false, 'items' => $users );
+	}
+
+	public static function admin_mailbox_create( WP_REST_Request $req ) {
+		$local = CE_Mail_Groups::clean_address( (string) $req['local'] );
+		if ( ! $local ) {
+			return self::fail( 'Enter the part before the @ (letters, numbers, dots, dashes).' );
+		}
+		$password = (string) $req['password'];
+		if ( '' === $password ) {
+			$password = CE_Mail_Purelymail::suggest_password();
+		}
+		if ( strlen( $password ) < 12 ) {
+			return self::fail( 'Use a password of at least 12 characters, or leave it blank to get one suggested.' );
+		}
+		$recovery = sanitize_email( (string) $req['recovery'] );
+		if ( self::demo_admin() ) {
+			return self::fail( 'Connect the Purelymail API token first (Mail → Settings in the dashboard).', 409 );
+		}
+		$res = CE_Mail_Purelymail::create_user( $local, $password, $recovery, ! empty( $req['welcome'] ) );
+		if ( is_wp_error( $res ) ) {
+			return self::fail( $res->get_error_message(), 502 );
+		}
+		return array( 'ok' => true, 'email' => $local . '@' . CE_Mail_Purelymail::domain(), 'password' => $password );
+	}
+
+	public static function admin_mailbox_password( WP_REST_Request $req ) {
+		$email = strtolower( sanitize_email( (string) $req['email'] ) );
+		if ( ! is_email( $email ) ) {
+			return self::fail( 'Pick a mailbox.' );
+		}
+		$password = (string) $req['password'];
+		if ( '' === $password ) {
+			$password = CE_Mail_Purelymail::suggest_password();
+		}
+		if ( strlen( $password ) < 12 ) {
+			return self::fail( 'Use a password of at least 12 characters, or leave it blank to get one suggested.' );
+		}
+		if ( self::demo_admin() ) {
+			return self::fail( 'Connect the Purelymail API token first (Mail → Settings in the dashboard).', 409 );
+		}
+		$res = CE_Mail_Purelymail::reset_password( $email, $password );
+		if ( is_wp_error( $res ) ) {
+			return self::fail( $res->get_error_message(), 502 );
+		}
+		return array( 'ok' => true, 'email' => $email, 'password' => $password );
+	}
+
+	public static function admin_groups() {
+		$items = CE_Mail_Groups::all();
+		if ( ! $items && self::demo_admin() ) {
+			return array( 'demo' => true, 'items' => CE_Mail_Groups::demo(), 'domain' => CE_Mail_Purelymail::domain() );
+		}
+		return array( 'demo' => false, 'items' => $items, 'domain' => CE_Mail_Purelymail::domain() );
+	}
+
+	public static function admin_group_save( WP_REST_Request $req ) {
+		$id = (int) $req['id'];
+		if ( $id && ! CE_Mail_Groups::get( $id ) ) {
+			return self::fail( 'Group not found.', 404 );
+		}
+		$res = CE_Mail_Groups::save( array( 'name' => $req['name'], 'address' => $req['address'], 'description' => $req['description'] ), $id );
+		if ( is_wp_error( $res ) ) {
+			return $res;
+		}
+		if ( null !== $req['members'] ) {
+			CE_Mail_Groups::set_members( $res, (array) $req['members'] );
+		}
+		return array( 'ok' => true, 'group' => CE_Mail_Groups::get( $res ) );
+	}
+
+	public static function admin_group_members( WP_REST_Request $req ) {
+		$g = CE_Mail_Groups::get( (int) $req['id'] );
+		if ( ! $g ) {
+			return self::fail( 'Group not found.', 404 );
+		}
+		CE_Mail_Groups::set_members( $g['id'], (array) $req['members'] );
+		return array( 'ok' => true, 'group' => CE_Mail_Groups::get( $g['id'] ) );
+	}
+
+	public static function admin_group_delete( WP_REST_Request $req ) {
+		$g = CE_Mail_Groups::get( (int) $req['id'] );
+		if ( ! $g ) {
+			return self::fail( 'Group not found.', 404 );
+		}
+		$dropped = CE_Mail_Groups::drop_rule( $g );
+		CE_Mail_Groups::delete( $g['id'] );
+		return array( 'ok' => true, 'warning' => is_wp_error( $dropped ) ? 'The group is gone but its Purelymail rule could not be removed: ' . $dropped->get_error_message() : '' );
+	}
+
+	public static function admin_rules() {
+		if ( self::demo_admin() ) {
+			return array( 'demo' => true, 'items' => array(), 'domain' => CE_Mail_Purelymail::domain() );
+		}
+		$rules = CE_Mail_Purelymail::rules();
+		if ( is_wp_error( $rules ) ) {
+			return $rules;
+		}
+		return array( 'demo' => false, 'items' => $rules, 'domain' => CE_Mail_Purelymail::domain() );
+	}
+
+	public static function admin_sync() {
+		if ( self::demo_admin() ) {
+			return self::fail( 'Connect the Purelymail API token first (Mail → Settings in the dashboard).', 409 );
+		}
+		$res = CE_Mail_Groups::sync();
+		if ( is_wp_error( $res ) ) {
+			return $res;
+		}
+		$res['groups_full'] = CE_Mail_Groups::all();
+		return $res;
 	}
 }

@@ -9,6 +9,7 @@ class CE_Mail_Frontend {
 
 	public static function add_rewrite() {
 		add_rewrite_rule( '^mail/?$', 'index.php?ce_mail=1', 'top' );
+		add_rewrite_rule( '^emailadmin/?$', 'index.php?ce_mail=admin', 'top' );
 	}
 
 	public static function query_vars( $vars ) {
@@ -17,13 +18,19 @@ class CE_Mail_Frontend {
 	}
 
 	public static function maybe_render() {
-		if ( ! get_query_var( 'ce_mail' ) ) {
+		$which = get_query_var( 'ce_mail' );
+		if ( ! $which ) {
 			return;
 		}
+		$is_admin = 'admin' === $which;
+		$path     = $is_admin ? '/emailadmin/' : '/mail/';
 		nocache_headers();
 		if ( ! is_user_logged_in() ) {
-			wp_safe_redirect( wp_login_url( home_url( '/mail/' ) ) );
+			wp_safe_redirect( wp_login_url( home_url( $path ) ) );
 			exit;
+		}
+		if ( $is_admin && ! current_user_can( 'manage_options' ) ) {
+			wp_die( 'Email administration is for website administrators only.', 'Email admin', array( 'response' => 403, 'back_link' => true ) );
 		}
 		if ( ! current_user_can( CE_MAIL_CAP ) ) {
 			wp_die( 'This mail portal is for church staff. Ask the website admin to give your account access.', 'Mail portal', array( 'response' => 403, 'back_link' => true ) );
@@ -31,7 +38,7 @@ class CE_Mail_Frontend {
 		status_header( 200 );
 		header( 'X-Frame-Options: SAMEORIGIN' );
 		$config = self::config();
-		include CE_MAIL_DIR . 'templates/app.php';
+		include CE_MAIL_DIR . ( $is_admin ? 'templates/admin.php' : 'templates/app.php' );
 		exit;
 	}
 
@@ -42,9 +49,10 @@ class CE_Mail_Frontend {
 			'rest'      => esc_url_raw( rest_url( CE_Mail_REST::NS . '/' ) ),
 			'nonce'     => wp_create_nonce( 'wp_rest' ),
 			'user'      => array( 'name' => $u->display_name, 'email' => $u->user_email, 'admin' => current_user_can( 'manage_options' ) ),
-			'site'      => array( 'name' => get_bloginfo( 'name' ), 'url' => home_url( '/' ), 'logout' => wp_logout_url( home_url( '/' ) ), 'settings' => admin_url( 'admin.php?page=ce-mail' ) ),
+			'site'      => array( 'name' => get_bloginfo( 'name' ), 'url' => home_url( '/' ), 'logout' => wp_logout_url( home_url( '/' ) ), 'settings' => admin_url( 'admin.php?page=ce-mail' ), 'mail' => home_url( '/mail/' ), 'emailadmin' => home_url( '/emailadmin/' ) ),
 			'webmail'   => $s['webmail_url'],
 			'imap_host' => $s['imap_host'],
+			'domain'    => CE_Mail_Purelymail::domain(),
 			'version'   => CE_MAIL_VERSION,
 		);
 	}
@@ -54,5 +62,8 @@ class CE_Mail_Frontend {
 			return;
 		}
 		$bar->add_node( array( 'id' => 'ce-mail', 'title' => '<span class="ab-icon dashicons dashicons-email-alt" style="margin-top:2px"></span> Mail', 'href' => home_url( '/mail/' ) ) );
+		if ( current_user_can( 'manage_options' ) ) {
+			$bar->add_node( array( 'id' => 'ce-mail-admin', 'parent' => 'ce-mail', 'title' => 'Email admin', 'href' => home_url( '/emailadmin/' ) ) );
+		}
 	}
 }

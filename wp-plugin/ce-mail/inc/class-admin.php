@@ -36,6 +36,8 @@ class CE_Mail_Admin {
 			'page_size'       => max( 10, min( 100, (int) ( isset( $in['page_size'] ) ? $in['page_size'] : 25 ) ) ),
 			'org_name'        => sanitize_text_field( isset( $in['org_name'] ) ? $in['org_name'] : $cur['org_name'] ),
 			'org_address'     => sanitize_text_field( isset( $in['org_address'] ) ? $in['org_address'] : $cur['org_address'] ),
+			'purelymail_token' => isset( $in['purelymail_token'] ) && '' !== trim( $in['purelymail_token'] ) ? CE_Mail_Crypto::encrypt( trim( $in['purelymail_token'] ) ) : ( ! empty( $in['purelymail_token_clear'] ) ? '' : $cur['purelymail_token'] ),
+			'mail_domain'     => strtolower( sanitize_text_field( isset( $in['mail_domain'] ) ? $in['mail_domain'] : $cur['mail_domain'] ) ),
 		);
 		// roles take effect immediately
 		add_action( 'updated_option', function ( $option ) {
@@ -81,6 +83,12 @@ class CE_Mail_Admin {
 		self::field( 'smtp_port', 'SMTP port', $s['smtp_port'], 'number', 'Use 465 with SSL (default) or 587 with STARTTLS.' );
 		printf( '<tr><th scope="row">SMTP encryption</th><td><label><input type="radio" name="%1$s[smtp_secure]" value="ssl" %2$s /> SSL (port 465)</label> &nbsp; <label><input type="radio" name="%1$s[smtp_secure]" value="tls" %3$s /> STARTTLS (port 587)</label></td></tr>', $opt, checked( $s['smtp_secure'], 'ssl', false ), checked( $s['smtp_secure'], 'tls', false ) );
 		self::field( 'webmail_url', 'Provider webmail link', $s['webmail_url'], 'url', 'Shown in the portal as a fallback ("Open in Purelymail").' );
+		echo '</table>';
+
+		$emailadmin = home_url( '/emailadmin/' );
+		echo '<h2>Email administration (Purelymail account API)</h2><p class="description">Lets administrators manage mailboxes and <strong>mail groups</strong> at <a href="' . esc_url( $emailadmin ) . '" target="_blank">' . esc_html( $emailadmin ) . '</a>. A group with an address (for example <code>info</code>) becomes a routing rule in Purelymail, so mail to that address reaches every member. The token can create mailboxes and routing rules, so only administrators ever see this page.</p><table class="form-table" role="presentation">';
+		printf( '<tr><th scope="row"><label for="purelymail_token">Purelymail API token</label></th><td><input type="password" id="purelymail_token" name="%1$s[purelymail_token]" value="" class="regular-text" placeholder="%2$s" autocomplete="new-password" /><p class="description">%3$s</p></td></tr>', $opt, $s['purelymail_token'] ? 'Saved. Enter a new token to replace it.' : 'Paste the token', $s['purelymail_token'] ? 'A token is saved (encrypted). Leave blank to keep it, or <label><input type="checkbox" name="' . $opt . '[purelymail_token_clear]" value="1" /> clear it</label>.' : 'In Purelymail: Account → API → create or refresh the API key, then paste it here. It is stored encrypted and never shown again.' );
+		self::field( 'mail_domain', 'Mail domain', $s['mail_domain'], 'text', 'The custom domain whose mailboxes and routing rules the admin page manages.' );
 		echo '</table>';
 
 		echo '<h2>Marketing email (Resend)</h2><p class="description">Off by default: the church sends newsletters and mass email from ChurchTrac. Everything below stays saved in the background and can be switched on later.</p><table class="form-table" role="presentation">';

@@ -7,7 +7,7 @@ defined( 'ABSPATH' ) || exit;
 
 class CE_Mail_Store {
 
-	const DB_VERSION = '1';
+	const DB_VERSION = '2';
 
 	public static function contacts_table() {
 		global $wpdb;
@@ -60,6 +60,7 @@ class CE_Mail_Store {
 			KEY status (status)
 			) $charset;"
 		);
+		CE_Mail_Groups::install( $charset );
 		update_option( 'ce_mail_db_version', self::DB_VERSION, false );
 	}
 

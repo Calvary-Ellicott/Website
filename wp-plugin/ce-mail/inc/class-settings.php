@@ -28,6 +28,8 @@ class CE_Mail_Settings {
 			'page_size'         => 25,
 			'org_name'          => 'Calvary Ellicott',
 			'org_address'       => '2150 N. Ellicott Hwy, Calhan, CO 80808',
+			'purelymail_token'  => '', // encrypted with CE_Mail_Crypto
+			'mail_domain'       => 'calvaryellicott.org',
 		);
 	}
 

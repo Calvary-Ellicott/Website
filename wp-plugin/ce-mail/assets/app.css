@@ -138,3 +138,12 @@ textarea{min-height:160px;resize:vertical}
   .pane{padding:16px}
   .reader-body{margin:14px}
 }
+
+/* ---------- email admin (/emailadmin) ---------- */
+.group .members{margin:0;padding:0 0 0 18px;columns:2;column-gap:24px}
+.group .members li{break-inside:avoid;padding:2px 0}
+.group .members li.help{list-style:none;margin-left:-18px}
+.app[data-view=groups] .pane .card+.card,.app[data-view=mailboxes] .pane .card+.table{margin-top:16px}
+.pane>.table{margin-top:16px}
+label.field input[type=checkbox]{width:auto;margin-right:6px}
+@media(max-width:640px){.group .members{columns:1}}

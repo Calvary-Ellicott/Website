@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Calvary Ellicott Mail
- * Description: A simple staff mail portal at /mail: Purelymail inboxes, marketing email through Resend, and a ChurchTrac contact import. Can be installed without being used; signed-in staff see a preview with sample data until a mailbox is connected.
- * Version: 0.1.1
+ * Description: A simple staff mail portal at /mail: Purelymail inboxes, marketing email through Resend, and a ChurchTrac contact import. Administrators get /emailadmin: mailboxes and mail groups kept in sync with Purelymail's routing rules. Can be installed without being used; signed-in staff see a preview with sample data until a mailbox is connected.
+ * Version: 0.2.0
  * Requires at least: 6.4
  * Requires PHP: 7.4
  * Author: Calvary Ellicott
@@ -11,7 +11,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CE_MAIL_VERSION', '0.1.1' );
+define( 'CE_MAIL_VERSION', '0.2.0' );
 define( 'CE_MAIL_FILE', __FILE__ );
 define( 'CE_MAIL_DIR', plugin_dir_path( __FILE__ ) );
 define( 'CE_MAIL_URL', plugin_dir_url( __FILE__ ) );
@@ -23,6 +23,8 @@ require CE_MAIL_DIR . 'inc/class-imap.php';
 require CE_MAIL_DIR . 'inc/class-mime.php';
 require CE_MAIL_DIR . 'inc/class-mailbox.php';
 require CE_MAIL_DIR . 'inc/class-resend.php';
+require CE_MAIL_DIR . 'inc/class-purelymail.php';
+require CE_MAIL_DIR . 'inc/class-groups.php';
 require CE_MAIL_DIR . 'inc/class-store.php';
 require CE_MAIL_DIR . 'inc/class-rest.php';
 require CE_MAIL_DIR . 'inc/class-admin.php';

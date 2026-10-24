@@ -1,0 +1,31 @@
+name: Plugin
+
+# Syntax-checks the ce-mail plugin's PHP on every push and PR that touches it.
+# There is no PHP on the development machines, so this is the lint step.
+
+on:
+  push:
+    paths: ["wp-plugin/**", ".github/workflows/plugin-lint.yml"]
+  pull_request:
+    paths: ["wp-plugin/**", ".github/workflows/plugin-lint.yml"]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "7.4"
+      - name: PHP syntax check (7.4, the plugin's minimum)
+        run: find wp-plugin/ce-mail -name "*.php" -print0 | xargs -0 -n1 php -l
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+      - name: PHP syntax check (8.3)
+        run: find wp-plugin/ce-mail -name "*.php" -print0 | xargs -0 -n1 php -l
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: JavaScript syntax check
+        run: for f in wp-plugin/ce-mail/assets/*.js; do node --check "$f"; done
