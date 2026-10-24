@@ -17,6 +17,28 @@ class CE_Mail_Frontend {
 		return $vars;
 	}
 
+	/**
+	 * Belt and braces: recognise /mail and /emailadmin from the request path itself,
+	 * so the pages work even when the rewrite rules were never flushed (for example
+	 * right after "Replace current with uploaded" on WordPress.com).
+	 */
+	public static function parse_request( $wp ) {
+		if ( ! empty( $wp->query_vars['ce_mail'] ) ) {
+			return;
+		}
+		$uri  = isset( $_SERVER['REQUEST_URI'] ) ? (string) $_SERVER['REQUEST_URI'] : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		$path = strtolower( trim( (string) wp_parse_url( $uri, PHP_URL_PATH ), '/' ) );
+		$home = trim( (string) wp_parse_url( home_url(), PHP_URL_PATH ), '/' );
+		if ( '' !== $home && 0 === strpos( $path, $home . '/' ) ) {
+			$path = substr( $path, strlen( $home ) + 1 );
+		}
+		if ( 'mail' === $path ) {
+			$wp->query_vars['ce_mail'] = '1';
+		} elseif ( 'emailadmin' === $path ) {
+			$wp->query_vars['ce_mail'] = 'admin';
+		}
+	}
+
 	public static function maybe_render() {
 		$which = get_query_var( 'ce_mail' );
 		if ( ! $which ) {
