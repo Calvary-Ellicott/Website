@@ -13,6 +13,11 @@ class CE_Mail_Mailbox {
 	/* ---------- stored login ---------- */
 
 	public static function creds( $user_id ) {
+		if ( ! $user_id ) {
+			// Not a WordPress user: a staff member signed in with their mailbox only.
+			$g = CE_Mail_Session::guest();
+			return $g ? array( 'email' => $g['email'], 'password' => $g['password'] ) : null;
+		}
 		$stored = get_user_meta( $user_id, self::META, true );
 		if ( ! is_array( $stored ) || empty( $stored['email'] ) || empty( $stored['secret'] ) ) {
 			return null;
@@ -22,10 +27,18 @@ class CE_Mail_Mailbox {
 	}
 
 	public static function save( $user_id, $email, $password ) {
+		if ( ! $user_id ) {
+			CE_Mail_Session::start( $email, $password, false );
+			return;
+		}
 		update_user_meta( $user_id, self::META, array( 'email' => $email, 'secret' => CE_Mail_Crypto::encrypt( $password ), 'linked_at' => time() ) );
 	}
 
 	public static function unlink( $user_id ) {
+		if ( ! $user_id ) {
+			CE_Mail_Session::end();
+			return;
+		}
 		delete_user_meta( $user_id, self::META );
 	}
 

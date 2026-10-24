@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Calvary Ellicott Mail
  * Description: A simple staff mail portal at /mail: Purelymail inboxes, marketing email through Resend, and a ChurchTrac contact import. Administrators get /emailadmin: mailboxes and mail groups kept in sync with Purelymail's routing rules. Can be installed without being used; signed-in staff see a preview with sample data until a mailbox is connected.
- * Version: 0.2.3
+ * Version: 0.3.0
  * Requires at least: 6.4
  * Requires PHP: 7.4
  * Author: Calvary Ellicott
@@ -11,7 +11,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CE_MAIL_VERSION', '0.2.3' );
+define( 'CE_MAIL_VERSION', '0.3.0' );
 define( 'CE_MAIL_FILE', __FILE__ );
 define( 'CE_MAIL_DIR', plugin_dir_path( __FILE__ ) );
 define( 'CE_MAIL_URL', plugin_dir_url( __FILE__ ) );
@@ -19,6 +19,7 @@ define( 'CE_MAIL_CAP', 'ce_mail_access' );
 
 require CE_MAIL_DIR . 'inc/class-settings.php';
 require CE_MAIL_DIR . 'inc/class-crypto.php';
+require CE_MAIL_DIR . 'inc/class-session.php';
 require CE_MAIL_DIR . 'inc/class-imap.php';
 require CE_MAIL_DIR . 'inc/class-mime.php';
 require CE_MAIL_DIR . 'inc/class-mailbox.php';
@@ -81,4 +82,5 @@ add_action( 'admin_init', array( 'CE_Mail_Admin', 'register_settings' ) );
 add_action( 'template_redirect', array( 'CE_Mail_Frontend', 'maybe_render' ) );
 add_filter( 'query_vars', array( 'CE_Mail_Frontend', 'query_vars' ) );
 add_action( 'parse_request', array( 'CE_Mail_Frontend', 'parse_request' ) );
+add_filter( 'nonce_user_logged_out', array( 'CE_Mail_Session', 'nonce_uid' ), 10, 2 );
 add_action( 'admin_bar_menu', array( 'CE_Mail_Frontend', 'admin_bar' ), 90 );

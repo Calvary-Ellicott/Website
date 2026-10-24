@@ -18,6 +18,9 @@ class CE_Mail_REST {
 			}
 			register_rest_route( self::NS, $route, array( 'methods' => $methods, 'callback' => array( __CLASS__, $cb ), 'permission_callback' => array( __CLASS__, $perm ), 'args' => $args ) );
 		};
+		// mailbox sign-in for staff without a WordPress account (public route, throttled)
+		register_rest_route( self::NS, '/session', array( 'methods' => 'POST', 'callback' => array( __CLASS__, 'session_start' ), 'permission_callback' => '__return_true' ) );
+		$r( '/session', 'DELETE', 'session_end' );
 		$r( '/me', 'GET', 'me' );
 		$r( '/mailbox', 'POST', 'mailbox_link' );
 		$r( '/mailbox', 'DELETE', 'mailbox_unlink' );
@@ -56,8 +59,18 @@ class CE_Mail_REST {
 		$r( '/admin/sync', 'POST', 'admin_sync' );
 	}
 
+	/**
+	 * A WordPress user with the portal capability, or a guest signed in with a mailbox.
+	 */
 	public static function can() {
-		return is_user_logged_in() && current_user_can( CE_MAIL_CAP );
+		if ( is_user_logged_in() ) {
+			return current_user_can( CE_MAIL_CAP );
+		}
+		return CE_Mail_Session::active();
+	}
+
+	private static function is_guest() {
+		return ! is_user_logged_in() && CE_Mail_Session::active();
 	}
 
 	public static function can_admin() {
@@ -68,6 +81,9 @@ class CE_Mail_REST {
 		return new WP_Error( 'ce_mail', $message, array( 'status' => $status ) );
 	}
 
+	/**
+	 * 0 for a guest signed in with a mailbox: CE_Mail_Mailbox then reads the session cookie.
+	 */
 	private static function uid() {
 		return get_current_user_id();
 	}
@@ -84,22 +100,56 @@ class CE_Mail_REST {
 	 * Marketing routes answer only while the section is switched on in settings.
 	 */
 	public static function can_market() {
-		return self::can() && CE_Mail_Settings::marketing_enabled();
+		return is_user_logged_in() && self::can() && CE_Mail_Settings::marketing_enabled();
+	}
+
+	/* ---------- mailbox sign-in (no WordPress account) ---------- */
+
+	public static function session_start( WP_REST_Request $req ) {
+		$email    = strtolower( sanitize_email( (string) $req['email'] ) );
+		$password = (string) $req['password'];
+		if ( ! is_email( $email ) || '' === $password ) {
+			return self::fail( 'Enter your church email address and its password.' );
+		}
+		if ( ! CE_Mail_Session::allowed_email( $email ) ) {
+			return self::fail( 'Sign in with your @' . CE_Mail_Purelymail::domain() . ' church address.' );
+		}
+		if ( ! CE_Mail_Session::allow_attempt() ) {
+			return self::fail( 'Too many sign-in attempts. Wait a few minutes and try again.', 429 );
+		}
+		try {
+			$imap = CE_Mail_Mailbox::open( $email, $password );
+			$imap->logout();
+		} catch ( Exception $e ) {
+			return self::fail( 'The mail server did not accept that email and password. ' . $e->getMessage(), 401 );
+		}
+		CE_Mail_Session::start( $email, $password, ! empty( $req['remember'] ) );
+		return array( 'ok' => true, 'email' => $email );
+	}
+
+	public static function session_end() {
+		CE_Mail_Session::end();
+		return array( 'ok' => true );
 	}
 
 	/* ---------- account ---------- */
 
 	public static function me() {
-		$u = wp_get_current_user();
-		$s = CE_Mail_Settings::all();
-		$c = CE_Mail_Mailbox::creds( $u->ID );
+		$u     = wp_get_current_user();
+		$s     = CE_Mail_Settings::all();
+		$guest = self::is_guest();
+		$c     = CE_Mail_Mailbox::creds( $guest ? 0 : $u->ID );
+		if ( $guest ) {
+			$name = ucwords( str_replace( array( '.', '_', '-' ), ' ', strstr( $c['email'], '@', true ) ) );
+		}
 		return array(
-			'name'      => $u->display_name,
-			'email'     => $u->user_email,
-			'admin'     => current_user_can( 'manage_options' ),
+			'name'      => $guest ? $name : $u->display_name,
+			'email'     => $guest ? $c['email'] : $u->user_email,
+			'admin'     => ! $guest && current_user_can( 'manage_options' ),
+			'guest'     => $guest,
 			'mailbox'   => array( 'linked' => (bool) $c, 'email' => $c ? $c['email'] : '' ),
 			'marketing' => array(
-				'enabled'  => CE_Mail_Settings::marketing_enabled(),
+				'enabled'  => ! $guest && CE_Mail_Settings::marketing_enabled(),
 				'ready'    => CE_Mail_Settings::marketing_ready(),
 				'from'     => $s['marketing_from'],
 				'name'     => $s['marketing_name'],

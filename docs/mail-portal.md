@@ -15,9 +15,34 @@ A WordPress plugin, `wp-plugin/ce-mail/`, that adds a staff-only mail app at `ca
 
 1. Zip the `wp-plugin/ce-mail` folder (or run `tools/package-plugin.bat`, which writes `wp-plugin/dist/ce-mail.zip`).
 2. WordPress → Plugins → Add New → Upload Plugin → the zip → Activate.
-3. Visit `/mail`. Administrators have access immediately. To let Editors in, go to **Mail → Settings** in the dashboard and tick the role.
+3. Visit `/mail`. Administrators have access immediately. To let Editors in, go to **Mail → Settings** in the dashboard and tick the role. Staff with no WordPress account sign in on the same page with their church mailbox (next section).
 
 Activation creates four tables (`wp_ce_mail_contacts`, `wp_ce_mail_campaigns`, `wp_ce_mail_groups`, `wp_ce_mail_group_members`) and the `/mail` and `/emailadmin` addresses. Deactivating removes the addresses and leaves the tables.
+
+## Signing in without a WordPress account (0.3.0)
+
+Anyone who opens `/mail` while not signed in to WordPress sees a sign-in page asking for a church mailbox
+address and its password. The plugin checks them against the IMAP server, then keeps them in one encrypted,
+HttpOnly cookie (`ce_mail_s`): for the browser session, or 30 days with *Keep me signed in*. Nothing is written to
+the database, so signing out (`/mail/?signout=1`, or the Sign out button in Settings) is just clearing the cookie.
+People can let their browser remember the password like any other site.
+
+Rules and limits:
+
+- Only addresses on the configured mail domain (`calvaryellicott.org`) can sign in this way, so the portal cannot
+  be used as a login page for arbitrary Purelymail accounts.
+- Eight attempts per address per 15 minutes, then a wait (`CE_Mail_Session::ATTEMPTS`).
+- Mailbox sign-ins see the inbox and Settings only. Marketing, Contacts, Import and `/emailadmin` need a
+  WordPress login.
+- The REST nonce for a mailbox sign-in is tied to that session (filter `nonce_user_logged_out`), not shared by
+  every logged-out visitor. The cookie is `SameSite=Lax`, and WordPress's REST CORS rules already refuse
+  cross-origin requests with the nonce header.
+- The pages render from `parse_request`, before the theme and before WordPress.com's "Coming soon" logic, so
+  staff can use `/mail` while the public site is still unlaunched. If a logged-out visitor still gets the
+  coming-soon page, that is the thing to look at first.
+
+Someone with a WordPress login that lacks the portal role gets a message to ask the admin or to sign out and use
+the mailbox sign-in instead.
 
 ## Setting up Purelymail (inboxes)
 
