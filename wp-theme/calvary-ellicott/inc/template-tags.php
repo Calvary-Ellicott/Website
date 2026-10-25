@@ -265,6 +265,10 @@ function ce_nav_fallback( $args ) {
 			printf( '<a href="%s"%s>%s</a>', esc_url( get_permalink( $id ) ), is_page( $id ) ? ' aria-current="page"' : '', esc_html( get_the_title( $id ) ) );
 		}
 	}
+	$announcements = ce_https_url( ce_opt( 'connect_announcements_url' ) );
+	if ( $announcements ) {
+		printf( '<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>', $announcements, esc_html( ce_opt( 'announcements_label' ) ) );
+	}
 	$connect = ce_connect_url();
 	if ( $connect ) {
 		$class = ! empty( $args['ce_cta_last'] ) ? ' class="nav-cta"' : '';

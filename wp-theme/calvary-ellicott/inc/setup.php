@@ -64,6 +64,31 @@ function ce_setup_make_page( $slug, $title, $template, $eyebrow, $excerpt, $cont
 	return array( $id, true );
 }
 
+/**
+ * The Announcements menu link (Church Connect's announcements page), marked with the
+ * nav-announcements class so a rerun can see it is there. Skipped when no address is set.
+ */
+function ce_setup_announcements_item( $menu_id, $position ) {
+	$url = ce_https_url( ce_opt( 'connect_announcements_url' ) );
+	if ( ! $url ) {
+		return false;
+	}
+	$id = wp_update_nav_menu_item(
+		$menu_id,
+		0,
+		array(
+			'menu-item-title'    => ce_opt( 'announcements_label' ),
+			'menu-item-url'      => $url,
+			'menu-item-type'     => 'custom',
+			'menu-item-status'   => 'publish',
+			'menu-item-position' => $position,
+			'menu-item-classes'  => 'nav-announcements',
+			'menu-item-target'   => '_blank',
+		)
+	);
+	return ! is_wp_error( $id );
+}
+
 function ce_run_setup() {
 	$done  = array();
 	$pages = array(
@@ -168,6 +193,7 @@ function ce_run_setup() {
 					)
 				);
 			}
+			ce_setup_announcements_item( $menu_id, 5 );
 			wp_update_nav_menu_item(
 				$menu_id,
 				0,
@@ -176,7 +202,7 @@ function ce_run_setup() {
 					'menu-item-url'      => ce_opt( 'connect_url' ),
 					'menu-item-type'     => 'custom',
 					'menu-item-status'   => 'publish',
-					'menu-item-position' => 5,
+					'menu-item-position' => 6,
 					'menu-item-classes'  => 'nav-cta',
 					'menu-item-target'   => '_blank',
 				)
@@ -185,24 +211,27 @@ function ce_run_setup() {
 			$locations['primary'] = $menu_id;
 			$locations['footer']  = $menu_id;
 			set_theme_mod( 'nav_menu_locations', $locations );
-			$done[] = 'Built the navigation menu (Discover, Visit, Learn, Events, Church Connect)';
+			$done[] = 'Built the navigation menu (Discover, Visit, Learn, Events, Announcements, Church Connect)';
 		}
 	} else {
 		// The menu already exists (built by an earlier version): add any page that is not in it yet,
-		// keeping the Church Connect link last.
+		// and the Announcements link, keeping the Church Connect link last.
 		$locations = get_nav_menu_locations();
 		$menu_id   = isset( $locations['primary'] ) ? (int) $locations['primary'] : 0;
 		$items     = $menu_id ? wp_get_nav_menu_items( $menu_id ) : array();
 		if ( $menu_id && false !== $items ) {
-			$in_menu  = array();
-			$cta      = null;
-			$position = 0;
+			$in_menu       = array();
+			$cta           = null;
+			$announcements = false;
+			$position      = 0;
 			foreach ( $items as $item ) {
 				$position = max( $position, (int) $item->menu_order );
 				if ( 'post_type' === $item->type ) {
 					$in_menu[] = (int) $item->object_id;
 				} elseif ( 'custom' === $item->type && in_array( 'nav-cta', (array) $item->classes, true ) ) {
 					$cta = $item;
+				} elseif ( 'custom' === $item->type && in_array( 'nav-announcements', (array) $item->classes, true ) ) {
+					$announcements = true;
 				}
 			}
 			$added = array();
@@ -223,6 +252,9 @@ function ce_run_setup() {
 					)
 				);
 				$added[] = get_the_title( $ids[ $slug ] );
+			}
+			if ( ! $announcements && ce_setup_announcements_item( $menu_id, ++$position ) ) {
+				$added[] = ce_opt( 'announcements_label' );
 			}
 			if ( $added && $cta ) {
 				// Move the Church Connect link back to the end.
