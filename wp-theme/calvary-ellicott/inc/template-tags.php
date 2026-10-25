@@ -118,9 +118,9 @@ function ce_template_url( $template, $fallback = '' ) {
  * A link into Church Connect, opened in a new tab. If no address is configured at all,
  * the link points at the Visit page so nothing on the site dead-ends.
  */
-function ce_connect_link( $key, $label, $class = '', $arrow = true ) {
+function ce_connect_link( $key, $label, $class = '', $arrow = true, $label_key = '' ) {
 	$url  = ce_connect_url( $key );
-	$text = esc_html( $label ) . ( $arrow ? ' <span>→</span>' : '' );
+	$text = ( $label_key ? ce_opt_span( $label_key ) : esc_html( $label ) ) . ( $arrow ? ' <span>→</span>' : '' );
 	if ( $url ) {
 		return sprintf( '<a class="%s" href="%s" target="_blank" rel="noopener noreferrer">%s</a>', esc_attr( $class ), $url, $text );
 	}
@@ -134,13 +134,14 @@ function ce_page_hero( $post = null ) {
 	$post    = get_post( $post );
 	$eyebrow = get_post_meta( $post->ID, '_ce_eyebrow', true );
 	$lead    = has_excerpt( $post ) ? get_the_excerpt( $post ) : '';
+	$editing = ce_editing(); // empty lines still render then, so they can be filled in
 	echo '<section class="page-hero">';
-	if ( $eyebrow ) {
-		echo '<p class="eyebrow">' . esc_html( $eyebrow ) . '</p>';
+	if ( $eyebrow || $editing ) {
+		echo '<p class="eyebrow"' . ce_meta_attr( $post->ID, '_ce_eyebrow' ) . '>' . esc_html( $eyebrow ) . '</p>';
 	}
-	echo '<h1>' . esc_html( get_the_title( $post ) ) . '</h1>';
-	if ( $lead ) {
-		echo '<p>' . esc_html( $lead ) . '</p>';
+	echo '<h1' . ce_post_attr( $post->ID, 'title' ) . '>' . esc_html( get_the_title( $post ) ) . '</h1>';
+	if ( $lead || $editing ) {
+		echo '<p' . ce_post_attr( $post->ID, 'excerpt' ) . '>' . esc_html( $lead ) . '</p>';
 	}
 	echo '</section>';
 }
@@ -169,6 +170,20 @@ function ce_service_line() {
 	return ce_opt( 'service_day' ) . ' at ' . ce_opt( 'service_time' );
 }
 
+/**
+ * The same line as HTML, with each part editable in edit mode.
+ */
+function ce_service_line_html() {
+	return ce_opt_span( 'service_day' ) . ' at ' . ce_opt_span( 'service_time' );
+}
+
+/**
+ * The two address lines, each editable in edit mode.
+ */
+function ce_address_html( $separator = '<br />' ) {
+	return ce_opt_span( 'address_1' ) . $separator . ce_opt_span( 'address_2' );
+}
+
 function ce_details_card( $rows ) {
 	echo '<div class="details-card">';
 	foreach ( array_values( $rows ) as $i => $row ) {
@@ -176,7 +191,7 @@ function ce_details_card( $rows ) {
 			'<div><span class="detail-number">%02d</span><p><strong>%s</strong>%s</p></div>',
 			$i + 1,
 			esc_html( $row[0] ),
-			wp_kses( $row[1], array( 'br' => array() ) )
+			wp_kses( $row[1], array( 'br' => array(), 'span' => array( 'data-ce-edit' => true, 'data-ce-format' => true ) ) )
 		);
 	}
 	echo '</div>';
@@ -224,11 +239,12 @@ function ce_alert_banner() {
 		$link = get_permalink( $page );
 	}
 	$label   = get_post_meta( $alert->ID, '_ce_link_text', true );
-	$message = $alert->post_content ? wp_strip_all_tags( $alert->post_content ) : $alert->post_title;
-	printf( '<div class="site-alert site-alert-%s" role="status" data-alert-id="%d"><p>%s', esc_attr( $style ), $alert->ID, esc_html( $message ) );
+	$message  = $alert->post_content ? wp_strip_all_tags( $alert->post_content ) : $alert->post_title;
+	$editable = $alert->post_content ? '' : ce_post_attr( $alert->ID, 'title' );
+	printf( '<div class="site-alert site-alert-%s" role="status" data-alert-id="%d"><p><span%s>%s</span>', esc_attr( $style ), $alert->ID, $editable, esc_html( $message ) );
 	if ( $link ) {
 		$external = 0 === strpos( $link, 'http' ) && false === strpos( $link, home_url() );
-		printf( ' <a href="%s"%s>%s</a>', esc_url( $link ), $external ? ' target="_blank" rel="noopener noreferrer"' : '', esc_html( $label ? $label : __( 'Learn more', 'calvary-ellicott' ) ) );
+		printf( ' <a href="%s"%s><span%s>%s</span></a>', esc_url( $link ), $external ? ' target="_blank" rel="noopener noreferrer"' : '', ce_meta_attr( $alert->ID, '_ce_link_text' ), esc_html( $label ? $label : __( 'Learn more', 'calvary-ellicott' ) ) );
 	}
 	echo '</p><button type="button" class="site-alert-close" aria-label="' . esc_attr__( 'Dismiss message', 'calvary-ellicott' ) . '">×</button></div>';
 }
@@ -257,9 +273,10 @@ function ce_nav_fallback( $args ) {
 }
 
 /**
- * Card grid linking to other pages. Uses each page's title and excerpt.
+ * Card grid linking to other pages. Uses each page's title and excerpt. The small line and
+ * headline are theme settings, named by key.
  */
-function ce_next_steps( $eyebrow, $headline, $templates ) {
+function ce_next_steps( $eyebrow_key, $headline_key, $templates ) {
 	$cards = array();
 	foreach ( $templates as $template ) {
 		$id = ce_page_by_template( $template );
@@ -271,13 +288,16 @@ function ce_next_steps( $eyebrow, $headline, $templates ) {
 		return;
 	}
 	echo '<section class="section next-steps-section"><div class="section-heading narrow"><div>';
-	echo '<p class="eyebrow">' . esc_html( $eyebrow ) . '</p><h2>' . esc_html( $headline ) . '</h2></div></div><div class="next-steps">';
+	echo '<p class="eyebrow"' . ce_edit_attr( 'opt:' . $eyebrow_key ) . '>' . esc_html( ce_opt( $eyebrow_key ) ) . '</p>';
+	echo '<h2' . ce_edit_attr( 'opt:' . $headline_key ) . '>' . esc_html( ce_opt( $headline_key ) ) . '</h2></div></div><div class="next-steps">';
 	foreach ( $cards as $i => $id ) {
 		printf(
-			'<a class="next-step" href="%s"><span class="detail-number">%02d</span><h3>%s</h3><p>%s</p></a>',
+			'<a class="next-step" href="%s"><span class="detail-number">%02d</span><h3%s>%s</h3><p%s>%s</p></a>',
 			esc_url( get_permalink( $id ) ),
 			$i + 1,
+			ce_post_attr( $id, 'title' ),
 			esc_html( get_the_title( $id ) ),
+			ce_post_attr( $id, 'excerpt' ),
 			esc_html( has_excerpt( $id ) ? get_the_excerpt( $id ) : '' )
 		);
 	}

@@ -11,6 +11,7 @@ while ( have_posts() ) :
 		<article class="prose">
 			<?php the_content(); ?>
 		</article>
+		<?php ce_editor_link(); ?>
 	</section>
 	<?php
 endwhile;

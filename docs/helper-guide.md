@@ -62,6 +62,19 @@ The banner appears at the top of every page once approved. **To take it down**, 
 4. On the right, in the **Photo** box, click **Add photo** and upload their picture. A landscape photo works best.
 5. Click **Submit for Review**.
 
+### Change a heading or a sentence right on the website (Editors and administrators)
+
+If your account is an Editor or Administrator, you do not need the dashboard for headings, short lines, button labels, and the paragraphs that belong to the design.
+
+1. Sign in, then open the page on the website itself.
+2. Click **Edit this page** in the bar at the bottom of the screen. Everything you can change gets a dashed outline.
+3. Click the text and type, the same way you would in a document. Press **Enter** to finish a line; press **Escape** to step out without finishing.
+4. Click **Save** in the bar. The page reloads with your changes live. **Discard changes** puts everything back; **Done** leaves editing.
+
+What you can change this way: the big banner lines, section headings and sentences, button labels, the service time and address, the names, roles and bios on staff cards, the beliefs and mission statements, and the small line and sentence at the top of each page. The long story text on Discover, and other block content, opens in the page editor instead: in edit mode a **Edit this text in the page editor** button appears next to it. Pictures and Church Connect links stay under **Site settings**.
+
+These changes are live as soon as you save, with no review step, so read the line again before you click **Save**.
+
 ### Change the words on a page
 
 1. Left menu: **Pages**. Click the page, for example **Discover**.

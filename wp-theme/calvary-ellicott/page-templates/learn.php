@@ -18,12 +18,12 @@ while ( have_posts() ) :
 	<section id="watch" class="section watch-section">
 		<div class="section-heading">
 			<div>
-				<p class="eyebrow"><?php echo esc_html( ce_opt( 'watch_live_eyebrow' ) ); ?></p>
-				<h2><?php echo esc_html( ce_opt( 'service_day' ) . 's at ' . ce_opt( 'service_time' ) ); ?></h2>
-				<p><?php echo esc_html( ce_opt( 'watch_live_text' ) ); ?></p>
+				<p class="eyebrow"<?php echo ce_edit_attr( 'opt:watch_live_eyebrow' ); ?>><?php echo esc_html( ce_opt( 'watch_live_eyebrow' ) ); ?></p>
+				<h2><?php echo ce_opt_span( 'service_day' ); ?>s at <?php echo ce_opt_span( 'service_time' ); ?></h2>
+				<p<?php echo ce_edit_attr( 'opt:watch_live_text' ); ?>><?php echo esc_html( ce_opt( 'watch_live_text' ) ); ?></p>
 			</div>
 			<?php if ( $archive_url ) : ?>
-				<a class="button gold" href="<?php echo $archive_url; ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html( ce_opt( 'video_archive_label' ) ); ?></a>
+				<a class="button gold" href="<?php echo $archive_url; ?>" target="_blank" rel="noopener noreferrer"><?php echo ce_opt_span( 'video_archive_label' ); ?></a>
 			<?php endif; ?>
 		</div>
 		<div class="watch-shell">
@@ -46,9 +46,10 @@ while ( have_posts() ) :
 
 	<section id="notes" class="section sermons-section">
 		<div class="sermons-intro">
-			<p class="eyebrow"><?php echo esc_html( ce_opt( 'watch_notes_eyebrow' ) ); ?></p>
-			<h2><?php echo esc_html( ce_opt( 'watch_notes_headline' ) ); ?></h2>
+			<p class="eyebrow"<?php echo ce_edit_attr( 'opt:watch_notes_eyebrow' ); ?>><?php echo esc_html( ce_opt( 'watch_notes_eyebrow' ) ); ?></p>
+			<h2<?php echo ce_edit_attr( 'opt:watch_notes_headline' ); ?>><?php echo esc_html( ce_opt( 'watch_notes_headline' ) ); ?></h2>
 			<div class="prose lead"><?php the_content(); ?></div>
+			<?php ce_editor_link(); ?>
 			<div class="sermons-current">
 				<?php if ( $latest_sermon ) : ?>
 					<?php
@@ -56,21 +57,21 @@ while ( have_posts() ) :
 					$notes   = get_post_meta( $latest_sermon->ID, '_ce_notes', true );
 					?>
 					<p class="eyebrow"><?php echo esc_html( ce_long_date( $latest_sermon ) ); ?></p>
-					<?php if ( $latest_sermon->post_title ) : ?><h3 style="margin:0 0 10px;font-size:1.6rem"><?php echo esc_html( $latest_sermon->post_title ); ?></h3><?php endif; ?>
-					<?php if ( trim( $latest_sermon->post_content ) ) : ?><p style="margin:0 0 16px;color:var(--muted)"><?php echo esc_html( wp_strip_all_tags( $latest_sermon->post_content ) ); ?></p><?php endif; ?>
+					<?php if ( $latest_sermon->post_title || ce_editing() ) : ?><h3 style="margin:0 0 10px;font-size:1.6rem"<?php echo ce_post_attr( $latest_sermon->ID, 'title' ); ?>><?php echo esc_html( $latest_sermon->post_title ); ?></h3><?php endif; ?>
+					<?php if ( trim( $latest_sermon->post_content ) || ce_editing() ) : ?><p style="margin:0 0 16px;color:var(--muted)"<?php echo ce_post_attr( $latest_sermon->ID, 'content' ); ?>><?php echo esc_html( wp_strip_all_tags( $latest_sermon->post_content ) ); ?></p><?php endif; ?>
 					<div class="sermon-buttons">
 						<?php echo ce_pdf_link( $handout, __( 'Sermon handout', 'calvary-ellicott' ), 'button primary' ); ?>
 						<?php echo ce_pdf_link( $notes, __( 'Pastor’s notes', 'calvary-ellicott' ), 'button outline' ); ?>
-						<?php if ( ! $notes ) : ?><p class="sermon-pending"><?php echo esc_html( ce_opt( 'watch_notes_pending' ) ); ?></p><?php endif; ?>
+						<?php if ( ! $notes ) : ?><p class="sermon-pending"<?php echo ce_edit_attr( 'opt:watch_notes_pending' ); ?>><?php echo esc_html( ce_opt( 'watch_notes_pending' ) ); ?></p><?php endif; ?>
 					</div>
 				<?php else : ?>
-					<p class="eyebrow"><?php echo esc_html( ce_opt( 'watch_notes_empty' ) ); ?></p>
+					<p class="eyebrow"<?php echo ce_edit_attr( 'opt:watch_notes_empty' ); ?>><?php echo esc_html( ce_opt( 'watch_notes_empty' ) ); ?></p>
 				<?php endif; ?>
 			</div>
 		</div>
 		<?php if ( $sermons ) : ?>
 			<aside class="sermons-archive">
-				<h2><?php esc_html_e( 'Previous weeks', 'calvary-ellicott' ); ?></h2>
+				<h2<?php echo ce_edit_attr( 'opt:watch_archive_headline' ); ?>><?php echo esc_html( ce_opt( 'watch_archive_headline' ) ); ?></h2>
 				<ul>
 					<?php foreach ( $sermons as $s ) : ?>
 						<li>
@@ -93,15 +94,15 @@ while ( have_posts() ) :
 				<?php if ( ! $announce_img ) : ?><span class="calendar-icon" aria-hidden="true">CE</span><?php endif; ?>
 			</div>
 			<div class="announce-copy">
-				<p class="eyebrow"><?php echo esc_html( ce_opt( 'announce_eyebrow' ) ); ?></p>
-				<h2><?php echo esc_html( ce_opt( 'announce_headline' ) ); ?></h2>
-				<p><?php echo esc_html( ce_opt( 'announce_text' ) ); ?></p>
-				<span class="button primary"><?php echo esc_html( ce_opt( 'announce_button' ) ); ?></span>
+				<p class="eyebrow"<?php echo ce_edit_attr( 'opt:announce_eyebrow' ); ?>><?php echo esc_html( ce_opt( 'announce_eyebrow' ) ); ?></p>
+				<h2<?php echo ce_edit_attr( 'opt:announce_headline' ); ?>><?php echo esc_html( ce_opt( 'announce_headline' ) ); ?></h2>
+				<p<?php echo ce_edit_attr( 'opt:announce_text' ); ?>><?php echo esc_html( ce_opt( 'announce_text' ) ); ?></p>
+				<span class="button primary"><?php echo ce_opt_span( 'announce_button' ); ?></span>
 			</div>
 		</a>
 	</section>
 	<?php endif; ?>
 	<?php
-	ce_next_steps( __( 'Keep going', 'calvary-ellicott' ), __( 'Get to know us, or plan a visit.', 'calvary-ellicott' ), array( 'page-templates/discover.php', 'page-templates/visit.php', 'page-templates/events.php' ) );
+	ce_next_steps( 'learn_next_eyebrow', 'learn_next_headline', array( 'page-templates/discover.php', 'page-templates/visit.php', 'page-templates/events.php' ) );
 endwhile;
 get_footer();

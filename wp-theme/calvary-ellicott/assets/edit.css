@@ -1,0 +1,40 @@
+/* Edit mode (logged-in editors only; see inc/inline-edit.php and assets/edit.js). */
+.ce-edit-bar{position:fixed;left:50%;bottom:18px;z-index:60;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px;max-width:calc(100vw - 32px);padding:8px 10px;transform:translateX(-50%);color:#f4f0e6;background:#182820f2;border:1px solid #ffffff2e;border-radius:12px;box-shadow:0 16px 40px #0006;font:500 .9rem "DM Sans",sans-serif;backdrop-filter:blur(10px)}
+.ce-edit-bar button,.ce-edit-bar a{display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border:1px solid #ffffff44;border-radius:8px;color:inherit;background:transparent;font:inherit;font-weight:700;text-decoration:none;cursor:pointer;white-space:nowrap}
+.ce-edit-bar button:hover,.ce-edit-bar a:hover{background:#ffffff14}
+.ce-edit-bar button:disabled{opacity:.5;cursor:default}
+.ce-edit-bar .ce-edit-save{color:#182820;background:#d2a24a;border-color:#d2a24a}
+.ce-edit-bar .ce-edit-save:not(:disabled):hover{background:#e0b35e}
+.ce-edit-bar .ce-edit-start{color:#182820;background:#f4f0e6;border-color:#f4f0e6}
+.ce-edit-bar .ce-edit-hint,.ce-edit-bar .ce-edit-actions{display:none}
+.ce-edit-bar.is-editing .ce-edit-start{display:none}
+.ce-edit-bar.is-editing .ce-edit-hint{display:block;flex:1 1 100%;order:-1;padding:2px 6px 0;color:#f4f0e6c7;font-weight:500;text-align:center}
+.ce-edit-bar.is-editing .ce-edit-actions{display:flex;align-items:center;gap:8px}
+.ce-edit-bar .ce-edit-status{color:#f0c77b;font-weight:600}
+.ce-edit-bar .ce-edit-status:empty{display:none}
+.ce-edit-bar .ce-edit-more{border-color:transparent;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+
+/* Outlined text while editing. The outline is drawn outside so it never changes layout. */
+.ce-editing [data-ce-edit]{outline:1.5px dashed #d2a24a;outline-offset:4px;border-radius:2px;cursor:text;transition:outline-color .15s,background .15s}
+.ce-editing [data-ce-edit]:hover{outline-color:#b75c3d;background:#d2a24a1a}
+.ce-editing [data-ce-edit]:focus{outline:2px solid #b75c3d;background:#d2a24a26}
+.ce-editing [data-ce-edit].is-changed{outline-color:#b75c3d;outline-style:solid}
+.ce-editing [data-ce-format=lines]{white-space:pre-line}
+.ce-editing [data-ce-edit]:empty::before{content:attr(data-ce-empty);opacity:.45;font-style:italic}
+.ce-editing [data-ce-edit]:empty{display:inline-block;min-width:4ch}
+.ce-editing a [data-ce-edit],.ce-editing summary [data-ce-edit]{cursor:text}
+
+/* Block content stays in the page editor; offer the way there. */
+.ce-open-editor{display:none}
+.ce-editing .ce-open-editor{display:inline-flex;align-items:center;gap:8px;margin:14px 0 0;padding:8px 14px;border:1.5px dashed #d2a24a;border-radius:8px;color:inherit;font:700 .85rem "DM Sans",sans-serif;text-decoration:none}
+.ce-editing .ce-open-editor::before{content:"✎"}
+.ce-editing .ce-open-editor:hover{border-style:solid}
+
+/* Leave room above the bar at the very bottom of the page. */
+body.ce-editing{padding-bottom:80px}
+
+@media (max-width:720px){
+  .ce-edit-bar{left:12px;right:12px;bottom:12px;max-width:none;transform:none}
+  .ce-edit-bar.is-editing .ce-edit-hint{display:none}
+  .ce-edit-bar .ce-edit-actions{flex-wrap:wrap}
+}
