@@ -173,19 +173,33 @@
   };
   window.addEventListener("beforeunload", warn);
 
-  /* Typing: keep one-line fields on one line, mirror the same setting shown twice on a page. */
+  /* Typing goes to the field and nowhere else. WordPress.com and plugins listen for single-key
+     shortcuts on the document, so every keyboard and paste event that starts inside an editable
+     field is handled here, at the window in the capture phase, and then stopped before any other
+     script sees it. The browser's own default (inserting the character) still happens. */
+  const inField = (e) => editing && e.target && e.target.closest && e.target.closest("[data-ce-edit]");
+  window.addEventListener("keydown", (e) => {
+    const el = inField(e);
+    if (!el) return;
+    if (e.key === "Escape") { e.preventDefault(); el.blur(); }
+    else if (e.key === "Enter" && el.dataset.ceFormat !== "lines") { e.preventDefault(); el.blur(); }
+    e.stopImmediatePropagation();
+  }, true);
+  ["keypress", "keyup"].forEach((type) => {
+    window.addEventListener(type, (e) => { if (inField(e)) e.stopImmediatePropagation(); }, true);
+  });
+  window.addEventListener("paste", (e) => {
+    const el = inField(e);
+    if (!el) return;
+    e.stopImmediatePropagation();
+    if (plaintextOnly) return;
+    e.preventDefault();
+    const text = (e.clipboardData || window.clipboardData).getData("text");
+    document.execCommand("insertText", false, text);
+  }, true);
+
+  /* Mirror the same setting shown twice on a page, and count the changes. */
   fields.forEach((el) => {
-    el.addEventListener("keydown", (e) => {
-      if (!editing) return;
-      if (e.key === "Escape") { e.preventDefault(); el.blur(); }
-      if (e.key === "Enter" && el.dataset.ceFormat !== "lines") { e.preventDefault(); el.blur(); }
-    });
-    el.addEventListener("paste", (e) => {
-      if (!editing || plaintextOnly) return;
-      e.preventDefault();
-      const text = (e.clipboardData || window.clipboardData).getData("text");
-      document.execCommand("insertText", false, text);
-    });
     el.addEventListener("input", () => {
       if (!editing) return;
       const value = read(el);

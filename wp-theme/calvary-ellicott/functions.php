@@ -10,7 +10,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CE_THEME_VERSION', wp_get_theme( get_template() )->get( 'Version' ) ?: '1.3.0' );
+define( 'CE_THEME_VERSION', wp_get_theme( get_template() )->get( 'Version' ) ?: '1.3.1' );
 define( 'CE_THEME_DIR', get_template_directory() );
 define( 'CE_THEME_URI', get_template_directory_uri() );
 
