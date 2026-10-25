@@ -19,7 +19,8 @@ while ( have_posts() ) :
 		<div class="section-heading">
 			<div>
 				<p class="eyebrow"<?php echo ce_edit_attr( 'opt:watch_live_eyebrow' ); ?>><?php echo esc_html( ce_opt( 'watch_live_eyebrow' ) ); ?></p>
-				<h2><?php echo ce_opt_span( 'service_day' ); ?>s at <?php echo ce_opt_span( 'service_time' ); ?></h2>
+				<?php $live_headline = ce_opt( 'watch_live_headline' ); ?>
+				<h2<?php echo ce_edit_attr( 'opt:watch_live_headline' ); ?>><?php echo esc_html( $live_headline ? $live_headline : ce_service_line() ); ?></h2>
 				<p<?php echo ce_edit_attr( 'opt:watch_live_text' ); ?>><?php echo esc_html( ce_opt( 'watch_live_text' ) ); ?></p>
 			</div>
 			<?php if ( $archive_url ) : ?>
