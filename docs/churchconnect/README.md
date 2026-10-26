@@ -39,6 +39,8 @@ How the ChurchTrac side is styled and built, one page at a time.
 | `sections/staff-grid.html` | Staff cards (name, role, bio, photo or initials) plus the gold invite tile. Light background. |
 | `section-welcome.html` | The first experiment (hero split + three tiles together). |
 | `staff-page-card.html` | Earlier inline-styled staff grid; superseded by `sections/staff-grid.html`. |
+| `pages/announcements/01-header.html` | Header section for the announcements page (dark background; body is cards). |
+| `pages/serving/01-header.html` | Header section for the serving page: short piece on why we serve, Mark 10:45 (ESV), 1 Peter 4:10. Dark background; body is one card per team. |
 
 ## Current inventory (2026-10-20)
 
