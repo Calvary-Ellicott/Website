@@ -132,3 +132,7 @@ ChurchTrac → People → export to CSV. In the portal, Import from ChurchTrac �
 - Folder list shows Inbox, Sent, Drafts, Archive, Junk, Trash, and any custom folders, but moving is limited to Archive, Trash, and Inbox.
 - The campaign editor is deliberately simple: headings, bold, italic, lists, links. No images yet.
 - Hosts sometimes block outbound SMTP ports. If sending fails with a connection error but reading works, switch SMTP to port 587 / STARTTLS in Mail → Settings; if both ports fail, the host blocks SMTP and sending has to stay in Purelymail's webmail.
+
+## AI assistant connector (planned)
+
+A spec for letting ChatGPT or Claude read a staff mailbox through this plugin (MCP endpoint with OAuth) is in `docs/mail-portal-mcp.md`. Nothing from it is built yet.
