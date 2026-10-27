@@ -180,8 +180,9 @@ New files: `inc/class-oauth.php` (metadata, register, authorize, token, revoke, 
 
 ## Constraints of the hosting
 
-- WordPress.com Premium: plugin installed by zip upload, no SSH, no file access, PHP 8.x, outbound IMAP 993
-  and SMTP 465 **unverified** (the portal itself has not been activated there yet as of 2026-10-27).
+- WordPress.com Premium: plugin installed by zip upload, no SSH, no file access, PHP 8.x. Outbound IMAP 993
+  and SMTP 465 to Purelymail are **verified**: the portal is active on the live site and `/mail` and
+  `/emailadmin` work (2026-10-27).
 - No PHP on the developer's machine (ShadowTablet). Lint through `.github/workflows/plugin-lint.yml` (PHP
   7.4 and 8.3) and test on the live site. Keep the code 7.4-compatible to match the lint.
 - Package with `tools/package-plugin.bat` → `wp-plugin/dist/ce-mail.zip`. Bump the plugin `Version` and the
