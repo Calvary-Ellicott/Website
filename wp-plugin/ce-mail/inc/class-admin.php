@@ -33,6 +33,8 @@ class CE_Mail_Admin {
 			'roles'           => array_values( array_filter( array_map( 'sanitize_key', isset( $in['roles'] ) ? (array) $in['roles'] : array() ) ) ),
 			'demo'            => empty( $in['demo'] ) ? 0 : 1,
 			'marketing_enabled' => empty( $in['marketing_enabled'] ) ? 0 : 1,
+			'ai_enabled'        => empty( $in['ai_enabled'] ) ? 0 : 1,
+			'ai_send'           => empty( $in['ai_send'] ) ? 0 : 1,
 			'page_size'       => max( 10, min( 100, (int) ( isset( $in['page_size'] ) ? $in['page_size'] : 25 ) ) ),
 			'org_name'        => sanitize_text_field( isset( $in['org_name'] ) ? $in['org_name'] : $cur['org_name'] ),
 			'org_address'     => sanitize_text_field( isset( $in['org_address'] ) ? $in['org_address'] : $cur['org_address'] ),
@@ -75,6 +77,10 @@ class CE_Mail_Admin {
 
 		echo '<form method="post" action="options.php">';
 		settings_fields( 'ce_mail' );
+		echo '<h2>AI assistants</h2><p>Connecting a mailbox shares member names, message content, and pastoral matters with the assistant vendor. Obtain the pastor\'s approval before staff connect.</p><table class="form-table" role="presentation">';
+		printf( '<tr><th>Allow AI assistants</th><td><label><input type="checkbox" name="%s[ai_enabled]" value="1" %s> Allow staff to authorize their own church mailbox</label></td></tr>', $opt, checked( ! empty( $s['ai_enabled'] ), true, false ) );
+		printf( '<tr><th>Allow assistants to send</th><td><label><input type="checkbox" name="%s[ai_send]" value="1" %s> Offer sending permission on the consent screen (each person must also opt in)</label></td></tr>', $opt, checked( ! empty( $s['ai_send'] ), true, false ) );
+		echo '</table><p>Connector URL: <code>' . esc_html( CE_Mail_OAuth::resource() ) . '</code>. Turning assistants off suspends access; existing grants remain until revoked or expired.</p>';
 
 		echo '<h2>Mailboxes (Purelymail)</h2><p class="description">Each staff member connects their own mailbox from the portal\'s Settings tab with their Purelymail email and password. These are the server details the portal uses for everyone.</p><table class="form-table" role="presentation">';
 		self::field( 'imap_host', 'IMAP server', $s['imap_host'] );

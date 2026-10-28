@@ -1,7 +1,114 @@
 # Church mail connector for AI assistants (MCP) — build spec
 
-Status: **spec only, nothing built** (2026-10-27). Written for whoever builds it (Codex, Claude, or a person).
+Status: **0.3.1 discovery verified live; 0.4.0 connector implemented locally, awaiting live acceptance** (2026-10-27).
 It extends the existing mail portal plugin in `wp-plugin/ce-mail/`; read `docs/mail-portal.md` first.
+
+### 0.4.2 callback navigation fix
+
+The user observed that the first Allow click left the form visible and a second click reported
+`flow_missing`. The old response consumed the flow and issued an external HTTP redirect while
+the source form had `Content-Security-Policy: form-action 'self'`. This browser behavior was
+reproduced with synthetic local endpoints: the POST/302 stayed on the consent form; the new
+production handoff template reached the cross-origin callback automatically in the same browser.
+This is distinct from an expired login or incorrect password.
+
+0.4.2 completes Allow/Cancel POSTs with an HTTP 200 completion document, then navigates through
+a meta refresh to the exact registered callback with code/error and state. A visible Continue to
+assistant link provides a fallback. The strict CSP, no-store/no-referrer headers, cookie binding,
+and one-use code checks stay in place. Passwords and bearer tokens are never included in the page.
+
+Local validation: 72 regression checks, seven authorization handler scenarios, PHP syntax checks,
+and a browser regression using the production return template. The browser fixture is
+`node tests/oauth-return-browser.cjs <php-path>`; it creates no real OAuth grants. Live 0.4.2
+acceptance is pending installation. The discovery checker now expects 0.4.2.
+
+### 0.4.1 sign-in transition update
+
+0.4.0 is now verified live: discovery, disabled/enabled MCP responses, public client registration,
+and a cookie-bound cancellation POST passed. The user repeatedly received the combined
+"expired or cookie missing" error after sign-in/Allow. The root cause is not yet established;
+the generic error did not identify the failed check. The in-app browser also showed a separate
+ERR_CACHE_MISS error, which does not establish the cause of the server-side rejection.
+
+0.4.1 verifies the browser cookie roundtrip before presenting a password form and uses
+POST/Redirect/GET after a successful sign-in. Consent refresh no longer resubmits the password.
+Successful sign-in gives the consent stage a fresh ten-minute deadline; it does not extend grants.
+Invalid passwords offer a retry link retaining the browser-bound flow. Distinct non-secret error
+codes identify a missing form, missing cookie, changed cookie, missing/consumed flow, expired flow,
+or storage failure. Cookie binding, PKCE, and one-use code protections remain enforced.
+
+Local PHP 8.3 validation passed 72 security/protocol checks plus six isolated real-handler/template
+scenarios (initial redirect, successful fixture sign-in, consent display, wrong-password retry,
+missing-cookie rejection, Allow/code issuance). These use a fake mailbox and SQLite, not real
+credentials or a browser. Upload 0.4.1 and repeat the live test before claiming this incident resolved.
+No database migration is needed beyond 0.4.0. The discovery checker now expects 0.4.1.
+
+## Current implementation and verification
+
+Both live discovery URLs returned HTTP 200 JSON with version **0.3.1** on 2026-10-27 after
+the user uploaded the probe. The issuer, resource, and endpoint checks passed. Acceptance
+test 0 is complete; no alternate host or issuer-path fallback is needed for this installation.
+
+Version **0.4.0** implements client registration, browser-bound sign-in/consent, S256 PKCE,
+single-use authorization codes, rotating refresh tokens with replay revocation, mailbox-bound
+grants, scope-aware MCP tools, audit rows, rate limits, both administrator switches, and the
+Connected assistants list/revocation in portal Settings. Both switches default to off.
+Discovery remains public and now reports `ce_mail_stage: connector`.
+
+Local verification: PHP 8.3 syntax checks and JavaScript syntax checks; `tests/connector.php`
+passes 65 security/protocol/mailbox regression checks with a SQLite persistence adapter and
+fixture mailbox. Tests cover PKCE and redirect rejection, one-use codes, audience binding,
+refresh rotation/replay, cross-mailbox isolation, revocation, switches, malformed RPC/arguments,
+rate limits, read-without-marking-seen, and safe archive handling. SQLite does **not** verify
+MySQL locking or WordPress REST integration. CI runs this suite and lint on PHP 7.4 and 8.3;
+CI has not been run for these local changes. No real mail was read, drafted, or sent during development.
+
+### Install and accept 0.4.0
+
+1. Upload `wp-plugin/dist/ce-mail.zip` and replace the existing plugin.
+2. Run `powershell -ExecutionPolicy Bypass -File tools/check-mail-discovery.ps1` from the repo.
+   To recheck the old probe, add `-ExpectedVersion 0.3.1`.
+3. Confirm MCP returns 503 while **Mail → Allow AI assistants** is off. Enable it only after
+   the pastor approves the vendor/data sharing. Leave **Allow assistants to send** off initially.
+4. Confirm unauthenticated POST to `/wp-json/ce-mail/v1/mcp` returns 401 with the discovery challenge.
+5. Use MCP Inspector with a dedicated church test mailbox. Request `mail:read mail:draft mail:organize`,
+   authorize with `resource` equal to the MCP URL, then test reading, drafts, flagging, and archiving.
+6. Revoke from portal Settings and verify the next call returns 401. Reauthorize, disable the
+   administrator switch, and verify 503. Then perform the ChatGPT and Claude acceptance checks below.
+
+Live acceptance tests 1–8, real SMTP/IMAP behavior, and the WordPress database upgrade remain unverified
+until this version is installed. The local package is not automatically deployed or committed.
+
+### Implementation refinements to the original design below
+
+- Database version 3 adds seven InnoDB tables named `ce_mail_oauth_clients`, `flows`, `codes`,
+  `grants`, `tokens`, `rates`, and `audit` under the site's WordPress prefix. Actual names after
+  the first are also prefixed with `ce_mail_oauth_`. The separate grant owns encrypted credentials,
+  scope, audience, and revocation; tokens hold only hashes and grant IDs. Short-lived flows and
+  codes contain encrypted credentials, never plaintext passwords.
+- Refresh tokens expire with the grant, 90 days from initial consent. Rotation does not extend
+  that deadline. Consumed refresh hashes remain until expiry to detect reuse. Code consumption
+  and refresh rotation use InnoDB transactions and row locks. Consent is tied to an HttpOnly,
+  Secure, SameSite=Lax browser cookie and a one-use, ten-minute server-side flow.
+- Both authorization and token requests require the exact resource URL. Redirects must match
+  registration exactly, including loopback ports. No redirect URI or scope is trusted from consent POSTs.
+- Atomic database counters replace transient counters for connector limits. Sends are limited
+  to 20/hour/**grant**, preventing token rotation from bypassing the limit. Registration and
+  token exchange also have limits. Login has both the existing IP throttle and a mailbox counter.
+- Archive requires the IMAP MOVE capability. It refuses the portal's COPY/EXPUNGE fallback,
+  which could expunge other messages already marked deleted.
+- Replies, snippets and threads are bounded: up to 50 records, 2 MB raw messages, 64 KiB text per
+  message, 10 reference IDs searched, approximately 256 KiB of thread text and a 20-second IMAP
+  budget. A large thread may time out with a tool error; use individual messages in that case.
+  Snippets use a bounded MIME preview and may be empty for complex multipart mail. Quote removal
+  is heuristic and is not guaranteed for every email client's formatting.
+- Draft IDs use APPENDUID where provided; otherwise the response reports `saved: true`, a null
+  draft ID, and a warning. A successful send with a failed Sent copy is reported as sent with a
+  warning, never as a failure inviting duplicate sends. Message bodies and recipient lists are
+  omitted from audit summaries. Read tools do not set the Seen flag or fetch remote images.
+- Revocation prevents subsequent requests; an operation already in progress may finish.
+
+The metadata and transport follow the pinned [MCP 2025-06-18 authorization specification](https://modelcontextprotocol.io/specification/2025-06-18/basic/authorization).
 
 ## Goal
 
@@ -35,7 +142,8 @@ mailbox, and access can be revoked from the portal.
 
 The `.well-known` paths are served by the plugin through `parse_request`, the same way `/mail` and
 `/emailadmin` are (`CE_Mail_Frontend::requested()`), because WordPress.com gives no file-system access.
-**Unverified:** whether WordPress.com lets a plugin answer `/.well-known/*`. If it does not, fall back to
+**Verified on this site (2026-10-27):** WordPress.com passes both `/.well-known/*` paths to this plugin.
+For a future host where it does not, fall back to
 RFC 8414 path-insertion by making the issuer `https://calvaryellicott.org/wp-json/ce-mail/v1/oauth`, so the
 metadata URL becomes `/.well-known/oauth-authorization-server/wp-json/ce-mail/v1/oauth`; if that is blocked
 too, the whole plan needs a different host for the authorization server, so test this first (see Acceptance
@@ -203,7 +311,7 @@ New files: `inc/class-oauth.php` (metadata, register, authorize, token, revoke, 
 
 ## Open questions
 
-- Does WordPress.com serve `/.well-known/*` to a plugin? (Test 0 answers it.)
+- WordPress.com discovery routing: answered yes on this site by the live 0.3.1 check.
 - Should Pastor Dan's mailbox be connectable at all, or only office/scheduling addresses? Default the
   "Allow AI assistants" switch to off and let the pastor decide per address; a per-mailbox allow-list in
   Settings is a small addition if wanted.

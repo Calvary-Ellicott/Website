@@ -385,10 +385,26 @@
   function renderSettings() {
     const v = $("#view"); const mb = state.me.mailbox;
     v.innerHTML = '<div class="topbar"><h1>Settings</h1></div><div class="pane">' +
-      '<div class="card"><h2>Your mailbox</h2>' + (state.me.guest ? '<p>Signed in as <strong>' + esc(mb.email) + '</strong> with your mailbox password. It is kept only in this browser while you are signed in; nothing is saved on the website.</p><div class="row"><a class="button ghost danger" href="' + esc(CFG.site.logout) + '">Sign out</a><a class="button ghost" href="' + esc(CFG.webmail) + '" target="_blank" rel="noopener">Open in Purelymail</a></div>' : mb.linked ? '<p>Connected as <strong>' + esc(mb.email) + '</strong>. Your inbox, sent mail, and replies all use this account.</p><div class="row"><button class="button ghost danger" data-action="unlink">Disconnect</button><a class="button ghost" href="' + esc(CFG.webmail) + '" target="_blank" rel="noopener">Open in Purelymail</a></div>' :
+      '<div class="card"><h2>Your mailbox</h2>' + (state.me.guest ? '<p>Signed in as <strong>' + esc(mb.email) + '</strong> with your mailbox password. This browser sign-in keeps your credentials in an encrypted cookie. Assistant connections below store separate encrypted credentials on the website.</p><div class="row"><a class="button ghost danger" href="' + esc(CFG.site.logout) + '">Sign out</a><a class="button ghost" href="' + esc(CFG.webmail) + '" target="_blank" rel="noopener">Open in Purelymail</a></div>' : mb.linked ? '<p>Connected as <strong>' + esc(mb.email) + '</strong>. Your inbox, sent mail, and replies all use this account.</p><div class="row"><button class="button ghost danger" data-action="unlink">Disconnect</button><a class="button ghost" href="' + esc(CFG.webmail) + '" target="_blank" rel="noopener">Open in Purelymail</a></div>' :
         '<p class="help">Enter the email address and password of your church mailbox. The password is stored encrypted and only used to talk to the mail server (' + esc(CFG.imap_host) + ').</p><form id="link-form"><div class="row"><label class="field grow"><span>Email address</span><input type="email" name="email" value="' + esc(state.me.email) + '" required /></label><label class="field grow"><span>Password</span><input type="password" name="password" required autocomplete="current-password" /></label></div><div class="row"><button type="submit" class="button primary">Connect mailbox</button><a class="button ghost" href="' + esc(CFG.webmail) + '" target="_blank" rel="noopener">Open Purelymail instead</a></div></form>') + "</div>" +
       (state.me.marketing.enabled ? '<div class="card"><h2>Marketing email</h2>' + (state.me.marketing.ready ? "<p>Campaigns send through Resend from <strong>" + esc(state.me.marketing.from) + "</strong>" + (state.me.marketing.reply_to ? ", replies go to <strong>" + esc(state.me.marketing.reply_to) + "</strong>" : "") + ".</p>" : '<p class="help">Not connected yet. ' + (state.me.admin ? 'Set it up under <a href="' + esc(CFG.site.settings) + '">Mail → Settings</a> in the dashboard: a Resend API key, an audience, and the sending address.' : "The website admin sets this up in the dashboard.") + "</p>") + "</div>" : '<div class="card"><h2>Newsletters and mass email</h2><p class="help">Those go out from ChurchTrac. This portal is for your own mailbox.</p></div>') +
       '<div class="card"><h2>Signed in as</h2><p>' + esc(state.me.name) + " · " + esc(state.me.email) + (state.me.guest ? " · mailbox sign-in" : "") + (state.me.admin ? ' · <a href="' + esc(CFG.site.settings) + '">Portal settings</a>' : "") + "</p></div></div>";
+    const assistants = document.createElement("div");
+    assistants.className = "card";
+    assistants.innerHTML = '<h2>Connected assistants</h2><p class="help">An assistant connection stores encrypted mailbox credentials separately from your browser sign-in. Revoke it here to stop access.</p><div class="assistant-list">Loading connections…</div>';
+    $(".pane", v).appendChild(assistants);
+    const assistantList = $(".assistant-list", assistants);
+    api("assistants").then((r) => {
+      assistantList.innerHTML = r.items.length ? r.items.map((c) => '<div class="card"><strong>' + esc(c.name || "AI assistant") + '</strong><p>' + esc(c.mailbox_email) + '<br>Permissions: ' + esc(c.scope) + '<br>Connected: ' + esc(new Date(Number(c.created_at) * 1000).toLocaleString()) + '<br>Last used: ' + esc(new Date(Number(c.last_used_at) * 1000).toLocaleString()) + '</p><button class="button ghost danger" data-revoke="' + esc(c.grant_id) + '">Revoke</button></div>').join("") : '<p>No connected assistants.</p>';
+      assistantList.querySelectorAll("[data-revoke]").forEach((button) => {
+        button.onclick = async () => {
+          if (!(await confirmBox("Revoke this assistant's access to your mailbox?", "Revoke"))) return;
+          button.disabled = true;
+          try { await api("assistants/" + button.dataset.revoke, { method: "DELETE" }); button.closest(".card").remove(); toast("Assistant access revoked", "ok"); }
+          catch (error) { toast(error.message, "bad"); button.disabled = false; }
+        };
+      });
+    }).catch((error) => { assistantList.textContent = error.message; });
     showDemoBanner();
     const form = $("#link-form");
     if (form) form.onsubmit = async (e) => {

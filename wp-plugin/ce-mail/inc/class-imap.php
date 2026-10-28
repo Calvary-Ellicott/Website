@@ -15,6 +15,17 @@ class CE_Mail_IMAP {
 	private $tag  = 0;
 	private $caps = array();
 	public $selected = '';
+	public $last_append_uid = null;
+	private $deadline = null;
+
+	public function set_deadline( $deadline ) { $this->deadline = $deadline; }
+	private function budget() {
+		if ( null !== $this->deadline ) {
+			$left = $this->deadline - microtime( true );
+			if ( $left <= 0 ) { throw new RuntimeException( 'Mail operation timed out.' ); }
+			if ( $this->sock ) { stream_set_timeout( $this->sock, max( 1, (int) min( $this->timeout, ceil( $left ) ) ) ); }
+		}
+	}
 
 	public function __construct( $host, $port = 993, $timeout = 25 ) {
 		$this->host    = $host;
@@ -148,12 +159,12 @@ class CE_Mail_IMAP {
 	/**
 	 * Header summaries for a set of UIDs: flags, date, size, from, to, subject, attachment hint.
 	 */
-	public function fetch_summaries( array $uids ) {
+	public function fetch_summaries( array $uids, $with_snippets = false ) {
 		if ( ! $uids ) {
 			return array();
 		}
 		$set = implode( ',', array_map( 'intval', $uids ) );
-		$r   = $this->command( 'UID FETCH ' . $set . ' (UID FLAGS INTERNALDATE RFC822.SIZE BODYSTRUCTURE BODY.PEEK[HEADER.FIELDS (FROM TO CC SUBJECT DATE MESSAGE-ID IN-REPLY-TO REFERENCES)])' );
+		$r   = $this->command( 'UID FETCH ' . $set . ' (UID FLAGS INTERNALDATE RFC822.SIZE BODYSTRUCTURE BODY.PEEK[HEADER.FIELDS (FROM TO CC SUBJECT DATE MESSAGE-ID IN-REPLY-TO REFERENCES CONTENT-TYPE CONTENT-TRANSFER-ENCODING MIME-VERSION)]' . ( $with_snippets ? ' BODY.PEEK[TEXT]<0.2048>' : '' ) . ')' );
 		$out = array();
 		foreach ( $r['records'] as $rec ) {
 			if ( ! preg_match( '/^\* \d+ FETCH /', $rec['text'] ) || ! preg_match( '/\bUID (\d+)/', $rec['text'], $u ) ) {
@@ -182,6 +193,15 @@ class CE_Mail_IMAP {
 				'message_id'  => isset( $headers['message-id'] ) ? $headers['message-id'] : '',
 				'attachments' => $has_att,
 			);
+			if ( $with_snippets ) {
+				$snippet = '';
+				if ( isset( $rec['literals'][1] ) ) {
+					$preview = CE_Mail_MIME::parse_message( $rec['literals'][0] . "\r\n\r\n" . $rec['literals'][1] );
+					$snippet = $preview['text'] ? $preview['text'] : wp_strip_all_tags( CE_Mail_MIME::safe_html( $preview['html'] ) );
+					$snippet = trim( preg_replace( '/\s+/', ' ', $snippet ) );
+				}
+				$out[ (int) $u[1] ]['snippet'] = function_exists( 'mb_substr' ) ? mb_substr( $snippet, 0, 200, 'UTF-8' ) : wp_check_invalid_utf8( substr( $snippet, 0, 200 ), true );
+			}
 		}
 		return $out;
 	}
@@ -221,6 +241,7 @@ class CE_Mail_IMAP {
 	}
 
 	public function append( $folder, $raw, $flags = '\Seen' ) {
+		$this->last_append_uid = null;
 		$raw = str_replace( "\r\n", "\n", $raw );
 		$raw = str_replace( "\n", "\r\n", $raw );
 		$tag = $this->next_tag();
@@ -231,6 +252,7 @@ class CE_Mail_IMAP {
 		}
 		$this->write( $raw . "\r\n" );
 		$r = $this->read_response( $tag );
+		if ( 'OK' === $r['status'] && preg_match( '/\[APPENDUID [0-9]+ ([0-9]+)\]/i', $r['text'], $uid ) ) { $this->last_append_uid = (int) $uid[1]; }
 		return 'OK' === $r['status'];
 	}
 
@@ -242,10 +264,12 @@ class CE_Mail_IMAP {
 	}
 
 	public function quote( $s ) {
+		if ( preg_match( '/[\r\n\x00]/', (string) $s ) ) { throw new InvalidArgumentException( 'IMAP values cannot contain line breaks or NUL.' ); }
 		return '"' . str_replace( array( '\\', '"' ), array( '\\\\', '\\"' ), (string) $s ) . '"';
 	}
 
 	private function write( $data ) {
+		$this->budget();
 		if ( ! $this->sock ) {
 			throw new Exception( 'Not connected.' );
 		}
@@ -263,6 +287,7 @@ class CE_Mail_IMAP {
 	private function read_line() {
 		$line = '';
 		while ( true ) {
+			$this->budget();
 			$chunk = fgets( $this->sock, 8192 );
 			if ( false === $chunk ) {
 				$meta = stream_get_meta_data( $this->sock );
@@ -279,6 +304,7 @@ class CE_Mail_IMAP {
 	private function read_literal( $n ) {
 		$data = '';
 		while ( strlen( $data ) < $n ) {
+			$this->budget();
 			$chunk = fread( $this->sock, min( 65536, $n - strlen( $data ) ) );
 			if ( false === $chunk || '' === $chunk ) {
 				throw new Exception( 'The connection to the mail server dropped mid-message.' );
@@ -310,7 +336,8 @@ class CE_Mail_IMAP {
 			while ( preg_match( '/\{(\d+)\}$/', $rec['text'], $m ) ) {
 				$n = (int) $m[1];
 				if ( $n > $max_literal ) {
-					$this->read_literal( $n ); // discard oversized data to stay in sync
+					// Discard without allocating a potentially huge attachment in memory.
+					for ( $left = $n; $left > 0; $left -= min( 65536, $left ) ) { $this->read_literal( min( 65536, $left ) ); }
 					$rec['literals'][] = '';
 				} else {
 					$rec['literals'][] = $this->read_literal( $n );

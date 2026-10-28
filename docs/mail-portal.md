@@ -122,7 +122,7 @@ ChurchTrac → People → export to CSV. In the portal, Import from ChurchTrac �
 
 - Mailbox passwords are encrypted with a key derived from the site's own salts (wp-config.php) using libsodium when available, otherwise AES-256-GCM. They are only ever sent to the IMAP/SMTP servers over TLS.
 - The Resend API key is stored in WordPress options and never shown again after saving.
-- All portal routes require a signed-in user with the `ce_mail_access` capability plus the standard REST nonce.
+- Portal routes require a permitted WordPress user or a mailbox session and REST nonce. The connector uses its own OAuth bearer tokens and never treats a portal cookie as an MCP credential.
 - Email HTML is sanitised before display (no scripts, frames, or forms). Remote images in emails are shown.
 - The Resend embed-style field in the theme and this plugin both accept raw HTML only from administrators.
 
@@ -133,6 +133,27 @@ ChurchTrac → People → export to CSV. In the portal, Import from ChurchTrac �
 - The campaign editor is deliberately simple: headings, bold, italic, lists, links. No images yet.
 - Hosts sometimes block outbound SMTP ports. If sending fails with a connection error but reading works, switch SMTP to port 587 / STARTTLS in Mail → Settings; if both ports fail, the host blocks SMTP and sending has to stay in Purelymail's webmail.
 
-## AI assistant connector (planned)
+## AI assistant connector (0.4.0, awaiting live acceptance)
 
-A spec for letting ChatGPT or Claude read a staff mailbox through this plugin (MCP endpoint with OAuth) is in `docs/mail-portal-mcp.md`. Nothing from it is built yet.
+A spec for letting ChatGPT or Claude read a staff mailbox through this plugin (MCP endpoint with OAuth) is in `docs/mail-portal-mcp.md`.
+The 0.3.1 discovery documents passed live checks on 2026-10-27. Version 0.4.0 adds OAuth consent,
+mailbox-bound access, reading/search/thread tools, drafts, flags, archiving, and optional sending.
+It adds seven connector tables (database version 3); existing mailbox connections remain intact.
+
+Upload the new ZIP, then run `powershell -ExecutionPolicy Bypass -File tools/check-mail-discovery.ps1`.
+In dashboard **Mail**, enable **Allow AI assistants** after the pastor approves the assistant vendor.
+Keep **Allow assistants to send** off for initial testing. Each person connects the URL
+`https://calvaryellicott.org/wp-json/ce-mail/v1/mcp`, signs in with their church mailbox, and consents.
+Requested scopes determine the tools available; sending needs both the administrator switch and an
+explicit checkbox on consent. Use a test mailbox for the acceptance steps in the connector spec.
+
+Portal **Settings → Connected assistants** shows connections for the signed-in mailbox and a Revoke
+button. Signing out of the browser does not revoke assistant access. Turning off AI assistants suspends
+all access without deleting grants; revocation remains available while disabled. Grants expire after
+90 days and require reconnection. Password changes require reconnecting. Rotating WordPress salts
+makes the encrypted credentials unreadable, so all mailbox and assistant connections must be reauthorized.
+
+Connecting to a third-party assistant shares message content, member names, and potentially pastoral
+or financial matters with that vendor. The pastor should sign off before staff connect. No attachment
+contents or remote images are returned by the tools. Audit records omit message content and expire
+after 90 days. Live OAuth, database, and real mailbox acceptance tests are pending for 0.4.0.

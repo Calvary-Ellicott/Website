@@ -25,6 +25,8 @@ class CE_Mail_Settings {
 			'roles'             => array( 'editor' ),
 			'demo'              => 1,
 			'marketing_enabled' => 0,
+			'ai_enabled'        => 0,
+			'ai_send'           => 0,
 			'page_size'         => 25,
 			'org_name'          => 'Calvary Ellicott',
 			'org_address'       => '2150 N. Ellicott Hwy, Calhan, CO 80808',
