@@ -24,21 +24,36 @@ class CE_Mail_MCP {
 		return $r;
 	}
 	public static function problem( $id, $code, $message ) { return self::rpc( $id, null, array( 'code' => $code, 'message' => $message ) ); }
+	public static function allowed_origin( $origin ) {
+		// WP_REST_Request::get_header() returns null when the header is absent.
+		// Native/server-side MCP clients normally omit Origin entirely.
+		if ( null === $origin || '' === $origin ) { return true; }
+		if ( ! is_string( $origin ) ) { return false; }
+		$site = wp_parse_url( home_url( '/' ) );
+		$expected = $site['scheme'] . '://' . $site['host'] . ( isset( $site['port'] ) ? ':' . $site['port'] : '' );
+		return $origin === $expected || 'https://chatgpt.com' === $origin || (bool) preg_match( '#^http://(localhost|127\.0\.0\.1)(:[0-9]+)?$#D', $origin );
+	}
+	public static function cors( $response, $server, $request ) {
+		$route = rtrim( $request->get_route(), '/' );
+		if ( '/ce-mail/v1/mcp' === $route && self::allowed_origin( $request->get_header( 'Origin' ) ) ) {
+			$response->header( 'Access-Control-Expose-Headers', 'WWW-Authenticate, MCP-Protocol-Version' );
+			$response->header( 'Access-Control-Allow-Headers', 'Authorization, Content-Type, Accept, MCP-Protocol-Version' );
+		}
+		return $response;
+	}
 	public static function dispatch( $req ) {
 		if ( ! CE_Mail_OAuth::enabled() ) { return CE_Mail_OAuth::error( 'temporarily_unavailable', 'AI assistants are disabled by the church administrator.', 503 ); }
 		$origin = $req->get_header( 'Origin' );
-		$site = wp_parse_url( home_url( '/' ) );
-		$expected = $site['scheme'] . '://' . $site['host'] . ( isset( $site['port'] ) ? ':' . $site['port'] : '' );
-		if ( $origin && $origin !== $expected && ! preg_match( '#^http://(localhost|127\.0\.0\.1)(:[0-9]+)?$#D', $origin ) ) { return CE_Mail_OAuth::error( 'forbidden', 'Origin not allowed.', 403 ); }
+		if ( ! self::allowed_origin( $origin ) ) { return CE_Mail_OAuth::error( 'forbidden', 'Origin not allowed.', 403 ); }
 		$g = CE_Mail_OAuth::bearer( $req->get_header( 'Authorization' ) );
 		if ( ! $g ) {
 			$r = CE_Mail_OAuth::error( 'invalid_token', 'Please reconnect your mailbox.', 401 );
-			$r->header( 'WWW-Authenticate', 'Bearer resource_metadata="' . home_url( '/.well-known/oauth-protected-resource' ) . '"' );
+			$r->header( 'WWW-Authenticate', 'Bearer resource_metadata="' . home_url( '/.well-known/oauth-protected-resource' ) . '", scope="' . implode( ' ', CE_Mail_OAuth::scopes() ) . '"' );
 			return $r;
 		}
 		if ( 'POST' !== $req->get_method() ) { $r = CE_Mail_OAuth::error( 'method_not_allowed', 'Use POST; streaming and sessions are not supported.', 405 ); $r->header( 'Allow', 'POST' ); return $r; }
 		if ( strlen( $req->get_body() ) > 131072 ) { return CE_Mail_OAuth::error( 'request_too_large', 'Request exceeds 128 KiB.', 413 ); }
-		if ( 0 !== strpos( $req->get_header( 'Content-Type' ), 'application/json' ) ) { return CE_Mail_OAuth::error( 'unsupported_media_type', 'Use application/json.', 415 ); }
+		if ( 0 !== strpos( (string) $req->get_header( 'Content-Type' ), 'application/json' ) ) { return CE_Mail_OAuth::error( 'unsupported_media_type', 'Use application/json.', 415 ); }
 		$d = json_decode( $req->get_body() );
 		if ( JSON_ERROR_NONE !== json_last_error() ) { return self::problem( null, -32700, 'Invalid JSON.' ); }
 		if ( ! is_object( $d ) || ! isset( $d->jsonrpc, $d->method ) || '2.0' !== $d->jsonrpc || ! is_string( $d->method ) || ( property_exists( $d, 'id' ) && ! is_int( $d->id ) && ! is_string( $d->id ) ) ) { return self::problem( null, -32600, 'Invalid JSON-RPC request. Batches are not supported.' ); }

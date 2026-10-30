@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Calvary Ellicott Mail
  * Description: A simple staff mail portal at /mail: Purelymail inboxes, marketing email through Resend, and a ChurchTrac contact import. Administrators get /emailadmin: mailboxes and mail groups kept in sync with Purelymail's routing rules. Can be installed without being used; signed-in staff see a preview with sample data until a mailbox is connected.
- * Version: 0.4.2
+ * Version: 0.4.4
  * Requires at least: 6.4
  * Requires PHP: 7.4
  * Author: Calvary Ellicott
@@ -11,7 +11,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CE_MAIL_VERSION', '0.4.2' );
+define( 'CE_MAIL_VERSION', '0.4.4' );
 define( 'CE_MAIL_FILE', __FILE__ );
 define( 'CE_MAIL_DIR', plugin_dir_path( __FILE__ ) );
 define( 'CE_MAIL_URL', plugin_dir_url( __FILE__ ) );
@@ -87,6 +87,7 @@ add_action( 'rest_api_init', array( 'CE_Mail_OAuth', 'register_routes' ) );
 add_action( 'rest_api_init', array( 'CE_Mail_MCP', 'register_routes' ) );
 add_filter( 'rest_pre_serve_request', array( 'CE_Mail_MCP', 'empty_response' ), 10, 3 );
 add_filter( 'rest_pre_dispatch', array( 'CE_Mail_MCP', 'pre_dispatch' ), 10, 3 );
+add_filter( 'rest_post_dispatch', array( 'CE_Mail_MCP', 'cors' ), 10, 3 );
 add_action( 'parse_request', array( 'CE_Mail_OAuth', 'parse_request' ), 1 );
 add_action( 'ce_mail_oauth_sweep', array( 'CE_Mail_OAuth_Store', 'sweep' ) );
 add_action( 'init', function () {

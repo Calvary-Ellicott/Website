@@ -240,7 +240,7 @@ class CE_Mail_OAuth {
 		catch ( Throwable $e ) { $wpdb->query( 'ROLLBACK' ); return self::error( 'server_error', 'Token exchange failed. Please reconnect.', 503 ); }
 	}
 	public static function bearer( $header ) {
-		if ( ! preg_match( '/^Bearer ([A-Za-z0-9_-]{64})$/iD', $header, $m ) ) { return null; }
+		if ( ! is_string( $header ) || ! preg_match( '/^Bearer ([A-Za-z0-9_-]{64})$/iD', $header, $m ) ) { return null; }
 		global $wpdb;
 		$t = CE_Mail_OAuth_Store::table( 'tokens' ); $g = CE_Mail_OAuth_Store::table( 'grants' );
 		$hash = self::hash( $m[1] );

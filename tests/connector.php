@@ -2,7 +2,7 @@
 /** Offline security regression tests. SQLite adapter tests persistence, not MySQL locking. */
 error_reporting( E_ALL );
 set_error_handler( function ( $severity, $message, $file, $line ) { throw new ErrorException( $message, 0, $severity, $file, $line ); } );
-define( 'ABSPATH', __DIR__ . '/' ); define( 'ARRAY_A', 'ARRAY_A' ); define( 'DAY_IN_SECONDS', 86400 ); define( 'CE_MAIL_VERSION', '0.4.2' );
+define( 'ABSPATH', __DIR__ . '/' ); define( 'ARRAY_A', 'ARRAY_A' ); define( 'DAY_IN_SECONDS', 86400 ); define( 'CE_MAIL_VERSION', '0.4.4' );
 $options = array( 'ai_enabled' => 1, 'ai_send' => 0 ); $checks = 0;
 function check( $condition, $label ) { global $checks; if ( ! $condition ) { throw new RuntimeException( 'FAILED: ' . $label ); } $checks++; }
 function rejected( $fn, $label ) { try { $fn(); } catch ( InvalidArgumentException $e ) { check( true, $label ); return; } throw new RuntimeException( 'FAILED: ' . $label ); }
@@ -40,7 +40,7 @@ class Request {
 	public function get_body() { return $this->raw; }
 	public function get_method() { return $this->method; }
 	public function get_route() { return $this->route; }
-	public function get_header( $name ) { return isset( $this->headers[ strtolower( $name ) ] ) ? $this->headers[ strtolower( $name ) ] : ''; }
+	public function get_header( $name ) { return isset( $this->headers[ strtolower( $name ) ] ) ? $this->headers[ strtolower( $name ) ] : null; }
 }
 class Database {
 	public $prefix = 'wp_'; public $pdo; public $insert_id;
@@ -117,6 +117,30 @@ $options['ai_send'] = 0;
 check( ! CE_Mail_MCP::tools( 'mail:send' ), 'Send kill switch overrides existing scope' );
 $rpc = new Request( array( 'jsonrpc' => '2.0', 'id' => 1, 'method' => 'initialize', 'params' => array( 'protocolVersion' => '2025-06-18' ) ), 'application/json' ); $rpc->headers['authorization'] = $bearer;
 check( '2025-06-18' === CE_Mail_MCP::dispatch( $rpc )->data['result']['protocolVersion'], 'MCP initialize' );
+$rpc->headers['origin'] = 'https://chatgpt.com';
+check( '2025-06-18' === CE_Mail_MCP::dispatch( $rpc )->data['result']['protocolVersion'], 'ChatGPT browser origin can initialize with valid bearer' );
+$unauthenticated = new Request( array( 'jsonrpc' => '2.0', 'id' => 1, 'method' => 'ping' ), 'application/json' );
+$unauthenticated->headers['origin'] = 'https://chatgpt.com';
+$challenge_response = CE_Mail_MCP::dispatch( $unauthenticated );
+check( 401 === $challenge_response->status && isset( $challenge_response->headers['WWW-Authenticate'] ), 'ChatGPT browser origin receives discovery challenge before login' );
+$cors_response = CE_Mail_MCP::cors( $challenge_response, null, $unauthenticated );
+check( false !== strpos( $cors_response->headers['Access-Control-Expose-Headers'], 'WWW-Authenticate' ), 'Browser can read discovery challenge header' );
+check( false !== strpos( $cors_response->headers['Access-Control-Allow-Headers'], 'MCP-Protocol-Version' ), 'Browser preflight allows protocol header' );
+unset( $unauthenticated->headers['origin'] );
+check( null === $unauthenticated->get_header( 'Origin' ), 'Request stub matches WordPress absent header behavior' );
+foreach ( array( 'GET', 'POST' ) as $method ) {
+	$unauthenticated->method = $method;
+	$server_challenge = CE_Mail_MCP::dispatch( $unauthenticated );
+	check( 401 === $server_challenge->status && isset( $server_challenge->headers['WWW-Authenticate'] ), 'Server-to-server ' . $method . ' receives OAuth challenge without Origin' );
+}
+check( CE_Mail_MCP::allowed_origin( null ) && CE_Mail_MCP::allowed_origin( '' ), 'Absent Origin allowed while literal null origin remains untrusted' );
+check( null === CE_Mail_OAuth::bearer( null ), 'Absent Authorization header handled without PHP warnings' );
+foreach ( array( 'https://chatgpt.com.evil.example', 'http://chatgpt.com', 'https://evil.example', 'null', 'https://chatgpt.com:444' ) as $bad_origin ) {
+	check( ! CE_Mail_MCP::allowed_origin( $bad_origin ), 'Unrelated/spoofed origins remain blocked' );
+}
+$root_metadata = CE_Mail_Discovery::document( '/.well-known/oauth-protected-resource' );
+check( $root_metadata === CE_Mail_Discovery::document( '/.well-known/oauth-protected-resource/wp-json/ce-mail/v1/mcp' ), 'Resource-specific discovery matches root document' );
+check( null === CE_Mail_Discovery::document( '/.well-known/oauth-protected-resource/wp-json/other/mcp' ), 'Metadata alias is limited to this resource' );
 $rpc->headers['origin'] = 'https://evil.example'; check( 403 === CE_Mail_MCP::dispatch( $rpc )->status, 'Cross-origin request refused' ); unset( $rpc->headers['origin'] );
 $rpc->raw = '{'; check( -32700 === CE_Mail_MCP::dispatch( $rpc )->data['error']['code'], 'Invalid JSON error' );
 check( -32700 === CE_Mail_MCP::pre_dispatch( null, null, $rpc )->data['error']['code'], 'REST bridge handles malformed JSON' );

@@ -1,7 +1,18 @@
-# Calvary Ellicott Mail 0.4.2
+# Calvary Ellicott Mail 0.4.4
 
 Install by uploading `ce-mail.zip` in WordPress Plugins and replacing the existing version.
 The portal remains at `/mail`; email administration remains at `/emailadmin`.
+
+0.4.4 fixes server-to-server OAuth discovery: WordPress returns null for an absent Origin header.
+That case now receives the OAuth challenge instead of an origin rejection. Browser origin checks
+remain enforced. The test request stub now follows WordPress header semantics and the live checker
+covers requests both with and without Origin. Sending remains separately disabled.
+
+0.4.3 adds browser-readable public discovery metadata, the resource-specific metadata URL, and
+support for the exact ChatGPT browser origin. Unauthenticated requests from ChatGPT now receive
+the OAuth challenge instead of an origin rejection. Other unrelated origins remain blocked.
+Sending still requires its separate administrator switch and explicit consent. Local regression
+checks passed; ChatGPT builder acceptance must be checked after installing this update.
 
 0.4.2 fixes the return after Allow/Cancel: a completion page automatically navigates back to the
 registered assistant and provides a Continue link. This avoids browsers blocking the previous

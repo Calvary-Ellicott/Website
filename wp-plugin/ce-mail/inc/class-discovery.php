@@ -25,7 +25,8 @@ class CE_Mail_Discovery {
 				'scopes_supported'                      => CE_Mail_OAuth::scopes(),
 			), $stage );
 		}
-		if ( '/.well-known/oauth-protected-resource' === $path ) {
+		$resource_path = (string) wp_parse_url( rest_url( 'ce-mail/v1/mcp' ), PHP_URL_PATH );
+		if ( '/.well-known/oauth-protected-resource' === $path || '/.well-known/oauth-protected-resource' . $resource_path === $path ) {
 			return array_merge( array(
 				'resource'                => rest_url( 'ce-mail/v1/mcp' ),
 				'authorization_servers'   => array( $issuer ),
@@ -45,9 +46,14 @@ class CE_Mail_Discovery {
 		}
 		nocache_headers();
 		header( 'X-Content-Type-Options: nosniff' );
+		// Metadata is public, contains no credentials, and must be readable by browser clients.
+		header( 'Access-Control-Allow-Origin: *' );
+		header( 'Access-Control-Allow-Methods: GET, HEAD, OPTIONS' );
+		header( 'Access-Control-Allow-Headers: MCP-Protocol-Version' );
 		$method = isset( $_SERVER['REQUEST_METHOD'] ) ? $_SERVER['REQUEST_METHOD'] : 'GET';
+		if ( 'OPTIONS' === $method ) { status_header( 204 ); exit; }
 		if ( 'GET' !== $method && 'HEAD' !== $method ) {
-			header( 'Allow: GET, HEAD' );
+			header( 'Allow: GET, HEAD, OPTIONS' );
 			wp_send_json( array( 'error' => 'method_not_allowed' ), 405 );
 		}
 		if ( 'HEAD' === $method ) {

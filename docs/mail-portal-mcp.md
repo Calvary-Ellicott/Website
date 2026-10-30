@@ -3,6 +3,116 @@
 Status: **0.3.1 discovery verified live; 0.4.0 connector implemented locally, awaiting live acceptance** (2026-10-27).
 It extends the existing mail portal plugin in `wp-plugin/ce-mail/`; read `docs/mail-portal.md` first.
 
+### Post-0.4.4 discovery investigation
+
+The user discontinued the WordPress-hosted ChatGPT approach and requested a personal,
+standalone Purelymail connection. Cloudflare Bot Fight Mode was restored to ON at their
+request; no additional hosting security setting had been changed. Sending stays off.
+The alternative should use a separate authenticated MCP service connected directly to
+`imap.purelymail.com:993` over TLS, using a mailbox-specific, IMAP-only app password.
+Initial tools: list folders, list/search messages, and read messages/threads. Use read-only
+IMAP selection and body peek, with no SMTP, flag/move/delete/draft tools or website dependency.
+Hosting choice (always-on service versus personal computer) is pending. This alternative
+has not yet been implemented or connected to the mailbox.
+
+Cloudflare Security > Analytics > Events, filtered to the exact registration path, confirmed
+Bot Fight Mode issuing a Managed Challenge to POST requests at 2026-10-27 23:13:54 MDT
+and 20:57:11 MDT. Latest Ray ID: `a51774320d0a3925`; user agent:
+`Python/3.14 aiohttp/3.14.4`; source ASN: Microsoft Corporation (8075).
+WordPress.com web server logs filtered to the same path for Oct 21-27 contained successful
+201 test registrations and one earlier 503, with no 403 entries. The Cloudflare challenge
+explains the observed registration failure before WordPress. Evidence screenshot:
+`wp-plugin/dist/cloudflare-bot-fight-evidence.png` (ignored).
+Cloudflare's free Bot Fight Mode does not support per-path WAF Skip exceptions.
+Disabling it is a domain-wide protection change requiring action-time confirmation;
+After explicit user approval, Bot Fight Mode was switched off and its off state verified
+after a page reload. ChatGPT creation was retried: the upstream failure changed from
+403 to 429 (`Dynamic client registration failed: registration endpoint returned 429`).
+WordPress.com logs now record the POST at 23:29 MDT as 429, renderer `static`,
+1,168 response bytes, with the same Python/aiohttp user agent; this suggests a hosting
+rate limit rather than the plugin's small JSON response. A direct registration probe with
+that same user agent returned 201 at 23:30 MDT. Fresh ChatGPT discovery still failed.
+The ChatGPT connection is not accepted yet. Sending remains off; live metadata still
+reports 0.4.4 without mail:send. Additional ignored screenshots:
+`wp-plugin/dist/cloudflare-bot-fight-off.png`, `wp-plugin/dist/chatgpt-registration-429.png`.
+Both WordPress.com WAF and Defensive Mode settings show a Business/Commerce upgrade gate
+on this Premium site. No hosting security setting was altered. Hosting support needs to
+identify the static 429 at 2026-10-28 05:29 UTC (Oct 27 23:29 MDT) on the registration path;
+no plan purchase or support message has been submitted.
+
+The next captured creation response identified the concrete upstream failure: ChatGPT's
+`POST /backend-api/aip/connectors/mcp` returned HTTP 400 with
+`detail.message = "Dynamic client registration failed: registration endpoint returned 403"`
+and `detail.status_code = 403`. The submitted payload was inspected: authorization/token/registration
+URLs, authorization-server base, resource, S256 PKCE, DCR, and mail:read scopes were correct.
+The live registration handler has no 403 response branch, and public-client registration from the
+local test machine returns 201. This points to a request-specific block before that handler
+(Cloudflare or WordPress.com security), not a demonstrated client-metadata validation error.
+Check Cloudflare/hosting security events for POST `/wp-json/ce-mail/v1/oauth/register` at the
+ChatGPT attempt before changing plugin behavior or weakening any site-wide security settings.
+Sending remained off in the live metadata. Diagnostic screenshot: ignored build output
+`wp-plugin/dist/chatgpt-registration-403.png`.
+
+Browser DevTools subsequently captured ChatGPT's own `POST /backend-api/aip/connectors/mcp/oauth_config`
+returning HTTP 404 with detail `MCP server https://calvaryellicott.org/wp-json/ce-mail/v1/mcp does not implement OAuth`.
+This response does not reveal the failing upstream request. The earlier connector creation produced HTTP 400
+and the generic settings-rejected UI; its response body was not captured at the time. Discovery retry resets
+the builder's manual OAuth fields, registration method and PKCE checkbox, so restore the verified values before
+another creation attempt. The manual read-only configuration has been restored and capture is ready to inspect
+the creation response. Public-client registration with the ChatGPT callback was independently accepted (201).
+
+Live 0.4.4 passed both metadata routes, the resource-specific metadata alias, and unauthenticated
+GET/POST with and without the ChatGPT Origin, all returning the expected discovery challenge.
+ChatGPT's builder still displayed its generic discovery failure.
+
+An additional independent test used the official `@modelcontextprotocol/sdk` client instead of
+the plugin's checker. `discoverOAuthServerInfo()` fetched the resource-specific metadata (200)
+and root authorization metadata (200), validated the documents with SDK schemas, and reported the
+expected issuer/resource, registration endpoint, public-client `none` auth, S256 PKCE, and no send scope.
+The reusable script is `node tools/check-mail-sdk-discovery.mjs`; install the SDK with
+`npm install --prefix wp-plugin/dist/mcp-diagnostics --ignore-scripts @modelcontextprotocol/sdk` first.
+That directory is ignored and is not in the uploaded plugin.
+
+The precise remaining ChatGPT builder failure has not been observed at the HTTP level. The generic
+UI message alone does not establish a new server defect. The next connection attempt can use the
+builder's explicit OAuth endpoints and DCR/public-client setup, preserving the same authentication
+and disabled sending setting. Do not describe the ChatGPT integration as accepted until that succeeds.
+
+### 0.4.4 absent Origin header correction
+
+ChatGPT discovery continued to fail on 0.4.3 despite the browser-origin test passing. A live
+server-to-server GET without Origin reproduced HTTP 403 with `Origin not allowed`, so the client
+could not see the OAuth challenge. WordPress `WP_REST_Request::get_header()` returns null for an
+absent header, while the 0.4.3 allowlist only accepted an empty string. The test request stub
+incorrectly returned an empty string, masking the regression.
+
+0.4.4 accepts missing Origin (`null` or empty string) while preserving rejection of unrelated
+browser origins, including the literal string `null`. Missing Authorization is handled without
+PHP null-argument warnings. The stub now matches WordPress, and tests require 401 plus discovery
+challenge for both GET and POST without Origin. The live checker covers those cases alongside
+ChatGPT-origin requests. Local validation passed 88 regression checks and seven handler scenarios.
+The user confirmed the exact MCP URL. Live 0.4.4/ChatGPT acceptance still requires upload.
+
+### 0.4.3 ChatGPT browser discovery compatibility
+
+The 0.4.2 test client passed live sign-in, consent, code exchange, MCP initialization/tool discovery,
+refresh and revocation. ChatGPT's builder subsequently reported that it could not discover OAuth settings.
+Live checks identified compatibility gaps: requests with `Origin: https://chatgpt.com` received 403 before
+the authentication challenge; public metadata had no CORS headers; and the RFC 9728 resource-specific
+discovery URL `/.well-known/oauth-protected-resource/wp-json/ce-mail/v1/mcp` returned 404.
+
+0.4.3 permits the exact ChatGPT origin alongside the existing site/loopback origins, while rejecting
+unrelated and spoofed origins. Anonymous ChatGPT-origin MCP requests now get the normal 401 challenge.
+The challenge includes available scopes; CORS exposes WWW-Authenticate and the protocol header and permits
+the MCP protocol request header. Public metadata supports cross-origin reads and OPTIONS without exposing
+credentials; the resource-specific metadata path returns the same document as the root path.
+
+83 local security/protocol checks and seven authorization handler scenarios passed, including origin
+allow/reject behavior and the metadata alias. The expanded discovery checker tests these live endpoints
+after upload. 0.4.3 and ChatGPT builder acceptance remain pending deployment; these gaps alone do not prove
+the exact request ChatGPT's builder used. Sending remains controlled by its separate disabled switch.
+Reference: [OpenAI authentication and discovery contract](https://developers.openai.com/plugins/build/auth).
+
 ### 0.4.2 callback navigation fix
 
 The user observed that the first Allow click left the form visible and a second click reported
